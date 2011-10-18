@@ -3,7 +3,7 @@ setopt promptsubst
 unsetopt transient_rprompt # leave the pwd 
 
 # get the colors
-source ~/.zcolors
+source "$HOME/dotfiles/zsh/zcolors"
 
 # set the prompt
 set_prompt() {

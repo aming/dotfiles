@@ -8,7 +8,6 @@ autoload -Uz compinit
 compinit
 
 # aliases
-echo "test"
 [ -e "$HOME/dotfiles/zsh/aliases" ] && source "$HOME/dotfiles/zsh/aliases"
 
 # prompt
