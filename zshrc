@@ -8,10 +8,11 @@ autoload -Uz compinit
 compinit
 
 # aliases
-[ -f "~/.dotfile/zsh/aliases" ] && source "~/.dotfile/zsh/aliases"
+echo "test"
+[ -e "$HOME/dotfiles/zsh/aliases" ] && source "$HOME/dotfiles/zsh/aliases"
 
 # prompt
-[ -f "~/.dotfile/zsh/prompt" ] && source "~/.dotfile/zsh/prompt"
+[ -f "$HOME/dotfiles/zsh/zprompt" ] && source "$HOME/dotfiles/zsh/zprompt"
 
 # add settings specific to one system for zsh
-[ -f "~/.zshrc.local" ] && source "~/.zshrc.local"
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
