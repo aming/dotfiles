@@ -1,0 +1,221 @@
+" A vimrc file for AMing
+"
+" Maintainer:	AMing (cyberming at gmail dot com)
+" Last change:	2011 Oct 18
+"
+" To use it, copy it to
+"     for Unix and OS/2:  ~/.vimrc
+"	      for Amiga:  s:.vimrc
+"  for MS-DOS and Win32:  $VIM\_vimrc
+"	    for OpenVMS:  sys$login:.vimrc
+
+" Use Vim settings, rather then Vi settings (much better!).
+" This must be first, because it changes other options as a side effect.
+set nocompatible
+
+" allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+
+set nobackup        " do not keep a backup file, use versions instead
+set history=50      " keep 50 lines of command line history
+set number          " Show Line Number
+set ruler           " show the cursor position all the time
+set showcmd         " display incomplete commands
+set showmatch       " Show matching brackets.
+set incsearch       " do incremental searching
+"set ignorecase     " Do case insensitive matching
+"set smartcase      " Do smart case matching
+"set autowrite      " Automatically save before commands like :next and :make
+"set hidden         " Hide buffers when they are abandoned
+
+" setting for the tab space
+set tabstop=2
+set shiftwidth=2
+set expandtab
+
+" For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
+" let &guioptions = substitute(&guioptions, "t", "", "g")
+
+" Don't use Ex mode, use Q for formatting
+map Q gq
+
+" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+inoremap <C-U> <C-G>u<C-U>
+
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+  set mouse=a
+  " Right Click to enter and exit insertiong mode
+  " From Tips 843
+  imap <RightMouse> <Esc>
+  nmap <RightMouse> i<LeftMouse>
+endif
+
+" Vim5 and later versions support syntax highlighting. Uncommenting the
+" following enable syntax highlighting on, if the terminal has colors
+" and also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has("gui_running")
+  syntax on
+  set hlsearch
+  colorscheme vividchalk  " Set Color Scheme
+endif
+
+" Only do this part when compiled with support for autocommands.
+if has("autocmd")
+
+  " Enable file type detection.
+  " Use the default filetype settings, so that mail gets 'tw' set to 72,
+  " 'cindent' is on in C files, etc.
+  " Also load indent files, to automatically do language-dependent indenting.
+  filetype plugin indent on
+
+  " Put these in an autocmd group, so that we can delete them easily.
+  augroup vimrcEx
+    au!
+
+    " For all text files set 'textwidth' to 78 characters.
+    autocmd FileType text setlocal textwidth=78
+
+    " When editing a file, always jump to the last known cursor position.
+    " Don't do it when the position is invalid or when inside an event handler
+    " (happens when dropping a file on gvim).
+    " Also don't do it when the mark is in the first line, that is the default
+    " position when opening a file.
+    autocmd BufReadPost *
+          \ if line("'\"") > 1 && line("'\"") <= line("$") |
+          \   exe "normal! g`\"" |
+          \ endif
+
+  augroup END
+
+else
+
+  set autoindent		" always set autoindenting on
+
+endif " has("autocmd")
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+        \ | wincmd p | diffthis
+endif
+
+" For Taglist
+" configure tags - add additional tags here or comment out not-used ones
+" set tags+=./ctags;,~/.vim/tags/cpp,~/.vim/tags/cpp_boost
+" set tags+=./ctags;,~/.vim/tags/cpp,~/vimfiles/tags/cpp
+" build tags of your own project with CTRL+F12
+map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
+" 
+""""""""""""""""""""""""""""""
+" Omin Complete
+""""""""""""""""""""""""""""""
+let OmniCpp_NamespaceSearch = 1
+let OmniCpp_GlobalScopeSearch = 1
+let OmniCpp_ShowAccess = 1
+let OmniCpp_MayCompleteDot = 1
+let OmniCpp_MayCompleteArrow = 1
+let OmniCpp_MayCompleteScope = 1
+let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
+" automatically open and close the popup menu / preview window
+au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
+set completeopt=menuone,menu,longest,preview
+
+""""""""""""""""""""""""""""""
+" netrw setting
+""""""""""""""""""""""""""""""
+let g:netrw_winsize = 30
+
+""""""""""""""""""""""""""""""
+" NERDTree setting
+""""""""""""""""""""""""""""""
+let NERDTreeWinSize = 35
+map <f2> :NERDTreeToggle<cr>
+imap <f2> <esc>:NERDTreeToggle<cr>i
+
+""""""""""""""""""""""""""""""
+" BufExplorer
+""""""""""""""""""""""""""""""
+let g:bufExplorerDefaultHelp=0       " Do not show default help.
+let g:bufExplorerShowRelativePath=1  " Show relative paths.
+let g:bufExplorerSortBy='mru'        " Sort by most recently used.
+let g:bufExplorerSplitRight=0        " Split left.
+let g:bufExplorerSplitVertical=1     " Split vertically.
+let g:bufExplorerSplitVertSize = 30  " Split width
+let g:bufExplorerUseCurrentWindow=1  " Open in new window.
+autocmd BufWinEnter \[Buf\ List\] setl nonumber 
+
+""""""""""""""""""""""""""""""
+" winManager setting
+""""""""""""""""""""""""""""""
+let g:winManagerWindowLayout = "BufExplorer,FileExplorer|TagList"
+let g:winManagerWidth = 30
+let g:defaultExplorer = 1
+nmap <C-W><C-F> :FirstExplorerWindow<cr>
+nmap <C-W><C-B> :BottomExplorerWindow<cr>
+nmap <silent> <leader>wm :WMToggle<cr> 
+
+""""""""""""""""""""""""""""""
+" Refactoring Setting
+" From Tips at http://vim.wikia.com/wiki/Vim_as_a_refactoring_tool_and_some_examples_in_C_sharp
+""""""""""""""""""""""""""""""
+vmap \em :call ExtractMethod()<CR>
+function! ExtractMethod() range
+  let name = inputdialog("Name of new method:")
+  '<
+  exe "normal! O\<BS>private " . name ."()\<CR>{\<Esc>"
+  '>
+  exe "normal! oreturn ;\<CR>}\<Esc>k"
+  s/return/\/\/ return/ge
+  normal! j%
+  normal! kf(
+  exe "normal! yyPi// = \<Esc>wdwA;\<Esc>"
+  normal! ==
+  normal! j0w
+endfunction
+
+"Create property
+imap <C-c><C-p><C-s> <Esc>:call CreateProperty("string")<CR>a
+imap <C-c><C-p><C-i> <Esc>:call CreateProperty("int")<CR>a
+function! CreateProperty(type)
+  exe "normal bim_\<Esc>b\"yywiprivate ".a:type." \<Esc>A;\<CR>public ".a:type.
+        \ " \<Esc>\"ypb2xea\<CR>{\<Esc>oget\<CR>{\<CR>return " .
+        \ "\<Esc>\"ypa;\<CR>}\<CR>set\<CR>{\<CR>\<Tab>\<Esc>\"yPa = value;\<CR>}\<CR>}\<CR>\<Esc>"
+  normal! 12k2wi
+endfunction
+
+"Create abstract class
+imap <C-c><C-a><C-c> <Esc>bipublic abstract class <Esc>A<CR>{<CR>public abstract void X();<CR>}<Esc>:?X<CR>0fXs
+"Create concrete class
+map <C-c><C-c><C-c> :silent! call ImplementAbstractClass()<CR>
+function! ImplementAbstractClass() range
+  exe "normal \<Esc>\"yyw"
+  /{
+  normal "xy%
+  normal %o
+  exe "normal! \<Esc>o"
+  let name = inputdialog("Name of new method:")
+  exe "normal! ipublic class " .name." : \<Esc>\"yp\"xp"
+  exe "normal! }O}\<Esc>=="
+  normal %v%
+  normal! gv
+  '<,'>s/abstract/override/g
+  normal! gv
+  '<,'>s/;/\r{\r}\r/g
+  normal! ==
+  normal %kdd%k
+endfunction
+
+imap <C-c><C-p> <Esc>:call CreateProperty()<CR>a
+function! CreateProperty()
+  exe "normal bim_\<Esc>b\"yyybiprivate \<Esc>A;\<CR>\<Esc>\"ypw\"xyw\<Esc>2xbipublic \<Esc>$a\<CR>{\<Esc>oget\<CR>{\<CR>return \<Esc>\"xpa;\<CR>}\<CR>set\<CR>{\<CR>\<Tab>\<Esc>\"xPa = value;\<CR>}\<CR>}\<CR>\<Esc>"
+  normal 12k2wi
+endfunction
+
+" Quickly edit/reload the vimrc file
+nmap <silent> <leader>ev :e $MYVIMRC<CR>
+nmap <silent> <leader>sv :so $MYVIMRC<CR>
+
