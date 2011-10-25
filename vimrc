@@ -1,4 +1,5 @@
 " Source a dotfiles configuration
+set runtimepath=~/dotfiles/vim,$VIMRUNTIME
 source $HOME/dotfiles/vim/vimrc
 
 " Source a local configuration
