@@ -13,6 +13,17 @@
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
+filetype off                   " required!
+set rtp+=~/dotfiles/vim/bundle/vundle/
+set rtp+=~/dotfiles/vim/bundle/vundle/myBundle
+call vundle#rc("~/dotfiles/vim/bundle/myBundle")
+
+" let Vundle manage Vundle required! 
+Bundle 'gmarik/vundle'
+" My Bundles here:
+" original repos on github
+
+
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
