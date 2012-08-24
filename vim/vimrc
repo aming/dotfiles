@@ -30,14 +30,47 @@ Bundle 'scrooloose/nerdtree'
 let NERDTreeWinSize = 35
 map <f2> :NERDTreeToggle<cr>
 imap <f2> <esc>:NERDTreeToggle<cr>i
-autocmd vimenter * if !argc() | NERDTree | endif  "open a NERDTree automatically when vim starts up if no files were specified
+"autocmd vimenter * if !argc() | NERDTree | endif  "open a NERDTree automatically when vim starts up if no files were specified
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif    "close vim if the only window left open is a NERDTree
+
+""""""""""""""""""""""""""""""
+" plugins from tpope
+""""""""""""""""""""""""""""""
+Bundle 'tpope/vim-speeddating'
+Bundle 'tpope/vim-surround'
+Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-unimpaired'
+Bundle 'tpope/vim-commentary'
+Bundle 'tpope/vim-repeat'
+Bundle 'tpope/vim-rails'
 
 """"""""""""""""""""""""""""""
 " vim-powerline
 """"""""""""""""""""""""""""""
 Bundle 'Lokaltog/vim-powerline'
 let g:Powerline_symbols = 'fancy'
+
+""""""""""""""""""""""""""""""
+" vim-ruby
+""""""""""""""""""""""""""""""
+Bundle 'vim-ruby/vim-ruby'
+let g:Powerline_symbols = 'fancy'
+
+""""""""""""""""""""""""""""""
+" Command-T
+""""""""""""""""""""""""""""""
+Bundle 'wincent/Command-T'
+
+""""""""""""""""""""""""""""""
+" taglist
+""""""""""""""""""""""""""""""
+Bundle 'vim-scripts/taglist.vim'
+" For Taglist
+" configure tags - add additional tags here or comment out not-used ones
+" set tags+=./ctags;,~/.vim/tags/cpp,~/.vim/tags/cpp_boost
+" set tags+=./ctags;,~/.vim/tags/cpp,~/vimfiles/tags/cpp
+" build tags of your own project with CTRL+F12
+map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
 
 
 " allow backspacing over everything in insert mode
@@ -130,12 +163,6 @@ if !exists(":DiffOrig")
         \ | wincmd p | diffthis
 endif
 
-" For Taglist
-" configure tags - add additional tags here or comment out not-used ones
-" set tags+=./ctags;,~/.vim/tags/cpp,~/.vim/tags/cpp_boost
-" set tags+=./ctags;,~/.vim/tags/cpp,~/vimfiles/tags/cpp
-" build tags of your own project with CTRL+F12
-map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
 " 
 """"""""""""""""""""""""""""""
 " Omin Complete
@@ -150,11 +177,6 @@ let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
 " automatically open and close the popup menu / preview window
 au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
 set completeopt=menuone,menu,longest,preview
-
-""""""""""""""""""""""""""""""
-" netrw setting
-""""""""""""""""""""""""""""""
-let g:netrw_winsize = 30
 
 """"""""""""""""""""""""""""""
 " BufExplorer
