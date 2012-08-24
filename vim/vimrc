@@ -23,6 +23,22 @@ Bundle 'gmarik/vundle'
 " My Bundles here:
 " original repos on github
 
+""""""""""""""""""""""""""""""
+" NERDTree
+""""""""""""""""""""""""""""""
+Bundle 'scrooloose/nerdtree'
+let NERDTreeWinSize = 35
+map <f2> :NERDTreeToggle<cr>
+imap <f2> <esc>:NERDTreeToggle<cr>i
+autocmd vimenter * if !argc() | NERDTree | endif  "open a NERDTree automatically when vim starts up if no files were specified
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif    "close vim if the only window left open is a NERDTree
+
+""""""""""""""""""""""""""""""
+" vim-powerline
+""""""""""""""""""""""""""""""
+Bundle 'Lokaltog/vim-powerline'
+let g:Powerline_symbols = 'fancy'
+
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -139,13 +155,6 @@ set completeopt=menuone,menu,longest,preview
 " netrw setting
 """"""""""""""""""""""""""""""
 let g:netrw_winsize = 30
-
-""""""""""""""""""""""""""""""
-" NERDTree setting
-""""""""""""""""""""""""""""""
-let NERDTreeWinSize = 35
-map <f2> :NERDTreeToggle<cr>
-imap <f2> <esc>:NERDTreeToggle<cr>i
 
 """"""""""""""""""""""""""""""
 " BufExplorer
