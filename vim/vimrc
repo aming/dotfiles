@@ -1,7 +1,7 @@
 " A vimrc file for AMing
 "
 " Maintainer:	AMing (cyberming at gmail dot com)
-" Last change:	2011 Oct 18
+" Last change:	2012 Nov 16
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -30,8 +30,10 @@ Bundle 'scrooloose/nerdtree'
 let NERDTreeWinSize = 35
 map <f2> :NERDTreeToggle<cr>
 imap <f2> <esc>:NERDTreeToggle<cr>i
-"autocmd vimenter * if !argc() | NERDTree | endif  "open a NERDTree automatically when vim starts up if no files were specified
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif    "close vim if the only window left open is a NERDTree
+if has("autocmd") 
+  autocmd vimenter * if !argc() | NERDTree | endif  "open a NERDTree automatically when vim starts up if no files were specified
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif    "close vim if the only window left open is a NERDTree
+endif " has("autocmd")
 
 """"""""""""""""""""""""""""""
 " plugins from tpope
@@ -51,15 +53,9 @@ Bundle 'Lokaltog/vim-powerline'
 let g:Powerline_symbols = 'fancy'
 
 """"""""""""""""""""""""""""""
-" vim-ruby
+" vim-cpp
 """"""""""""""""""""""""""""""
-Bundle 'vim-ruby/vim-ruby'
-let g:Powerline_symbols = 'fancy'
-
-""""""""""""""""""""""""""""""
-" Command-T
-""""""""""""""""""""""""""""""
-Bundle 'wincent/Command-T'
+Bundle 'Rip-Rip/clang_complete'
 
 """"""""""""""""""""""""""""""
 " taglist
@@ -72,6 +68,25 @@ Bundle 'vim-scripts/taglist.vim'
 " build tags of your own project with CTRL+F12
 map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
 
+""""""""""""""""""""""""""""""
+" vim-java
+""""""""""""""""""""""""""""""
+Bundle 'vim-scripts/javacomplete'
+if has("autocmd") 
+  autocmd Filetype java setlocal omnifunc=javacomplete#Complete 
+  autocmd Filetype java setlocal completefunc=javacomplete#CompleteParamsInfo
+endif " has("autocmd")
+
+""""""""""""""""""""""""""""""
+" vim-ruby
+""""""""""""""""""""""""""""""
+Bundle 'vim-ruby/vim-ruby'
+let g:Powerline_symbols = 'fancy'
+
+""""""""""""""""""""""""""""""
+" Command-T
+""""""""""""""""""""""""""""""
+Bundle 'wincent/Command-T'
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -95,9 +110,6 @@ set expandtab
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
 " let &guioptions = substitute(&guioptions, "t", "", "g")
-
-" Don't use Ex mode, use Q for formatting
-map Q gq
 
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
@@ -163,21 +175,6 @@ if !exists(":DiffOrig")
         \ | wincmd p | diffthis
 endif
 
-" 
-""""""""""""""""""""""""""""""
-" Omin Complete
-""""""""""""""""""""""""""""""
-let OmniCpp_NamespaceSearch = 1
-let OmniCpp_GlobalScopeSearch = 1
-let OmniCpp_ShowAccess = 1
-let OmniCpp_MayCompleteDot = 1
-let OmniCpp_MayCompleteArrow = 1
-let OmniCpp_MayCompleteScope = 1
-let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-" automatically open and close the popup menu / preview window
-au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-set completeopt=menuone,menu,longest,preview
-
 """"""""""""""""""""""""""""""
 " BufExplorer
 """"""""""""""""""""""""""""""
@@ -188,7 +185,9 @@ let g:bufExplorerSplitRight=0        " Split left.
 let g:bufExplorerSplitVertical=1     " Split vertically.
 let g:bufExplorerSplitVertSize = 30  " Split width
 let g:bufExplorerUseCurrentWindow=1  " Open in new window.
-autocmd BufWinEnter \[Buf\ List\] setl nonumber 
+if has("autocmd") 
+  autocmd BufWinEnter \[Buf\ List\] setl nonumber 
+endif " has("autocmd")
 
 """"""""""""""""""""""""""""""
 " winManager setting
@@ -199,63 +198,6 @@ let g:defaultExplorer = 1
 nmap <C-W><C-F> :FirstExplorerWindow<cr>
 nmap <C-W><C-B> :BottomExplorerWindow<cr>
 nmap <silent> <leader>wm :WMToggle<cr> 
-
-""""""""""""""""""""""""""""""
-" Refactoring Setting
-" From Tips at http://vim.wikia.com/wiki/Vim_as_a_refactoring_tool_and_some_examples_in_C_sharp
-""""""""""""""""""""""""""""""
-vmap \em :call ExtractMethod()<CR>
-function! ExtractMethod() range
-  let name = inputdialog("Name of new method:")
-  '<
-  exe "normal! O\<BS>private " . name ."()\<CR>{\<Esc>"
-  '>
-  exe "normal! oreturn ;\<CR>}\<Esc>k"
-  s/return/\/\/ return/ge
-  normal! j%
-  normal! kf(
-  exe "normal! yyPi// = \<Esc>wdwA;\<Esc>"
-  normal! ==
-  normal! j0w
-endfunction
-
-"Create property
-imap <C-c><C-p><C-s> <Esc>:call CreateProperty("string")<CR>a
-imap <C-c><C-p><C-i> <Esc>:call CreateProperty("int")<CR>a
-function! CreateProperty(type)
-  exe "normal bim_\<Esc>b\"yywiprivate ".a:type." \<Esc>A;\<CR>public ".a:type.
-        \ " \<Esc>\"ypb2xea\<CR>{\<Esc>oget\<CR>{\<CR>return " .
-        \ "\<Esc>\"ypa;\<CR>}\<CR>set\<CR>{\<CR>\<Tab>\<Esc>\"yPa = value;\<CR>}\<CR>}\<CR>\<Esc>"
-  normal! 12k2wi
-endfunction
-
-"Create abstract class
-imap <C-c><C-a><C-c> <Esc>bipublic abstract class <Esc>A<CR>{<CR>public abstract void X();<CR>}<Esc>:?X<CR>0fXs
-"Create concrete class
-map <C-c><C-c><C-c> :silent! call ImplementAbstractClass()<CR>
-function! ImplementAbstractClass() range
-  exe "normal \<Esc>\"yyw"
-  /{
-  normal "xy%
-  normal %o
-  exe "normal! \<Esc>o"
-  let name = inputdialog("Name of new method:")
-  exe "normal! ipublic class " .name." : \<Esc>\"yp\"xp"
-  exe "normal! }O}\<Esc>=="
-  normal %v%
-  normal! gv
-  '<,'>s/abstract/override/g
-  normal! gv
-  '<,'>s/;/\r{\r}\r/g
-  normal! ==
-  normal %kdd%k
-endfunction
-
-imap <C-c><C-p> <Esc>:call CreateProperty()<CR>a
-function! CreateProperty()
-  exe "normal bim_\<Esc>b\"yyybiprivate \<Esc>A;\<CR>\<Esc>\"ypw\"xyw\<Esc>2xbipublic \<Esc>$a\<CR>{\<Esc>oget\<CR>{\<CR>return \<Esc>\"xpa;\<CR>}\<CR>set\<CR>{\<CR>\<Tab>\<Esc>\"xPa = value;\<CR>}\<CR>}\<CR>\<Esc>"
-  normal 12k2wi
-endfunction
 
 " Quickly edit/reload the vimrc file
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
