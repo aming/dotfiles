@@ -72,11 +72,12 @@ map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
 """"""""""""""""""""""""""""""
 " vim-java
 """"""""""""""""""""""""""""""
-Bundle 'vim-scripts/javacomplete'
-if has("autocmd") 
-  autocmd Filetype java setlocal omnifunc=javacomplete#Complete 
-  autocmd Filetype java setlocal completefunc=javacomplete#CompleteParamsInfo
-endif " has("autocmd")
+Bundle 'Vim-JDE'
+"Bundle 'vim-scripts/javacomplete'
+"if has("autocmd") 
+"  autocmd Filetype java setlocal omnifunc=javacomplete#Complete 
+"  autocmd Filetype java setlocal completefunc=javacomplete#CompleteParamsInfo
+"endif " has("autocmd")
 
 """"""""""""""""""""""""""""""
 " vim-ruby
