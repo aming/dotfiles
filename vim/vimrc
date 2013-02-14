@@ -1,7 +1,6 @@
 " A vimrc file for AMing
 "
-" Maintainer:	AMing (cyberming at gmail dot com)
-" Last change:	2012 Nov 16
+" Maintainer:	AMing
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -83,7 +82,9 @@ Bundle 'Vim-JDE'
 " vim-ruby
 """"""""""""""""""""""""""""""
 Bundle 'vim-ruby/vim-ruby'
-let g:Powerline_symbols = 'fancy'
+let g:rubycomplete_buffer_loading = 1
+let g:rubycomplete_classes_in_global = 1
+let g:rubycomplete_rails = 1
 
 """"""""""""""""""""""""""""""
 " Command-T
@@ -176,31 +177,7 @@ if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
         \ | wincmd p | diffthis
 endif
-
-""""""""""""""""""""""""""""""
-" BufExplorer
-""""""""""""""""""""""""""""""
-let g:bufExplorerDefaultHelp=0       " Do not show default help.
-let g:bufExplorerShowRelativePath=1  " Show relative paths.
-let g:bufExplorerSortBy='mru'        " Sort by most recently used.
-let g:bufExplorerSplitRight=0        " Split left.
-let g:bufExplorerSplitVertical=1     " Split vertically.
-let g:bufExplorerSplitVertSize = 30  " Split width
-let g:bufExplorerUseCurrentWindow=1  " Open in new window.
-if has("autocmd") 
-  autocmd BufWinEnter \[Buf\ List\] setl nonumber 
-endif " has("autocmd")
-
-""""""""""""""""""""""""""""""
-" winManager setting
-""""""""""""""""""""""""""""""
-let g:winManagerWindowLayout = "BufExplorer,FileExplorer|TagList"
-let g:winManagerWidth = 30
-let g:defaultExplorer = 1
-nmap <C-W><C-F> :FirstExplorerWindow<cr>
-nmap <C-W><C-B> :BottomExplorerWindow<cr>
-nmap <silent> <leader>wm :WMToggle<cr> 
-
+"
 " Quickly edit/reload the vimrc file
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
 nmap <silent> <leader>sv :so $MYVIMRC<CR>
