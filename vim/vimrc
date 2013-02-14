@@ -1,6 +1,7 @@
 " A vimrc file for AMing
 "
-" Maintainer:	AMing
+" Maintainer:	AMing (cyberming at gmail dot com)
+" Last change:	2013 Feb 8
 "
 " To use it, copy it to
 "     for Unix and OS/2:  ~/.vimrc
@@ -16,6 +17,9 @@ filetype off                   " required!
 set rtp+=~/dotfiles/vim/bundle/vundle/
 set rtp+=~/dotfiles/vim/bundle/vundle/myBundle
 call vundle#rc("~/dotfiles/vim/bundle/myBundle")
+
+" Change leader from '\' to ','
+let mapleader=","
 
 " let Vundle manage Vundle required! 
 Bundle 'gmarik/vundle'
@@ -87,9 +91,11 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
 """"""""""""""""""""""""""""""
-" Command-T
+" Ctrl-P
 """"""""""""""""""""""""""""""
-Bundle 'wincent/Command-T'
+Bundle 'kien/ctrlp.vim'
+let g:ctrlp_map = '<leader>t'
+"let g:ctrlp_cmd = 'CtrlP'
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -177,8 +183,10 @@ if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
         \ | wincmd p | diffthis
 endif
-"
+
+""""""""""""""""""""""""""""""
 " Quickly edit/reload the vimrc file
+""""""""""""""""""""""""""""""
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
 nmap <silent> <leader>sv :so $MYVIMRC<CR>
 
