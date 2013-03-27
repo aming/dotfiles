@@ -1,3 +1,6 @@
+[user]
+[color]
+	ui = auto
 [alias]
   co = checkout
   ci = commit
@@ -6,3 +9,12 @@
   hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
   type = cat-file -t
   dump = cat-file -p
+	llog = log --oneline @{upstream}..HEAD
+	llp = log -p @{upstream}..HEAD
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+[push]
+	default = simple
+[rebase]
+	autosquash = true
+[core]
+	excludesfile = ~/dotfiles/git/gitignore_global
