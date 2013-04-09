@@ -91,6 +91,11 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
 """"""""""""""""""""""""""""""
+" sparkup
+""""""""""""""""""""""""""""""
+Bundle 'rstacruz/sparkup'
+
+""""""""""""""""""""""""""""""
 " Ctrl-P
 """"""""""""""""""""""""""""""
 Bundle 'kien/ctrlp.vim'
