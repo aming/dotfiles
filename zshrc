@@ -8,11 +8,11 @@ zstyle :compinstall filename '~/.zshrc'
 setopt AUTO_PUSHD     # auto pushd on every cd
 
 #==================== import other files ====================#
-# aliases
-[ -e "$HOME/dotfiles/zsh/aliases" ] && source "$HOME/dotfiles/zsh/aliases"
-
-# prompt
-[ -f "$HOME/dotfiles/zsh/zprompt" ] && source "$HOME/dotfiles/zsh/zprompt"
+# import all the zsh settings
+zsh_home=$HOME/dotfiles/zsh
+for file in $HOME/dotfiles/zsh/*; do
+  source $file
+done
 
 # add settings specific to one system for zsh
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

@@ -2,9 +2,6 @@
 setopt promptsubst
 unsetopt transient_rprompt # leave the pwd 
 
-# get the colors
-source "$HOME/dotfiles/zsh/zcolors"
-
 # set the prompt
 set_prompt() {
     mypath="$C_OFF$C_L_GREEN%~"
