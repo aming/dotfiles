@@ -1,2 +1,9 @@
 # Global gitignore file - see `man gitignore` for details
 
+# Vim temp files
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
