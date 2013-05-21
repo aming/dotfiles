@@ -102,6 +102,17 @@ Bundle 'kien/ctrlp.vim'
 let g:ctrlp_map = '<leader>t'
 "let g:ctrlp_cmd = 'CtrlP'
 
+""""""""""""""""""""""""""""""
+" Zen Coding
+""""""""""""""""""""""""""""""
+Bundle 'mattn/zencoding-vim'
+let g:user_zen_mode = 'i'
+
+""""""""""""""""""""""""""""""
+" vim-mason
+""""""""""""""""""""""""""""""
+Bundle 'aming/vim-mason'
+
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
