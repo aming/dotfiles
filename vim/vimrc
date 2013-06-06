@@ -113,6 +113,11 @@ let g:user_zen_mode = 'i'
 """"""""""""""""""""""""""""""
 Bundle 'aming/vim-mason'
 
+""""""""""""""""""""""""""""""
+" fholgado/minibufexpl.vim
+""""""""""""""""""""""""""""""
+Bundle 'fholgado/minibufexpl.vim'
+
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
