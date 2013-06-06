@@ -62,15 +62,16 @@ Bundle 'Rip-Rip/clang_complete'
 let g:clang_user_options='|| exit 0'
 
 """"""""""""""""""""""""""""""
-" taglist
+" majutsushi/tagbar
 """"""""""""""""""""""""""""""
-Bundle 'vim-scripts/taglist.vim'
+Bundle 'majutsushi/tagbar'
 " For Taglist
 " configure tags - add additional tags here or comment out not-used ones
 " set tags+=./ctags;,~/.vim/tags/cpp,~/.vim/tags/cpp_boost
 " set tags+=./ctags;,~/.vim/tags/cpp,~/vimfiles/tags/cpp
-" build tags of your own project with CTRL+F12
-map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
+" build tags of your own project with CTRL+F8
+"map <C-F8> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
+nmap <F8> :TagbarToggle<CR>
 
 """"""""""""""""""""""""""""""
 " vim-java
