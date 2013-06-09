@@ -39,6 +39,11 @@ if has("autocmd")
 endif " has("autocmd")
 
 """"""""""""""""""""""""""""""
+" matchit
+""""""""""""""""""""""""""""""
+Bundle 'matchit.zip'
+
+""""""""""""""""""""""""""""""
 " plugins from tpope
 """"""""""""""""""""""""""""""
 Bundle 'tpope/vim-speeddating'
