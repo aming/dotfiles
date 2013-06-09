@@ -17,3 +17,4 @@
 	autosquash = true
 [core]
 	excludesfile = ~/dotfiles/git/gitignore_global
+	pager = less -FMRiX
