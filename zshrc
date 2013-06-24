@@ -17,6 +17,12 @@ done
 # add settings specific to one system for zsh
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
+# This loads RVM into a shell session.
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
+
 autoload -Uz compinit
 compinit
 
