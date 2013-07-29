@@ -39,6 +39,11 @@ if has("autocmd")
 endif " has("autocmd")
 
 """"""""""""""""""""""""""""""
+" Color Scheme
+""""""""""""""""""""""""""""""
+Bundle 'tpope/vim-vividchalk'
+
+""""""""""""""""""""""""""""""
 " matchit
 """"""""""""""""""""""""""""""
 Bundle 'matchit.zip'
