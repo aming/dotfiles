@@ -146,8 +146,8 @@ set smartcase      " Do smart case matching
 "set hidden         " Hide buffers when they are abandoned
 
 " setting for the tab space
-set tabstop=2
-set shiftwidth=2
+set tabstop=4
+set shiftwidth=4
 set expandtab
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
