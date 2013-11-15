@@ -60,10 +60,10 @@ Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-rails'
 
 """"""""""""""""""""""""""""""
-" vim-powerline
+" vim-airline
 """"""""""""""""""""""""""""""
-Bundle 'Lokaltog/vim-powerline'
-let g:Powerline_symbols = 'fancy'
+Bundle 'bling/vim-airline'
+let g:airline#extensions#tabline#enabled = 1
 
 """"""""""""""""""""""""""""""
 " vim-cpp
@@ -123,12 +123,6 @@ let g:user_zen_mode = 'i'
 " vim-mason
 """"""""""""""""""""""""""""""
 Bundle 'aming/vim-mason'
-
-""""""""""""""""""""""""""""""
-" fholgado/minibufexpl.vim
-""""""""""""""""""""""""""""""
-Bundle 'fholgado/minibufexpl.vim'
-nmap <leader>b :MBEOpen<CR>:MBEFocus<CR>
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
