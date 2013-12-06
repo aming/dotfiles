@@ -110,10 +110,11 @@ let g:ctrlp_map = '<leader>t'
 "let g:ctrlp_cmd = 'CtrlP'
 
 """"""""""""""""""""""""""""""
-" Zen Coding
+" Emmet-vim
 """"""""""""""""""""""""""""""
-Bundle 'mattn/zencoding-vim'
-let g:user_zen_mode = 'i'
+Bundle 'mattn/emmet-vim'
+let g:user_emmet_mode='n'    "only enable normal mode functions.
+"let g:user_emmet_mode='inv'  "enable all functions, which is equal to 'a'
 
 """"""""""""""""""""""""""""""
 " vim-mason
