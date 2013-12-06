@@ -157,6 +157,10 @@ if has('mouse')
   nmap <RightMouse> i<LeftMouse>
 endif
 
+" Force xterm and screen (including tmux) using color 256
+if (&term =~ "xterm") || (&term =~ "screen") 
+    set t_Co=256 
+endif 
 " Vim5 and later versions support syntax highlighting. Uncommenting the
 " following enable syntax highlighting on, if the terminal has colors
 " and also switch on highlighting the last used search pattern.
