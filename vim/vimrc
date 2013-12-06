@@ -27,16 +27,12 @@ Bundle 'gmarik/vundle'
 " original repos on github
 
 """"""""""""""""""""""""""""""
-" NERDTree
+" NERDTree & NERDTree-tabs
 """"""""""""""""""""""""""""""
 Bundle 'scrooloose/nerdtree'
 let NERDTreeWinSize = 35
-map <f2> :NERDTreeToggle<cr>
-imap <f2> <esc>:NERDTreeToggle<cr>i
-if has("autocmd") 
-  autocmd vimenter * if !argc() | NERDTree | endif  "open a NERDTree automatically when vim starts up if no files were specified
-  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif    "close vim if the only window left open is a NERDTree
-endif " has("autocmd")
+Bundle 'jistr/vim-nerdtree-tabs'
+map <Leader>n <plug>NERDTreeTabsToggle<CR>
 
 """"""""""""""""""""""""""""""
 " Color Scheme
