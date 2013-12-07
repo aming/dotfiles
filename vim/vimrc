@@ -98,11 +98,6 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
 """"""""""""""""""""""""""""""
-" sparkup
-""""""""""""""""""""""""""""""
-Bundle 'rstacruz/sparkup'
-
-""""""""""""""""""""""""""""""
 " Ctrl-P
 """"""""""""""""""""""""""""""
 Bundle 'kien/ctrlp.vim'
@@ -113,7 +108,7 @@ let g:ctrlp_map = '<leader>t'
 " Emmet-vim
 """"""""""""""""""""""""""""""
 Bundle 'mattn/emmet-vim'
-let g:user_emmet_mode='n'    "only enable normal mode functions.
+let g:user_emmet_mode='a'    "only enable normal mode functions.
 "let g:user_emmet_mode='inv'  "enable all functions, which is equal to 'a'
 
 """"""""""""""""""""""""""""""
