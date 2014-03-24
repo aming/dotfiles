@@ -6,7 +6,7 @@
     ci = commit
     st = status
     br = branch
-    hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --branches
+    hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --branches --date-order
     type = cat-file -t
     dump = cat-file -p
 	llog = log --oneline @{upstream}..HEAD
