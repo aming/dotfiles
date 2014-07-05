@@ -20,12 +20,13 @@ done
 # This loads RVM into a shell session.
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+# Add RVM to PATH for scripting
+export PATH="$HOME/.rvm/bin:$PATH"
+# Add Heroku Toolbelt to PATH
+export PATH="/usr/local/heroku/bin:$PATH"
 
+export PATH="/usr/local/bin:$PATH"
 
 autoload -Uz compinit
 compinit
 
-
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
