@@ -30,8 +30,6 @@ source $ZSH/oh-my-zsh.sh
 # This loads RVM into a shell session.
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-# Add RVM to PATH for scripting
-export PATH="$HOME/.rvm/bin:$PATH"
 # Add Heroku Toolbelt to PATH
 export PATH="/usr/local/heroku/bin:$PATH"
 
