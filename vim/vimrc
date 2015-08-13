@@ -234,3 +234,9 @@ endif
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
 nmap <silent> <leader>sv :so $MYVIMRC<CR>
 
+
+" Use relative line numbers
+if exists("&relativenumber")
+    set relativenumber
+    au BufReadPost * set relativenumber
+endif
