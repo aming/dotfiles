@@ -108,7 +108,7 @@ let g:rubycomplete_rails = 1
 """"""""""""""""""""""""""""""
 " Ctrl-P
 """"""""""""""""""""""""""""""
-Plugin 'kien/ctrlp.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
 let g:ctrlp_map = '<leader>t'
 "let g:ctrlp_cmd = 'CtrlP'
 
