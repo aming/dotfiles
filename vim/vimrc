@@ -98,6 +98,12 @@ Plugin 'Vim-JDE'
 "endif " has("autocmd")
 
 """"""""""""""""""""""""""""""
+" vim-javascript
+""""""""""""""""""""""""""""""
+Plugin 'pangloss/vim-javascript'
+Plugin 'mxw/vim-jsx'
+
+""""""""""""""""""""""""""""""
 " vim-ruby
 """"""""""""""""""""""""""""""
 Plugin 'vim-ruby/vim-ruby'
