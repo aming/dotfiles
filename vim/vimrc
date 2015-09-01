@@ -16,11 +16,11 @@ set nocompatible
 let mapleader=","
 
 filetype off                   " required!
-set rtp+=~/dotfiles/vim/bundle/vundle/
+set rtp+=~/dotfiles/vim/bundle/Vundle.vim
 call vundle#begin("~/dotfiles/vim/bundle/myBundle")
 
 " let Vundle manage Vundle required! 
-Plugin 'gmarik/vundle'
+Plugin 'VundleVim/Vundle.vim'
 
 """"""""""""""""""""""""""""""
 " My Bundles here:
