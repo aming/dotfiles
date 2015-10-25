@@ -14,7 +14,6 @@ for file in $HOME/dotfiles/zsh/lib/*; do
   source $file
 done
 
-
 #==================== oh-my-zsh configuration ====================#
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
@@ -22,13 +21,11 @@ ZSH_THEME="robbyrussell"
 plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
-
-#==================== oh-my-zsh configuration ====================#
 # add settings specific to one system for zsh
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
-# This loads RVM into a shell session.
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+# This loads rbenv into a shell session.
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # Add Heroku Toolbelt to PATH
 export PATH="/usr/local/heroku/bin:$PATH"
