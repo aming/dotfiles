@@ -88,16 +88,6 @@ Plugin 'majutsushi/tagbar'
 nmap <F8> :TagbarToggle<CR>
 
 """"""""""""""""""""""""""""""
-" vim-java
-""""""""""""""""""""""""""""""
-Plugin 'Vim-JDE'
-"Plugin 'vim-scripts/javacomplete'
-"if has("autocmd") 
-"  autocmd Filetype java setlocal omnifunc=javacomplete#Complete 
-"  autocmd Filetype java setlocal completefunc=javacomplete#CompleteParamsInfo
-"endif " has("autocmd")
-
-""""""""""""""""""""""""""""""
 " vim-javascript
 """"""""""""""""""""""""""""""
 Plugin 'pangloss/vim-javascript'
