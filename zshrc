@@ -17,6 +17,7 @@ done
 #==================== oh-my-zsh configuration ====================#
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
+export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="robbyrussell"
 plugins=(git osx z)
 source $ZSH/oh-my-zsh.sh
