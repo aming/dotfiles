@@ -19,14 +19,11 @@ done
 export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="robbyrussell"
-plugins=(git osx z)
+plugins=(rbenv git osx z)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
-
-# This loads rbenv into a shell session.
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # Add Heroku Toolbelt to PATH
 export PATH="/usr/local/heroku/bin:$PATH"
