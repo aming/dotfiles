@@ -12,6 +12,9 @@
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
+" Set the Encoding of VIM
+set encoding=utf-8
+
 " Change leader from '\' to ','
 let mapleader=","
 
@@ -46,6 +49,11 @@ Plugin 'tpope/vim-vividchalk'
 Plugin 'matchit.zip'
 
 """"""""""""""""""""""""""""""
+" Super Tab
+""""""""""""""""""""""""""""""
+Plugin 'ervandew/supertab'
+
+""""""""""""""""""""""""""""""
 " plugins from tpope
 """"""""""""""""""""""""""""""
 Plugin 'tpope/vim-speeddating'
@@ -53,7 +61,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-rails'
+Plugin 'tpope/vim-endwise'
 
 """"""""""""""""""""""""""""""
 " vim-fugitive
@@ -64,16 +72,20 @@ autocmd BufReadPost fugitive://* set bufhidden=delete
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 
 """"""""""""""""""""""""""""""
+" hive.vim
+""""""""""""""""""""""""""""""
+Plugin 'autowitch/hive.vim'
+
+""""""""""""""""""""""""""""""
+" vim-dash
+""""""""""""""""""""""""""""""
+Plugin 'rizzatti/dash.vim'
+
+""""""""""""""""""""""""""""""
 " vim-airline
 """"""""""""""""""""""""""""""
 Plugin 'bling/vim-airline'
 let g:airline#extensions#tabline#enabled = 1
-
-""""""""""""""""""""""""""""""
-" vim-cpp
-""""""""""""""""""""""""""""""
-Plugin 'Rip-Rip/clang_complete'
-let g:clang_user_options='|| exit 0'
 
 """"""""""""""""""""""""""""""
 " majutsushi/tagbar
@@ -94,9 +106,10 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'mxw/vim-jsx'
 
 """"""""""""""""""""""""""""""
-" vim-ruby
+" For ruby and rails
 """"""""""""""""""""""""""""""
 Plugin 'vim-ruby/vim-ruby'
+Plugin 'tpope/vim-rails'
 let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
