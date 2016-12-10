@@ -44,6 +44,27 @@ map <Leader>n <plug>NERDTreeTabsToggle<CR>
 Plugin 'tpope/vim-vividchalk'
 
 """"""""""""""""""""""""""""""
+" Code completion
+""""""""""""""""""""""""""""""
+Plugin 'Valloric/YouCompleteMe'
+if !exists("g:ycm_semantic_triggers")
+    let g:ycm_semantic_triggers = {}
+endif
+
+""""""""""""""""""""""""""""""
+" TypeScript
+""""""""""""""""""""""""""""""
+Plugin 'leafgarland/typescript-vim'
+let g:ycm_semantic_triggers['typescript'] = ['.']
+
+""""""""""""""""""""""""""""""
+" Notes
+""""""""""""""""""""""""""""""
+Plugin 'xolox/vim-notes'
+Plugin 'vim-misc'
+:let g:notes_directories = ['~/Documents/Notes']
+
+""""""""""""""""""""""""""""""
 " matchit
 """"""""""""""""""""""""""""""
 Plugin 'matchit.zip'
