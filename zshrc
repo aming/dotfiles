@@ -19,7 +19,7 @@ done
 export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="robbyrussell"
-plugins=(rbenv git osx z)
+plugins=(rbenv git osx z zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
