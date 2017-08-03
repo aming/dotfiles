@@ -2,7 +2,7 @@
     name = aming
     email = cyberming@gmail.com
 [color]
-	ui = auto
+    ui = auto
 [alias]
     co = checkout
     ci = commit
@@ -11,17 +11,17 @@
     hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --branches --date-order
     type = cat-file -t
     dump = cat-file -p
-	llog = log --oneline @{upstream}..HEAD
-	llp = log -p @{upstream}..HEAD
-	dag = log --graph --format='format:%C(yellow)%h%C(reset) %C(blue)\"%an\" <%ae>%C(reset) %C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order
-	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-	share-feature = "! git add-share-remote && git push share \"HEAD:refs/share/$USER/${1:-$(git symbolic-ref --short -q HEAD)}\" #"
-	pull-feature = ! git add-share-remote \"$1\" && git pull \"$1\" \"refs/share/$1/$2\" && true
-	backup = ! git add-backup-remote && git push backup
+    llog = log --oneline @{upstream}..HEAD
+    llp = log -p @{upstream}..HEAD
+    dag = log --graph --format='format:%C(yellow)%h%C(reset) %C(blue)\"%an\" <%ae>%C(reset) %C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    share-feature = "! git add-share-remote && git push share \"HEAD:refs/share/$USER/${1:-$(git symbolic-ref --short -q HEAD)}\" #"
+    pull-feature = ! git add-share-remote \"$1\" && git pull \"$1\" \"refs/share/$1/$2\" && true
+    backup = ! git add-backup-remote && git push backup
 [push]
-	default = simple
+    default = simple
 [rebase]
-	autosquash = true
+    autosquash = true
 [core]
-	excludesfile = ~/dotfiles/git/gitignore_global
-	pager = less -FMRiX
+    excludesfile = ~/dotfiles/git/gitignore_global
+    pager = less -FMRiX
