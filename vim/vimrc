@@ -158,7 +158,6 @@ set backspace=indent,eol,start
 
 set nobackup        " do not keep a backup file, use versions instead
 set history=50      " keep 50 lines of command line history
-set number          " Show Line Number
 set ruler           " show the cursor position all the time
 set showcmd         " display incomplete commands
 set showmatch       " Show matching brackets.
@@ -167,6 +166,13 @@ set ignorecase      " Do case insensitive matching
 set smartcase       " Do smart case matching
 "set autowrite      " Automatically save before commands like :next and :make
 "set hidden         " Hide buffers when they are abandoned
+
+" Show line numbers
+set number
+if exists("&relativenumber")
+    set relativenumber
+    au BufReadPost * set relativenumber
+endif
 
 " setting for the tab space
 set tabstop=4
@@ -250,9 +256,3 @@ endif
 nmap <silent> <leader>ev :e $MYVIMRC<CR>
 nmap <silent> <leader>sv :so $MYVIMRC<CR>
 
-
-" Use relative line numbers
-if exists("&relativenumber")
-    set relativenumber
-    au BufReadPost * set relativenumber
-endif
