@@ -153,9 +153,11 @@ call vundle#end()            " required
 filetype plugin indent on    " required
 """"""""""""""""""""""""""""""
 
+
+
+
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
-
 set nobackup        " do not keep a backup file, use versions instead
 set history=50      " keep 50 lines of command line history
 set ruler           " show the cursor position all the time
@@ -166,6 +168,8 @@ set ignorecase      " Do case insensitive matching
 set smartcase       " Do smart case matching
 "set autowrite      " Automatically save before commands like :next and :make
 "set hidden         " Hide buffers when they are abandoned
+set path+=**        " Enable recursive search to the subfolders
+set wildmenu        " Enable command-line completion operation
 
 " Show line numbers
 set number
