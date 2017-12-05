@@ -7,3 +7,6 @@
 [submodule "zsh/oh-my-zsh-plugins/plugins/zsh-autosuggestions"]
 	path = zsh/oh-my-zsh-plugins/plugins/zsh-autosuggestions
 	url = git://github.com/zsh-users/zsh-autosuggestions
+[submodule "zsh/oh-my-zsh-plugins/themes/powerlevel9k"]
+	path = zsh/oh-my-zsh-plugins/themes/powerlevel9k
+	url = https://github.com/bhilburn/powerlevel9k.git
