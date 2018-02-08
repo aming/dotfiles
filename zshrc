@@ -40,6 +40,9 @@ source $ZSH/oh-my-zsh.sh
 # add settings specific to one system for zsh
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
+# Use vim as the default editor
+export EDITOR="vim"
+
 # Add Heroku Toolbelt to PATH
 export PATH="/usr/local/heroku/bin:$PATH"
 
