@@ -34,7 +34,7 @@ POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(root_indicator dir dir_writable vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs command_execution_time time)
 POWERLEVEL9K_SHOW_CHANGESET=true
 HYPHEN_INSENSITIVE="true"
-plugins=(rbenv git osx z zsh-autosuggestions thefuck pyenv)
+plugins=(rbenv git osx z zsh-autosuggestions thefuck pyenv zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
