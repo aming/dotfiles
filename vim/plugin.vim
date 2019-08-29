@@ -1,60 +1,52 @@
-" All plugins for vim managed by Vundle
+" All plugins for vim managed by vim-plugs
+source $HOME/dotfiles/vim/plugged/vim-plug/plug.vim
 
-set rtp+=~/dotfiles/vim/bundle/Vundle.vim
-call vundle#begin("~/dotfiles/vim/bundle/myBundle")
-
-" let Vundle manage Vundle required! 
-Plugin 'VundleVim/Vundle.vim'
-
-""""""""""""""""""""""""""""""
-" My Bundles here:
-" original repos on github
-""""""""""""""""""""""""""""""
+call plug#begin('~/dotfiles/vim/plugged')
 
 """"""""""""""""""""""""""""""
 " NERDTree & NERDTree-tabs
 """"""""""""""""""""""""""""""
-Plugin 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree'
 let NERDTreeWinSize = 35
-Plugin 'jistr/vim-nerdtree-tabs'
+Plug 'jistr/vim-nerdtree-tabs'
 map <Leader>n <plug>NERDTreeTabsToggle<CR>
 
 """"""""""""""""""""""""""""""
 " Color Scheme
 """"""""""""""""""""""""""""""
-Plugin 'tpope/vim-vividchalk'
+Plug 'tpope/vim-vividchalk'
 
 """"""""""""""""""""""""""""""
 " Notes
 """"""""""""""""""""""""""""""
-Plugin 'xolox/vim-notes'
-Plugin 'vim-misc'
+Plug 'vim-scripts/vim-misc'
+Plug 'xolox/vim-notes'
 :let g:notes_directories = ['~/Documents/Notes']
 
 """"""""""""""""""""""""""""""
 " matchit
 """"""""""""""""""""""""""""""
-Plugin 'matchit.zip'
+Plug 'vim-scripts/matchit.zip'
 
 """"""""""""""""""""""""""""""
 " Super Tab
 """"""""""""""""""""""""""""""
-Plugin 'ervandew/supertab'
+Plug 'ervandew/supertab'
 
 """"""""""""""""""""""""""""""
 " plugins from tpope
 """"""""""""""""""""""""""""""
-Plugin 'tpope/vim-speeddating'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-unimpaired'
-Plugin 'tpope/vim-commentary'
-Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-endwise'
+Plug 'tpope/vim-speeddating'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-endwise'
 
 """"""""""""""""""""""""""""""
 " vim-fugitive
 """"""""""""""""""""""""""""""
-Plugin 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 " Delete the buffer when close git object using fugitive
 autocmd BufReadPost fugitive://* set bufhidden=delete
 set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
@@ -62,23 +54,23 @@ set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 """"""""""""""""""""""""""""""
 " hive.vim
 """"""""""""""""""""""""""""""
-Plugin 'autowitch/hive.vim'
+Plug 'autowitch/hive.vim', {'for': 'hive'}
 
 """"""""""""""""""""""""""""""
 " vim-dash
 """"""""""""""""""""""""""""""
-Plugin 'rizzatti/dash.vim'
+Plug 'rizzatti/dash.vim'
 
 """"""""""""""""""""""""""""""
 " vim-airline
 """"""""""""""""""""""""""""""
-Plugin 'bling/vim-airline'
+Plug 'bling/vim-airline'
 let g:airline#extensions#tabline#enabled = 1
 
 """"""""""""""""""""""""""""""
 " majutsushi/tagbar
 """"""""""""""""""""""""""""""
-Plugin 'majutsushi/tagbar'
+Plug 'majutsushi/tagbar'
 " For Taglist
 " configure tags - add additional tags here or comment out not-used ones
 " set tags+=./ctags;,~/.vim/tags/cpp,~/.vim/tags/cpp_boost
@@ -90,14 +82,14 @@ nmap <F8> :TagbarToggle<CR>
 """"""""""""""""""""""""""""""
 " vim-javascript
 """"""""""""""""""""""""""""""
-Plugin 'pangloss/vim-javascript'
-Plugin 'mxw/vim-jsx'
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
 
 """"""""""""""""""""""""""""""
 " For ruby and rails
 """"""""""""""""""""""""""""""
-Plugin 'vim-ruby/vim-ruby'
-Plugin 'tpope/vim-rails'
+Plug 'vim-ruby/vim-ruby', {'for': 'ruby'}
+Plug 'tpope/vim-rails', {'for': 'ruby'}
 let g:rubycomplete_buffer_loading = 1
 let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
@@ -105,37 +97,32 @@ let g:rubycomplete_rails = 1
 """"""""""""""""""""""""""""""
 " Ctrl-P
 """"""""""""""""""""""""""""""
-Plugin 'ctrlpvim/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 let g:ctrlp_map = '<leader>t'
 "let g:ctrlp_cmd = 'CtrlP'
 
 """"""""""""""""""""""""""""""
 " Emmet-vim
 """"""""""""""""""""""""""""""
-Plugin 'mattn/emmet-vim'
+Plug 'mattn/emmet-vim'
 let g:user_emmet_mode='a'    "only enable normal mode functions.
 "let g:user_emmet_mode='inv'  "enable all functions, which is equal to 'a'
 
 """"""""""""""""""""""""""""""
 " vim-mason
 """"""""""""""""""""""""""""""
-Plugin 'aming/vim-mason'
+Plug 'aming/vim-mason', {'for': 'mason'}
 
 """"""""""""""""""""""""""""""
 " ack.vim
 """"""""""""""""""""""""""""""
-Plugin 'mileszs/ack.vim'
+Plug 'mileszs/ack.vim'
 let g:ackprg = 'ag --nogroup --nocolor --colum'
 
 """"""""""""""""""""""""""""""
 " table-mode
 """"""""""""""""""""""""""""""
-Plugin 'dhruvasagar/vim-table-mode'
+Plug 'dhruvasagar/vim-table-mode'
 
-""""""""""""""""""""""""""""""
-" End of Bundle
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-""""""""""""""""""""""""""""""
-
+" Initialize plugin system
+call plug#end()
