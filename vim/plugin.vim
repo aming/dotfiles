@@ -128,6 +128,11 @@ Plugin 'mileszs/ack.vim'
 let g:ackprg = 'ag --nogroup --nocolor --colum'
 
 """"""""""""""""""""""""""""""
+" table-mode
+""""""""""""""""""""""""""""""
+Plugin 'dhruvasagar/vim-table-mode'
+
+""""""""""""""""""""""""""""""
 " End of Bundle
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
