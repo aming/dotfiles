@@ -29,11 +29,6 @@ Plug 'xolox/vim-notes'
 Plug 'vim-scripts/matchit.zip'
 
 """"""""""""""""""""""""""""""
-" Super Tab
-""""""""""""""""""""""""""""""
-Plug 'ervandew/supertab'
-
-""""""""""""""""""""""""""""""
 " plugins from tpope
 """"""""""""""""""""""""""""""
 Plug 'tpope/vim-speeddating'
@@ -82,8 +77,8 @@ nmap <F8> :TagbarToggle<CR>
 """"""""""""""""""""""""""""""
 " vim-javascript
 """"""""""""""""""""""""""""""
-Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
+Plug 'pangloss/vim-javascript', {'for': 'javascript'}
+Plug 'mxw/vim-jsx', {'for': 'javascript'}
 
 """"""""""""""""""""""""""""""
 " For ruby and rails
@@ -123,6 +118,11 @@ let g:ackprg = 'ag --nogroup --nocolor --colum'
 " table-mode
 """"""""""""""""""""""""""""""
 Plug 'dhruvasagar/vim-table-mode'
+
+""""""""""""""""""""""""""""""
+" Conquer of Completion
+""""""""""""""""""""""""""""""
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Initialize plugin system
 call plug#end()
