@@ -124,5 +124,10 @@ Plug 'dhruvasagar/vim-table-mode'
 """"""""""""""""""""""""""""""
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
+""""""""""""""""""""""""""""""
+" plugin for Golang support
+""""""""""""""""""""""""""""""
+Plug 'fatih/vim-go'
+
 " Initialize plugin system
 call plug#end()
