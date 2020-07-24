@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
@@ -18,21 +25,7 @@ done
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
-ZSH_THEME="powerlevel9k/powerlevel9k"
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=0
-POWERLEVEL9K_BACKGROUND_JOBS_FOREGROUND='black'
-POWERLEVEL9K_BACKGROUND_JOBS_BACKGROUND='178'
-POWERLEVEL9K_NVM_BACKGROUND="238"
-POWERLEVEL9K_NVM_FOREGROUND="green"
-POWERLEVEL9K_CONTEXT_DEFAULT_FOREGROUND="blue"
-POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_FOREGROUND="015"
-POWERLEVEL9K_TIME_BACKGROUND='255'
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='245'
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='black'
-POWERLEVEL9K_TIME_FORMAT="%D{%H:%M}"
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(root_indicator dir dir_writable vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status background_jobs command_execution_time time)
-POWERLEVEL9K_SHOW_CHANGESET=true
+ZSH_THEME="powerlevel10k/powerlevel10k"
 HYPHEN_INSENSITIVE="true"
 plugins=(rbenv git osx z zsh-autosuggestions thefuck pyenv zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
@@ -52,3 +45,6 @@ autoload -Uz compinit
 compinit
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# To customize prompt, run `p10k configure` or edit ~/dotfiles/zsh/p10k.zsh.
+[[ ! -f ~/dotfiles/zsh/p10k.zsh ]] || source ~/dotfiles/zsh/p10k.zsh
