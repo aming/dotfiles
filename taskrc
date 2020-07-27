@@ -1,0 +1,76 @@
+# [Created by task 2.5.1 7/24/2020 16:08:40]
+# Taskwarrior program configuration file.
+# For more documentation, see http://taskwarrior.org or try 'man task', 'man task-color',
+# 'man task-sync' or 'man taskrc'
+
+# Here is an example of entries that use the default, override and blank values
+#   variable=foo   -- By specifying a value, this overrides the default
+#   variable=      -- By specifying no value, this means no default
+#   #variable=foo  -- By commenting out the line, or deleting it, this uses the default
+
+# Use the command 'task show' to see all defaults and overrides
+
+# Files
+data.location=~/.task
+
+# Color theme (uncomment one to use)
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/light-16.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/light-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-16.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-red-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-green-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-blue-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-violets-256.theme
+include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-yellow-green.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-gray-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/dark-gray-blue-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/solarized-dark-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/solarized-light-256.theme
+#include /usr/local/Cellar/task/2.5.1/share/doc/task/rc/no-color.theme
+
+taskd.certificate=/Users/liuml/.task/private.certificate.pem
+taskd.key=/Users/liuml/.task/private.key.pem
+taskd.ca=/Users/liuml/.task/ca.cert.pem
+taskd.server=taskwarrior.inthe.am:53589
+taskd.credentials=inthe_am/ustlml/c6ff8808-7a6c-42fe-bc4c-a1712a5e6bf7
+taskd.trust=ignore hostname
+
+uda.estimate.type=duration
+uda.estimate.label=Estimate
+uda.intheamattachments.type=string
+uda.intheamattachments.label=Inthe.AM Attachments
+uda.intheamoriginalemailsubject.type=string
+uda.intheamoriginalemailsubject.label=Inthe.AM E-mail Subject
+uda.intheamoriginalemailid.type=numeric
+uda.intheamoriginalemailid.label=Inthe.AM E-mail ID
+uda.intheamtrelloid.type=string
+uda.intheamtrelloid.label=Inthe.AM Trello Object ID
+uda.intheamtrelloboardid.type=string
+uda.intheamtrelloboardid.label=Inthe.AM Trello Board ID
+uda.intheamtrellolistid.type=string
+uda.intheamtrellolistid.label=Inthe.AM Trello List ID
+uda.intheamtrellolistname.type=string
+uda.intheamtrellolistname.label=Inthe.AM Trello List Name
+uda.intheamtrellourl.type=string
+uda.intheamtrellourl.label=Inthe.AM Trello URL
+uda.intheamtrellodescription.type=string
+uda.intheamtrellodescription.label=Inthe.AM Trello Description
+uda.intheamtrellolastupdated.type=string
+uda.intheamtrellolastupdated.label=Inthe.AM Trello Last Updated
+uda.intheamduplicateof.type=string
+uda.intheamduplicateof.label=Inthe.AM Duplicate of Task
+uda.intheammergedfrom.type=string
+uda.intheammergedfrom.label=Inthe.AM Duplicate Tasks Merged
+
+report.tiny.description="a next-like tiny report to display in tiny panels"
+report.tiny.columns=id,project,estimate,description.truncated_count
+report.tiny.labels=ID,Project,E,Description
+report.tiny.filter=status:pending limit:page
+report.tiny.sort=urgency-
+# default.command=tiny
+
+context.inbox=-PROJECT
+context.backlog=+PROJECT -SCHEDULED -ACTIVE
+context.kanban=( ( +PROJECT ( +SCHEDULED or +ACTIVE ) ) or due.before:tomorrow )
+
