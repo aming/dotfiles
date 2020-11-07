@@ -31,7 +31,7 @@ plugins=(rbenv git osx z zsh-autosuggestions thefuck pyenv zsh-syntax-highlighti
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
-[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+[ -f "$HOME/.local/.zshrc" ] && source "$HOME/.local/.zshrc"
 
 # Use vim as the default editor
 export EDITOR="vim"
