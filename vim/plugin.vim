@@ -1,5 +1,5 @@
-" All plugins for vim managed by vim-plugs
-source $HOME/dotfiles/vim/plugged/vim-plug/plug.vim
+" All plugins for vim managed by vim-plug
+" https://github.com/junegunn/vim-plug
 
 call plug#begin('~/dotfiles/vim/plugged')
 
