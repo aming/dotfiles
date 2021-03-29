@@ -113,7 +113,9 @@ Plug 'aming/vim-mason', {'for': 'mason'}
 " ack.vim
 """"""""""""""""""""""""""""""
 Plug 'mileszs/ack.vim'
-let g:ackprg = 'ag --nogroup --nocolor --colum'
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
 
 """"""""""""""""""""""""""""""
 " table-mode
