@@ -27,7 +27,7 @@ export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="powerlevel10k/powerlevel10k"
 HYPHEN_INSENSITIVE="true"
-plugins=(rbenv git osx z zsh-autosuggestions thefuck pyenv zsh-syntax-highlighting)
+plugins=(rbenv git osx z zsh-autosuggestions pyenv zsh-syntax-highlighting tmux fzf)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
@@ -36,14 +36,10 @@ source $ZSH/oh-my-zsh.sh
 # Use vim as the default editor
 export EDITOR="vim"
 
-# Add Heroku Toolbelt to PATH
-export PATH="/usr/local/heroku/bin:$PATH"
-
-export PATH="/usr/local/bin:$PATH"
-
 autoload -Uz compinit
 compinit
 
+# iTerm2 Shell integration script
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/dotfiles/zsh/p10k.zsh.
