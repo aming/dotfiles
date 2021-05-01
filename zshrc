@@ -14,13 +14,6 @@ zstyle :compinstall filename '~/.zshrc'
 #==================== zsh options ====================#
 setopt AUTO_PUSHD     # auto pushd on every cd
 
-#==================== import other files ====================#
-# import all the zsh settings
-zsh_home=$HOME/dotfiles/zsh
-for file in $HOME/dotfiles/zsh/lib/*; do
-  source $file
-done
-
 #==================== oh-my-zsh configuration ====================#
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
