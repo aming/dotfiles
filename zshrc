@@ -20,11 +20,11 @@ export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="powerlevel10k/powerlevel10k"
 HYPHEN_INSENSITIVE="true"
-plugins=(rbenv git osx z zsh-autosuggestions pyenv zsh-syntax-highlighting tmux fzf)
+plugins=(rbenv pyenv git osx z zsh-autosuggestions zsh-syntax-highlighting tmux fzf)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
-[ -f "$HOME/.config/.zshrc" ] && source "$HOME/.config/.zshrc"
+[ -f "$HOME/.config/zshrc" ] && source "$HOME/.config/zshrc"
 
 # Use vim as the default editor
 export EDITOR="vim"
@@ -33,7 +33,14 @@ autoload -Uz compinit
 compinit
 
 # iTerm2 Shell integration script
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+[ -f "$HOME/.iterm2_shell_integration.zsh" ] && source "$HOME/.iterm2_shell_integration.zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/dotfiles/zsh/p10k.zsh.
-[[ ! -f ~/dotfiles/zsh/p10k.zsh ]] || source ~/dotfiles/zsh/p10k.zsh
+[ -f "$HOME/dotfiles/zsh/p10k.zsh" ] && source "$HOME/dotfiles/zsh/p10k.zsh"
+
+# Fzf settings
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+
+# Use Homebrew version
+export PATH="/usr/local/sbin:$PATH"
+
