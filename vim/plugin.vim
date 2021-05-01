@@ -19,9 +19,10 @@ Plug 'tpope/vim-vividchalk'
 """"""""""""""""""""""""""""""
 " Notes
 """"""""""""""""""""""""""""""
-Plug 'vim-scripts/vim-misc'
-Plug 'xolox/vim-notes'
-:let g:notes_directories = ['~/Documents/Notes']
+Plug 'vimwiki/vimwiki'
+let g:vimwiki_list = [{'syntax': 'markdown','ext': '.md'}]
+command! -nargs=1 VimwikiSearch Ack <args> ~/vimwiki/*.md
+nnoremap <Leader>wack :VimwikiSearch
 
 """"""""""""""""""""""""""""""
 " matchit
