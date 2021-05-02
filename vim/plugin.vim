@@ -96,7 +96,9 @@ let g:rubycomplete_rails = 1
 """"""""""""""""""""""""""""""
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-nnoremap <silent> <C-p> :FZF<CR>
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <silent> <C-g> :Rg<CR>
+let g:fzf_preview_window = ['right:60%', 'ctrl-/']
 
 """"""""""""""""""""""""""""""
 " Emmet-vim
@@ -109,14 +111,6 @@ let g:user_emmet_mode='a'    "only enable normal mode functions.
 " vim-mason
 """"""""""""""""""""""""""""""
 Plug 'aming/vim-mason', {'for': 'mason'}
-
-""""""""""""""""""""""""""""""
-" ack.vim
-""""""""""""""""""""""""""""""
-Plug 'mileszs/ack.vim'
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
-endif
 
 """"""""""""""""""""""""""""""
 " table-mode

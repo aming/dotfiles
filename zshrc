@@ -39,8 +39,11 @@ compinit
 # To customize prompt, run `p10k configure` or edit ~/dotfiles/zsh/p10k.zsh.
 [ -f "$HOME/dotfiles/zsh/p10k.zsh" ] && source "$HOME/dotfiles/zsh/p10k.zsh"
 
-# Fzf settings
-export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+# fzf settings
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview "bat --style=numbers --color=always --line-range :500 {}"'
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd -t d"
 
 # Use Homebrew version
 export PATH="/usr/local/sbin:$PATH"
