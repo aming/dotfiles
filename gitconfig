@@ -18,6 +18,7 @@
     share-feature = "! git add-share-remote && git push share \"HEAD:refs/share/$USER/${1:-$(git symbolic-ref --short -q HEAD)}\" #"
     pull-feature = ! git add-share-remote \"$1\" && git pull \"$1\" \"refs/share/$1/$2\" && true
     backup = ! git add-backup-remote && git push backup
+    ff = ! git diff --name-only | fzf -m --ansi --preview \"git diff --color=always  -- {-1}\"
 [push]
     default = simple
 [rebase]
