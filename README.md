@@ -1,4 +1,14 @@
-# Update all the submodules
+# Installation
+
+## Clone the repos
+
+```bash
+cd ~
+git clone https://github.com/aming/dotfiles.git dotfiles
+```
+
+## Update all the submodules
+
 You could update the submodules to the latest commit available from the remote
 
  ```bash
@@ -6,9 +16,22 @@ You could update the submodules to the latest commit available from the remote
  # For all repos
  git submodule update --init --recursive
  ```
+ 
+## Install Homebrew and tools
 
-# ZSH
-## Install a new oh-my-zsh plugin
+Install the Homebrew tools
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Install Batteries to executable included
+``` bash
+brew install aming/aming/Batteries
+```
+
+# How-to
+## ZSH
+### Install a new oh-my-zsh plugin
 Install the plugin by adding a new submodule to this repos
 
 1. Checkout the package to `$ZSH_CUSTOM/plugins` (`zsh/oh-my-zsh-plugins/plugins/`)
@@ -30,7 +53,7 @@ Install the plugin by adding a new submodule to this repos
  git commit
  ```
 
-## Removing a plugin
+### Removing a plugin
 1. Remove the plugin from plugins list in the zshrc
 
  ```
