@@ -6,8 +6,9 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 HISTFILE=~/.histfile
-HISTSIZE=1000
+HISTSIZE=5000
 SAVEHIST=1000
+setopt HIST_IGNORE_DUPS EXTENDED_HISTORY HIST_EXPIRE_DUPS_FIRST SHARE_HISTORY
 bindkey -e
 zstyle :compinstall filename '~/.zshrc'
 
