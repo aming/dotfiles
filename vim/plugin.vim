@@ -92,11 +92,11 @@ let g:rubycomplete_classes_in_global = 1
 let g:rubycomplete_rails = 1
 
 """"""""""""""""""""""""""""""
-" Ctrl-P
+" fzf
 """"""""""""""""""""""""""""""
-Plug 'ctrlpvim/ctrlp.vim'
-let g:ctrlp_map = '<leader>t'
-"let g:ctrlp_cmd = 'CtrlP'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+nnoremap <silent> <C-p> :FZF<CR>
 
 """"""""""""""""""""""""""""""
 " Emmet-vim
