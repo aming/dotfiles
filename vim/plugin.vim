@@ -21,8 +21,17 @@ Plug 'tpope/vim-vividchalk'
 """"""""""""""""""""""""""""""
 Plug 'vimwiki/vimwiki'
 let g:vimwiki_list = [{'syntax': 'markdown','ext': '.md'}]
-command! -nargs=1 VimwikiSearch Ack <args> ~/vimwiki/*.md
-nnoremap <Leader>wack :VimwikiSearch
+function! VimwikiSearch(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s $HOME/vimwiki/*.md || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+command! -nargs=* -bang WG call VimwikiSearch(<q-args>, <bang>0)
+nnoremap <Leader>wg :WG<CR>
+
 
 """"""""""""""""""""""""""""""
 " matchit
