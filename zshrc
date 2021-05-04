@@ -51,6 +51,9 @@ alias ll='exa -lbF --git --sort=modified'
 alias llx='exa -lbhHigUmuSa --time-style=long-iso --git --color-scale'
 alias tree='exa -T --level=3'
 
+# bat settings
+export BAT_CONFIG_PATH=$HOME/dotfiles/bat.config
+
 # Use Homebrew version
 export PATH="/usr/local/sbin:$PATH"
 
