@@ -45,6 +45,12 @@ export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd -t d"
 
+# exa settings
+alias ls='exa -F'
+alias ll='exa -lbF --git --sort=modified'
+alias llx='exa -lbhHigUmuSa --time-style=long-iso --git --color-scale'
+alias tree='exa -T --level=3'
+
 # Use Homebrew version
 export PATH="/usr/local/sbin:$PATH"
 
