@@ -21,7 +21,7 @@ export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="powerlevel10k/powerlevel10k"
 HYPHEN_INSENSITIVE="true"
-plugins=(rbenv pyenv nvm git osx zsh-autosuggestions zsh-syntax-highlighting tmux fzf thefuck)
+plugins=(rbenv pyenv nvm git osx zsh-syntax-highlighting tmux fzf fzf-tab thefuck)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
@@ -55,10 +55,13 @@ alias tree='exa -T --level=3'
 # bat settings
 export BAT_CONFIG_PATH=$HOME/dotfiles/bat.config
 
-# zoxide settins
-export _ZO_FZF_OPTS='--height 40% --layout=reverse --no-preview --border'
+# zoxide settings
+export _ZO_FZF_OPTS='--height 40% --layout=reverse --border --no-preview'
 export _ZO_DATA_DIR=$HOME/.local/share
 eval "$(zoxide init zsh)"
+
+# fzf-tab settings
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 
 # Use Homebrew version
 export PATH="/usr/local/sbin:$PATH"

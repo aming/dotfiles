@@ -2,10 +2,6 @@
 	path = zsh/oh-my-zsh
 	url = https://github.com/robbyrussell/oh-my-zsh
     shallow = true
-[submodule "zsh/oh-my-zsh-plugins/plugins/zsh-autosuggestions"]
-	path = zsh/oh-my-zsh-plugins/plugins/zsh-autosuggestions
-	url = git://github.com/zsh-users/zsh-autosuggestions
-    shallow = true
 [submodule "zsh/oh-my-zsh-plugins/plugins/zsh-syntax-highlighting"]
 	path = zsh/oh-my-zsh-plugins/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
@@ -13,4 +9,8 @@
 [submodule "zsh/oh-my-zsh-plugins/themes/powerlevel10k"]
 	path = zsh/oh-my-zsh-plugins/themes/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k.git
+    shallow = true
+[submodule "zsh/oh-my-zsh-plugins/plugins/fzf-tab"]
+	path = zsh/oh-my-zsh-plugins/plugins/fzf-tab
+	url = https://github.com/Aloxaf/fzf-tab
     shallow = true
