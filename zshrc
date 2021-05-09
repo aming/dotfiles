@@ -21,11 +21,11 @@ export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="powerlevel10k/powerlevel10k"
 HYPHEN_INSENSITIVE="true"
-plugins=(rbenv pyenv nvm git osx z zsh-autosuggestions zsh-syntax-highlighting tmux fzf thefuck)
+plugins=(rbenv pyenv nvm git osx zsh-autosuggestions zsh-syntax-highlighting tmux fzf thefuck)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
-[ -f "$HOME/.config/zshrc" ] && source "$HOME/.config/zshrc"
+[ -f "$HOME/.config/zsh/zshrc" ] && source "$HOME/.config/zsh/zshrc"
 
 # Use vim as the default editor
 export EDITOR="vim"
@@ -43,6 +43,7 @@ compinit
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview "bat --style=numbers --color=always --line-range :500 {}"'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_R_OPTS="--no-preview"
 export FZF_ALT_C_COMMAND="fd -t d"
 
 # exa settings
@@ -53,6 +54,11 @@ alias tree='exa -T --level=3'
 
 # bat settings
 export BAT_CONFIG_PATH=$HOME/dotfiles/bat.config
+
+# zoxide settins
+export _ZO_FZF_OPTS='--height 40% --layout=reverse --no-preview --border'
+export _ZO_DATA_DIR=$HOME/.local/share
+eval "$(zoxide init zsh)"
 
 # Use Homebrew version
 export PATH="/usr/local/sbin:$PATH"
