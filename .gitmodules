@@ -14,3 +14,7 @@
 	path = zsh/oh-my-zsh-plugins/plugins/fzf-tab
 	url = https://github.com/Aloxaf/fzf-tab
     shallow = true
+[submodule "zsh/oh-my-zsh-plugins/plugins/forgit"]
+	path = zsh/oh-my-zsh-plugins/plugins/forgit
+	url = https://github.com/wfxr/forgit.git
+    shallow = true

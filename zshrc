@@ -21,7 +21,7 @@ export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="powerlevel10k/powerlevel10k"
 HYPHEN_INSENSITIVE="true"
-plugins=(rbenv pyenv nvm git osx zsh-syntax-highlighting tmux fzf fzf-tab thefuck)
+plugins=(rbenv pyenv nvm git osx zsh-syntax-highlighting tmux fzf fzf-tab forgit thefuck)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
