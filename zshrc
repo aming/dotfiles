@@ -44,7 +44,8 @@ export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --preview "bat -
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_R_OPTS="--no-preview"
-export FZF_ALT_C_COMMAND="fd -t d"
+export FZF_ALT_C_COMMAND="fd -t d . $HOME"
+export FZF_ALT_C_OPTS='--height 40% --layout=reverse --border --preview-window=down --preview "ls {}"'
 
 # exa settings
 alias ls='exa -F'
