@@ -21,6 +21,9 @@ let mapleader=","
 " Install and load the vim plugins
 source $HOME/dotfiles/vim/plugin.vim
 
+" Setting style and color scheme
+source $HOME/dotfiles/vim/style.vim
+
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 set nobackup        " do not keep a backup file, use versions instead
@@ -62,19 +65,6 @@ if has('mouse')
   " From Tips 843
   imap <RightMouse> <Esc>
   nmap <RightMouse> i<LeftMouse>
-endif
-
-" Force xterm and screen (including tmux) using color 256
-if (&term =~ "xterm") || (&term =~ "screen") 
-    set t_Co=256 
-endif 
-" Vim5 and later versions support syntax highlighting. Uncommenting the
-" following enable syntax highlighting on, if the terminal has colors
-" and also switch on highlighting the last used search pattern.
-if &t_Co > 2 || has("gui_running")
-  syntax on
-  set hlsearch
-  colorscheme vividchalk  " Set Color Scheme
 endif
 
 " Only do this part when compiled with support for autocommands.

@@ -14,7 +14,7 @@ map <Leader>n <plug>NERDTreeTabsToggle<CR>
 """"""""""""""""""""""""""""""
 " Color Scheme
 """"""""""""""""""""""""""""""
-Plug 'tpope/vim-vividchalk'
+Plug 'kaicataldo/material.vim'
 
 """"""""""""""""""""""""""""""
 " Notes
