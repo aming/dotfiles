@@ -21,7 +21,7 @@ export ZSH=$HOME/dotfiles/zsh/oh-my-zsh
 export ZSH_CUSTOM=$HOME/dotfiles/zsh/oh-my-zsh-plugins
 ZSH_THEME="powerlevel10k/powerlevel10k"
 HYPHEN_INSENSITIVE="true"
-plugins=(rbenv pyenv nvm git osx zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck)
+plugins=(rbenv nvm git osx zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
@@ -63,6 +63,11 @@ eval "$(zoxide init zsh)"
 
 # fzf-tab settings
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+
+# pyenv settings
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
 
 # Use Homebrew version
 export PATH="/usr/local/sbin:$PATH"
