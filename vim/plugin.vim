@@ -74,9 +74,10 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#coc#enabled = 1
 
 """"""""""""""""""""""""""""""
-" majutsushi/tagbar
+" Tagbar
+" Depends on 'Universal Ctags'
 """"""""""""""""""""""""""""""
-Plug 'majutsushi/tagbar'
+Plug 'preservim/tagbar'
 " For Taglist
 " configure tags - add additional tags here or comment out not-used ones
 " set tags+=./ctags;,~/.vim/tags/cpp,~/.vim/tags/cpp_boost
@@ -84,7 +85,6 @@ Plug 'majutsushi/tagbar'
 " build tags of your own project with CTRL+F8
 "map <C-F8> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
 nmap <F8> :TagbarToggle<CR>
-
 
 """"""""""""""""""""""""""""""
 " Rust
