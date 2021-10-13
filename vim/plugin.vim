@@ -85,6 +85,12 @@ Plug 'majutsushi/tagbar'
 "map <C-F8> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+qf .<CR>
 nmap <F8> :TagbarToggle<CR>
 
+
+""""""""""""""""""""""""""""""
+" Rust
+""""""""""""""""""""""""""""""
+Plug 'rust-lang/rust.vim'
+
 """"""""""""""""""""""""""""""
 " vim-javascript
 """"""""""""""""""""""""""""""
