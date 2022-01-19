@@ -10,15 +10,15 @@ setopt AUTO_PUSHD     # auto pushd on every cd
 
 #==================== oh-my-zsh configuration ====================#
 
-DOTFILES=$HOME/dotfiles
-ZSH=$DOTFILES/zsh/oh-my-zsh  # Path to your oh-my-zsh installation.
+export DOTFILES=$HOME/dotfiles
+export ZSH=$DOTFILES/zsh/oh-my-zsh  # Path to your oh-my-zsh installation.
 ZSH_CUSTOM=$DOTFILES/zsh/oh-my-zsh-plugins
 ZSH_THEME="powerlevel10k/powerlevel10k"
-ZSH_TMUX_AUTOSTART='true'
+# ZSH_TMUX_AUTOSTART='true'
 ZSH_TMUX_AUTOCONNECT='true'
 ZSH_TMUX_FIXTERM='true'
 ZSH_TMUX_UNICODE='true'
-ZSH_TMUX_CONFIG="$DOTFILES/tmux.conf"
+ZSH_TMUX_CONFIG="$DOTFILES/tmux/tmux.conf"
 HYPHEN_INSENSITIVE='true'  # _ and - will be interchangeable.
 
 plugins=(rbenv nvm asdf git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck)
