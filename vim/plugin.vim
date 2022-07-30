@@ -128,6 +128,12 @@ let g:user_emmet_mode='a'    "only enable normal mode functions.
 Plug 'aming/vim-mason', {'for': 'mason'}
 
 """"""""""""""""""""""""""""""
+" vim-beancount
+""""""""""""""""""""""""""""""
+Plug 'nathangrigg/vim-beancount'
+let b:beancount_root='main.bean'
+
+""""""""""""""""""""""""""""""
 " table-mode
 """"""""""""""""""""""""""""""
 Plug 'dhruvasagar/vim-table-mode'
