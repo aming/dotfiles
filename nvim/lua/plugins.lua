@@ -167,6 +167,11 @@ local function plugins(use)
   use 'tpope/vim-repeat'
   use 'tpope/vim-endwise'
 
+  --------------------
+  -- BeanCount
+  --------------------
+  use 'nathangrigg/vim-beancount'
+
   print("Plugins are loaded from "..vim.fn.stdpath('data'))
 end
 
