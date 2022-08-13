@@ -11,8 +11,9 @@ vim.cmd('let packpath=&runtimepath')
 
 vim.g.mapleader = ','           -- Change the leader key from '/' to ','
 
-require('plugins')
-require('styles')
+require'plugins'
+require'styles'
+require'lsp'
 
 -- Options
 vim.o.showcmd = true            -- Display incomplete commands
@@ -25,6 +26,8 @@ vim.o.smartindent = true        -- Autoindenting when starting a new line
 vim.o.mouse = 'a'               -- Enable mouse operation
 vim.o.number = true             -- Show line numbers
 vim.o.colorcolumn = '120'       -- Set the line on the 120 coloumn
+vim.o.tabstop = 2               -- Set the line on the 120 coloumn
+vim.o.shiftwidth = 2            -- Set the line on the 120 coloumn
 
 
 -- vim: ts=2 sw=2 ft=lua expandtab:
