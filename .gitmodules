@@ -20,7 +20,7 @@
 	shallow = true
 [submodule "zsh/oh-my-zsh-plugins/plugins/zsh-autosuggestions"]
 	path = zsh/oh-my-zsh-plugins/plugins/zsh-autosuggestions
-	url = git://github.com/zsh-users/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions
 	shallow = true
 [submodule "tmux/plugins/tpm"]
 	path = tmux/plugins/tpm
