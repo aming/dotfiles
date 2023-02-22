@@ -54,16 +54,19 @@ export EDITOR="vim"
 [ -f "$HOME/.iterm2_shell_integration.zsh" ] && source "$HOME/.iterm2_shell_integration.zsh"
 
 # exa settings
-alias ls='exa -F'
-alias ll='exa -lbF --git --sort=modified'
-alias llx='exa -lbhHigUmuSa --time-style=long-iso --git --color-scale'
-alias tree='exa -T --level=3'
+if type exa &>/dev/null
+then
+  alias ls='exa -F'
+  alias ll='exa -lbF --git --sort=modified'
+  alias llx='exa -lbhHigUmuSa --time-style=long-iso --git --color-scale'
+  alias tree='exa -T --level=3'
+fi
 
 # bat settings
 export BAT_CONFIG_PATH="$DOTFILES/bat.config"
 
 # OCI-CLI SDK
-[[ -e "$HOME/lib/oci_autocomplete.sh" ]] && source "$HOME/lib/oci_autocomplete.sh"
+[[ -f "$HOME/lib/oci_autocomplete.sh" ]] && source "$HOME/lib/oci_autocomplete.sh"
 
 eval $(thefuck --alias)
 
