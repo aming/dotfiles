@@ -38,7 +38,7 @@ export FZF_ALT_C_OPTS='--height 40% --layout=reverse --border --preview-window=d
 export _ZO_FZF_OPTS='--height 40% --layout=reverse --border --no-preview'
 export _ZO_DATA_DIR=$HOME/.local/share
 
-plugins=(brew pyenv rbenv nvm asdf git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck zoxide)
+plugins=(brew pyenv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck zoxide)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
@@ -46,9 +46,6 @@ source $ZSH/oh-my-zsh.sh
 
 # Use vim as the default editor
 export EDITOR="vim"
-
-autoload -Uz compinit
-compinit
 
 # To customize prompt, run `p10k configure` or edit $DOTFILES/zsh/p10k.zsh.
 [ -f "$DOTFILES/zsh/p10k.zsh" ] && source "$DOTFILES/zsh/p10k.zsh"
@@ -64,4 +61,22 @@ alias tree='exa -T --level=3'
 
 # bat settings
 export BAT_CONFIG_PATH="$DOTFILES/bat.config"
+
+# OCI-CLI SDK
+[[ -e "$HOME/lib/oci_autocomplete.sh" ]] && source "$HOME/lib/oci_autocomplete.sh"
+
+eval $(thefuck --alias)
+
+# If homebrew or Linuxbrew installed
+if type brew &>/dev/null
+then
+  # ASDF
+  . $(brew --prefix asdf)/libexec/asdf.sh
+
+  # Configure auto completion from brew installed packages
+  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+fi
+
+autoload -Uz compinit
+compinit
 
