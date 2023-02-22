@@ -19,7 +19,7 @@ local function plugins(use)
   --------------------
   vim.g.neo_tree_remove_legacy_commands = 1 -- Unless you are still migrating, remove deprecated commands from v1.x
   use {
-  "nvim-neo-tree/neo-tree.nvim",
+    "nvim-neo-tree/neo-tree.nvim",
     branch = "v2.x",
     requires = {
       "nvim-lua/plenary.nvim",
@@ -28,6 +28,7 @@ local function plugins(use)
     }
   }
   vim.keymap.set('n', '<leader>n', '<cmd>Neotree toggle left<cr>', opts)
+  vim.keymap.set('n', '\\', '<cmd>Neotree float reveal<cr>', opts)
   require("neo-tree").setup({
     close_if_last_window = true,
   })
@@ -36,6 +37,7 @@ local function plugins(use)
   -- Telescope
   --------------------
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+  use { "nvim-telescope/telescope-file-browser.nvim" }
   use {
     'nvim-telescope/telescope.nvim', tag = '0.1.0',
     requires = { {'nvim-lua/plenary.nvim'} }
@@ -47,10 +49,24 @@ local function plugins(use)
         override_generic_sorter = true,  -- override the generic sorter
         override_file_sorter = true,     -- override the file sorter
         case_mode = "smart_case",        -- "smart_case" or "ignore_case" or "respect_case"
+      },
+      file_browser = {
+        theme = "ivy",
+        -- disables netrw and use telescope-file-browser in its place
+        hijack_netrw = true,
+        mappings = {
+          ["i"] = {
+            -- your custom insert mode mappings
+          },
+          ["n"] = {
+            -- your custom normal mode mappings
+          },
+        },
       }
     }
   })
   require('telescope').load_extension('fzf')
+  -- require("telescope").load_extension('file_browser')
   vim.keymap.set('n', '<C-p>', '<cmd>Telescope find_files<cr>', opts)
   vim.keymap.set('n', '<C-g>', '<cmd>Telescope live_grep<cr>', opts)
   vim.keymap.set('n', '<leader>fb', '<cmd>Telescope buffers<cr>', opts)
@@ -64,6 +80,7 @@ local function plugins(use)
   vim.keymap.set('n', '<leader>fr', '<cmd>Telescope resume<cr>', opts)
   vim.keymap.set('n', '<leader>fs', '<cmd>Telescope search_history<cr>', opts)
   vim.keymap.set('n', '<leader>ft', '<cmd>Telescope treesitter<cr>', opts)
+  vim.keymap.set('n', '<leader>f\\', '<cmd>Telescope file_browser<cr>', opts)
 
   --------------------
   -- LSP and Treesitter
@@ -82,11 +99,27 @@ local function plugins(use)
   use 'tpope/vim-commentary'
   use 'tpope/vim-repeat'
   use 'tpope/vim-endwise'
+  use 'tpope/vim-fugitive'
 
   --------------------
   -- BeanCount
   --------------------
   use 'nathangrigg/vim-beancount'
+
+  --------------------
+  -- Terraform
+  --------------------
+  use 'hashivim/vim-terraform'
+
+  --------------------
+  -- Go Lang Bundle
+  --------------------
+  use {
+    'fatih/vim-go',
+    ft = { 'go' },
+    cmd = ':GoInstallBinaries',
+  }
+
 end
 
 print("Loading plugins from "..vim.fn.stdpath('data'))
