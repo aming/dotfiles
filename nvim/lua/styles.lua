@@ -59,5 +59,4 @@ require('lualine').setup {
   extensions = {}
 }
 
-
 -- vim: ts=2 sw=2 ft=lua expandtab:

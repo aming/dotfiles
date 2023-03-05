@@ -110,16 +110,6 @@ local function plugins(use)
   -- Terraform
   --------------------
   use 'hashivim/vim-terraform'
-
-  --------------------
-  -- Go Lang Bundle
-  --------------------
-  use {
-    'fatih/vim-go',
-    ft = { 'go' },
-    cmd = ':GoInstallBinaries',
-  }
-
 end
 
 print("Loading plugins from "..vim.fn.stdpath('data'))

@@ -41,8 +41,21 @@ require('lspconfig').jdtls.setup {
   on_attach = on_attach,
 }
 
-require'lspconfig'.gopls.setup {
+require('lspconfig').gopls.setup {
   on_attach = on_attach,
+  cmd = { 'gopls' },
+  -- for postfix snippets and analyzers
+  -- capabilities = capabilities,
+  settings = {
+    gopls = {
+      experimentalPostfixCompletions = true,
+      analyses = {
+        unusedparams = true,
+        shadow = true,
+      },
+      staticcheck = true,
+    },
+  },
 }
 
 require'lspconfig'.clangd.setup {
@@ -103,6 +116,5 @@ if cmp ~= nil then
 else
   print 'Not able to load cmp module. Skip Autocompletion function.'
 end
-
 
 -- vim: ts=2 sw=2 ft=lua expandtab:
