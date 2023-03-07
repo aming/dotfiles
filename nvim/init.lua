@@ -11,9 +11,9 @@ vim.cmd('let packpath=&runtimepath')
 
 require'user.keymaps'
 require'user.options'
+require'user.plugins'
+require'user.styles'
 
-require'plugins'
-require'styles'
 require'lsp'
 
 -- vim: ts=2 sw=2 ft=lua expandtab:
