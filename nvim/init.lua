@@ -9,11 +9,11 @@
 vim.cmd('set runtimepath=$HOME/dotfiles/nvim,$VIMRUNTIME')
 vim.cmd('let packpath=&runtimepath')
 
-vim.g.mapleader = ','           -- Change the leader key from '/' to ','
+require'user.keymaps'
+require'user.options'
 
 require'plugins'
 require'styles'
 require'lsp'
-require'user.options'
 
 -- vim: ts=2 sw=2 ft=lua expandtab:
