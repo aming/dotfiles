@@ -20,6 +20,8 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+-- Terminal
+vim.keymap.set('n', '<leader>tt', '<cmd>ToggleTerm<cr>', opts)
 -- Tree navigation
 vim.keymap.set('n', '<leader>n', '<cmd>Neotree toggle left<CR>', opts)
 vim.keymap.set('n', '\\', '<cmd>Neotree float reveal<CR>', opts)
@@ -50,6 +52,8 @@ vim.keymap.set('n', '<leader>f\\', '<cmd>Telescope file_browser<cr>', opts)
 
 
 -- Terminal (t) --
+vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
 
 
 -- Command (c) --

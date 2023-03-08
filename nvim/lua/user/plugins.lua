@@ -95,6 +95,15 @@ local function plugins(use)
   use 'tpope/vim-endwise'
   use 'tpope/vim-fugitive'
 
+
+  --------------------
+  -- Terminals
+  --------------------
+  use {
+    'akinsho/toggleterm.nvim', tag = 'v2.2.1',
+  }
+  require('toggleterm').setup()
+
   --------------------
   -- BeanCount
   --------------------
