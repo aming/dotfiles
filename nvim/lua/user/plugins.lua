@@ -68,10 +68,21 @@ local function plugins(use)
   --------------------
   -- LSP and Treesitter
   --------------------
-  -- use 'nvim-treesitter/nvim-treesitter'
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use 'neovim/nvim-lspconfig'           -- Collection of configurations for built-in LSP client
   use 'hrsh7th/nvim-cmp'                -- Autocompletion plugin
   use 'hrsh7th/cmp-nvim-lsp'            -- LSP source for nvim-cmp
+  use {
+    'folke/trouble.nvim',
+    -- requires = 'nvim-tree/nvim-web-devicons',
+  }
+  require('trouble').setup({
+    group = true, -- group results by file
+    padding = true, -- add an extra new line on top of the list
+    mode = "workspace_diagnostics", -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
+    auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
+    auto_jump = {"lsp_definitions"}, -- for the given modes, automatically jump if there is only a single result
+  })
 
   --------------------
   -- plugins from tpope
