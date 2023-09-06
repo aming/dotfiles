@@ -2,6 +2,8 @@
 
 echo "[$NAME] Call by $SENDER with $INFO"
 
+source "$CONFIG_DIR/colors.sh"
+
 # Yabai Icons
 YABAI_STACK=􀏭
 YABAI_FULLSCREEN_ZOOM=􀏜
@@ -10,39 +12,42 @@ YABAI_FLOAT=􀢌
 YABAI_GRID=􀧍
 
 window_state() {
-  echo "[$NAME] window_state triggered"
 
   WINDOW=$(yabai -m query --windows --window)
   CURRENT=$(echo "$WINDOW" | jq '.["stack-index"]')
+  ICON=""
 
-  args=()
-  if [[ $CURRENT -gt 0 ]]; then
-    LAST=$(yabai -m query --windows --window stack.last | jq '.["stack-index"]')
-    args+=(--set $NAME icon=$YABAI_STACK icon.color=$RED label.drawing=on label=$(printf "[%s/%s]" "$CURRENT" "$LAST"))
-    yabai -m config active_window_border_color $RED > /dev/null 2>&1 &
+  echo "[$NAME] window_state triggered. stack-index: $CURRENT."
 
-  else 
-    args+=(--set $NAME label.drawing=off)
-    case "$(echo "$WINDOW" | jq '.["is-floating"]')" in
-      "false")
-        if [ "$(echo "$WINDOW" | jq '.["has-fullscreen-zoom"]')" = "true" ]; then
-          args+=(--set $NAME icon=$YABAI_FULLSCREEN_ZOOM icon.color=$GREEN)
-          yabai -m config active_window_border_color $GREEN > /dev/null 2>&1 &
-        elif [ "$(echo "$WINDOW" | jq '.["has-parent-zoom"]')" = "true" ]; then
-          args+=(--set $NAME icon=$YABAI_PARENT_ZOOM icon.color=$BLUE)
-          yabai -m config active_window_border_color $BLUE > /dev/null 2>&1 &
-        else
-          args+=(--set $NAME icon=$YABAI_GRID icon.color=$ORANGE)
-          yabai -m config active_window_border_color $WHITE > /dev/null 2>&1 &
-        fi
-        ;;
-      "true")
-        args+=(--set $NAME icon=$YABAI_FLOAT icon.color=$MAGENTA)
-        yabai -m config active_window_border_color $MAGENTA > /dev/null 2>&1 &
-        ;;
-    esac
+  if [ "$(echo "$WINDOW" | jq '.["is-floating"]')" = "true" ]; then
+    ICON+=$YABAI_FLOAT
+    COLOR=$MAGENTA
+  elif [ "$(echo "$WINDOW" | jq '.["has-fullscreen-zoom"]')" = "true" ]; then
+    ICON+=$YABAI_FULLSCREEN_ZOOM
+    COLOR=$GREEN
+  elif [ "$(echo "$WINDOW" | jq '.["has-parent-zoom"]')" = "true" ]; then
+    ICON+=$YABAI_PARENT_ZOOM
+    COLOR=$BLUE
+  elif [[ $STACK_INDEX -gt 0 ]]; then
+    LAST_STACK_INDEX=$(yabai -m query --windows --window stack.last | jq '.["stack-index"]')
+    ICON+=$YABAI_STACK
+    LABEL="$(printf "[%s/%s]" "$STACK_INDEX" "$LAST_STACK_INDEX")"
+    COLOR=$RED
+  else
+    ICON+=$YABAI_GRID
+    COLOR=$YELLOW
   fi
 
+  args=(--animate sin 10 --bar border_color=$COLOR
+                         --set $NAME icon.color=$COLOR)
+
+  [ -z "$LABEL" ] && args+=(label.width=0) \
+                  || args+=(label="$LABEL" label.width=40)
+
+  [ -z "$ICON" ] && args+=(icon.width=0) \
+                 || args+=(icon="$ICON" icon.width=30)
+
+  echo "[$NAME] args: ${args[@]}."
   sketchybar -m "${args[@]}"
 }
 
@@ -70,15 +75,40 @@ windows_on_spaces () {
 }
 
 mouse_clicked() {
-  echo "[$NAME] mouse_clicked triggered"
-  yabai -m window --toggle float
-  window_state
+  space=$(yabai -m query --spaces --space)
+  current=$(echo "$space" | jq '.["type"]')
+  ICON=()
+  echo "[$NAME] mouse_clicked triggered. Toggle space layout from $current"
+
+  if [ $current == "\"bsp\"" ]; then
+    yabai -m space --layout float
+    ICON+=$YABAI_FLOAT
+    COLOR=$MAGENTA
+  else
+    yabai -m space --layout bsp
+    ICON+=$YABAI_GRID
+    COLOR=$YELLOW
+  fi
+
+  args=(
+    --animate sin 10
+    --bar border_color=$COLOR
+    --set $NAME icon.color=$COLOR
+  )
+
+  [ -z "$LABEL" ] && args+=(label.width=0) \
+                  || args+=(label="$LABEL" label.width=40)
+
+  [ -z "$ICON" ] && args+=(icon.width=0) \
+                 || args+=(icon="$ICON" icon.width=30)
+
+  sketchybar -m "${args[@]}"
 }
 
 case "$SENDER" in
   "mouse.clicked") mouse_clicked
   ;;
-  "forced") exit 0
+  "forced") window_state
   ;;
   "window_focus") window_state 
   ;;

@@ -25,7 +25,6 @@ params=(
 sketchybar \
   --add event window_focus \
   --add event windows_on_spaces \
-  \
   --add item $item $position \
   --set $item "${params[@]}" \
   --subscribe $item window_focus windows_on_spaces mouse.clicked

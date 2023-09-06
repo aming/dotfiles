@@ -48,7 +48,11 @@ spaces_bracket=(
   background.border_width=2
 )
 
-separator=(
+sketchybar \
+  --add bracket spaces_bracket '/space\..*/'  \
+  --set spaces_bracket "${spaces_bracket[@]}"
+
+separator_param=(
   icon=􀆊
   icon.font="$FONT:Heavy:16.0"
   padding_left=10
@@ -59,9 +63,7 @@ separator=(
   icon.color=$WHITE
 )
 
-sketchybar --add bracket spaces_bracket '/space\..*/'  \
-  --set spaces_bracket "${spaces_bracket[@]}" \
-  \
+sketchybar \
   --add item separator $position \
-  --set separator "${separator[@]}"
+  --set separator "${separator_param[@]}"
 

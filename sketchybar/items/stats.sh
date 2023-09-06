@@ -11,5 +11,5 @@ params=(
 sketchybar \
   --add alias "Stats,CPU" $position \
   --add alias "Stats,RAM" $position \
-  # --add alias "Stats,Network" $position
+  --add alias "Stats,Network" $position
 
