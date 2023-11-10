@@ -60,13 +60,13 @@ export EDITOR="vim"
 # iTerm2 Shell integration script
 [ -f "$HOME/.iterm2_shell_integration.zsh" ] && source "$HOME/.iterm2_shell_integration.zsh"
 
-# exa settings
-if type exa &>/dev/null
+# eza settings
+if type eza &>/dev/null
 then
-  alias ls='exa -F'
-  alias ll='exa -lbF --git --sort=modified'
-  alias llx='exa -lbhHigUmuSa --time-style=long-iso --git --color-scale'
-  alias tree='exa -T --level=3'
+  alias ls='eza -F'
+  alias ll='eza -lbF --git --sort=modified'
+  alias llx='eza -lbhHigUmuSa --time-style=long-iso --git --color-scale all'
+  alias tree='eza -T --level=3'
 fi
 
 # bat settings
