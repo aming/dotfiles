@@ -77,12 +77,12 @@ export BAT_CONFIG_PATH="$DOTFILES/bat.config"
 
 eval $(thefuck --alias)
 
-# If homebrew or Linuxbrew installed
-if type brew &>/dev/null
-then
-  # ASDF
-  . $(brew --prefix asdf)/libexec/asdf.sh
+# ASDF
+[[ -f $(brew --prefix asdf)/libexec/asdf.sh ]] &&
+  source $(brew --prefix asdf)/libexec/asdf.sh
 
+# If homebrew or Linuxbrew installed
+if type brew &>/dev/null; then
   # Configure auto completion from brew installed packages
   FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
