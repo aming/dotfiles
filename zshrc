@@ -73,7 +73,8 @@ fi
 export BAT_CONFIG_PATH="$DOTFILES/bat.config"
 
 # OCI-CLI SDK
-[[ -f "$HOME/lib/oci_autocomplete.sh" ]] && source "$HOME/lib/oci_autocomplete.sh"
+export PATH="$HOME/bin":$PATH
+[[ -e "$HOME/lib/oracle-cli/lib/python3.11/site-packages/oci_cli/bin/oci_autocomplete.sh" ]] && source "$HOME/lib/oracle-cli/lib/python3.11/site-packages/oci_cli/bin/oci_autocomplete.sh"
 
 eval $(thefuck --alias)
 
@@ -90,3 +91,8 @@ fi
 autoload -Uz compinit
 compinit
 
+# Repo-Cli Need to be after compinit
+[[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
+  source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
+
+alias yt='yt-dlp -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
