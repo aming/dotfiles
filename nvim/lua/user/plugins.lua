@@ -36,10 +36,18 @@ local function plugins(use)
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
   use { "nvim-telescope/telescope-file-browser.nvim" }
   use {
-    'nvim-telescope/telescope.nvim', tag = '0.1.4',
+    'nvim-telescope/telescope.nvim', branch = '0.1.x',
     requires = { {'nvim-lua/plenary.nvim'} }
   }
   require('telescope').setup({
+    pickers = {
+      find_files = {
+        theme = "dropdown",
+      },
+      live_grep = {
+        theme = "dropdown",
+      },
+    },
     extensions = {
       fzf = {
         fuzzy = true,                    -- false will only do exact matching
@@ -48,7 +56,7 @@ local function plugins(use)
         case_mode = "smart_case",        -- "smart_case" or "ignore_case" or "respect_case"
       },
       file_browser = {
-        theme = "ivy",
+        theme = "dropdown",
         -- disables netrw and use telescope-file-browser in its place
         hijack_netrw = true,
         mappings = {
@@ -100,7 +108,7 @@ local function plugins(use)
   -- Terminals
   --------------------
   use {
-    'akinsho/toggleterm.nvim', tag = 'v2.2.1',
+    'akinsho/toggleterm.nvim', tag = '*',
   }
   require('toggleterm').setup()
 
@@ -118,4 +126,4 @@ end
 print("Loading plugins from "..vim.fn.stdpath('data'))
 require("packer").startup(plugins)
 
--- vim: ts=2 sw=2 ft=lua expandtab:
+-- vim: ts=2 sw=2 ft=luaexpandtab:

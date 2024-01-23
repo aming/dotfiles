@@ -28,6 +28,7 @@ vim.keymap.set('n', '\\', '<cmd>Neotree float reveal<CR>', opts)
 -- Telescope Shortcuts
 vim.keymap.set('n', '<C-p>', '<cmd>Telescope find_files<cr>', opts)
 vim.keymap.set('n', '<C-g>', '<cmd>Telescope live_grep<cr>', opts)
+vim.keymap.set('n', '<leader>fr', '<cmd>Telescope resume<cr>', opts)
 vim.keymap.set('n', '<leader>fb', '<cmd>Telescope buffers<cr>', opts)
 vim.keymap.set('n', '<leader>fc', '<cmd>Telescope quickfix<cr>', opts)
 vim.keymap.set('n', '<leader>fgb', '<cmd>Telescope git_branches<cr>', opts)
@@ -36,10 +37,9 @@ vim.keymap.set('n', '<leader>fgs', '<cmd>Telescope git_stash<cr>', opts)
 vim.keymap.set('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', opts)
 vim.keymap.set('n', '<leader>fj', '<cmd>Telescope jumplist<cr>', opts)
 vim.keymap.set('n', '<leader>fm', '<cmd>Telescope marks<cr>', opts)
-vim.keymap.set('n', '<leader>fr', '<cmd>Telescope resume<cr>', opts)
 vim.keymap.set('n', '<leader>fs', '<cmd>Telescope search_history<cr>', opts)
 vim.keymap.set('n', '<leader>ft', '<cmd>Telescope treesitter<cr>', opts)
-vim.keymap.set('n', '<leader>f\\', '<cmd>Telescope file_browser<cr>', opts)
+vim.keymap.set('n', '<leader>ff', '<cmd>Telescope file_browser<cr>', opts)
 
 
 -- Insert (i) --
