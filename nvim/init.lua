@@ -9,11 +9,10 @@
 vim.cmd('set runtimepath=$HOME/dotfiles/nvim,$VIMRUNTIME')
 vim.cmd('let packpath=&runtimepath')
 
-require'user.keymaps'
-require'user.options'
-require'user.plugins'
-require'user.styles'
-
-require'lsp'
+-- Import the config files
+require'config.keymaps'
+require'config.options'
+require'config.plugins'
+require'config.styles'
 
 -- vim: ts=2 sw=2 ft=lua expandtab:
