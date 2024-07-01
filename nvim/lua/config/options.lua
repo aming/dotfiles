@@ -36,6 +36,8 @@ local options = {
   shiftwidth = 2,                         -- the number of spaces inserted for each indentation
   smartindent = true,                     -- Autoindenting when starting a new line
 
+  conceallevel = 1,                       -- Each block of concealed text is replaced with one character
+
   completeopt = { "menuone", "noselect" },-- mostly just for cmp
 }
 
