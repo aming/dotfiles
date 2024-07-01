@@ -29,6 +29,12 @@ Install Batteries to executable included
 brew install aming/aming/Batteries
 ```
 
+## Initial Neovim plugins
+
+During the first time starting the Neovim, it will automatically download the _Lazy.nvim_ to the _.config/_ folder.
+After the _Lazy.nvim_ installed and Neovim started. Run `:Lazy` to start the Lazy console in Neovim.
+And then `I` to install all plugins.
+
 # How-to
 ## ZSH
 ### Install a new oh-my-zsh plugin
@@ -65,3 +71,9 @@ Install the plugin by adding a new submodule to this repos
  ```bash
  git submodule rm zsh/oh-my-zsh-plugins/plugins/<plugin_name>
  ```
+
+## Vim
+
+1. To add a new plugin, create a new Lazy spec file under _nvim/lua/plugins_. And run the `:Lazy` to start the Lazy
+Console to install the plugins list. And remember to check in  _nvim/lazy-lock.json_ for locked plugin versions.
+
