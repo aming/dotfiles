@@ -2,7 +2,7 @@
 -- BeanCount
 --------------------
 return {
-  'nathangrigg/vim-beancount',
+  'crispgm/cmp-beancount',
   lazy = true,
   ft = 'beancount',
 }
