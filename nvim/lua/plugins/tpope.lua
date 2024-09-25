@@ -8,5 +8,4 @@ return {
   'tpope/vim-commentary',
   'tpope/vim-repeat',
   'tpope/vim-endwise',
-  'tpope/vim-fugitive',
 }
