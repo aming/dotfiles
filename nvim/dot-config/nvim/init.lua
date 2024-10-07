@@ -6,7 +6,7 @@
 ----------------------------------------
 
 -- Set the runtime path to Dotfiles directory
-vim.cmd('set runtimepath=$HOME/dotfiles/nvim,$VIMRUNTIME')
+vim.cmd('set runtimepath=$HOME/dotfiles/nvim/dot-config/nvim,$VIMRUNTIME')
 vim.cmd('let packpath=&runtimepath')
 
 -- Import the config files

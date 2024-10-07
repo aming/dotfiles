@@ -29,6 +29,22 @@ Install Batteries to executable included
 brew install aming/aming/Batteries
 ```
 
+## Create Symbolic links of the configurations to the dotfiles
+
+We use GNU Stow as the symlink farm manager to create symlink between the dotfiles and system configuration
+
+To install NeoVim configuration files, run following under the dotfiles root directory
+
+```
+stow --dotfiles nvim vim zsh
+```
+
+To remove the configuration from the system by adding **-D** flag.
+
+```
+stow -D nvim vim zsh
+```
+
 ## Initial Neovim plugins
 
 During the first time starting the Neovim, it will automatically download the _Lazy.nvim_ to the _.config/_ folder.

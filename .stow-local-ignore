@@ -1,0 +1,10 @@
+# This file is used by stow to determine which files to ignore when installing
+
+^/README.*
+^/LICENSE.*
+
+\.DS_Store
+\.git
+\.gitignore
+
+*.md
