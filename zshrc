@@ -63,7 +63,7 @@ export EDITOR="vim"
 # eza settings
 if type eza &>/dev/null
 then
-  alias ls='eza -F'
+  alias ls='eza'
   alias ll='eza -lbF --git --sort=modified'
   alias llx='eza -lbhHigUmuSa --time-style=long-iso --git --color-scale all'
   alias tree='eza -T --level=3'
@@ -88,11 +88,13 @@ if type brew &>/dev/null; then
   FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
-autoload -Uz compinit
-compinit
-
 # Repo-Cli Need to be after compinit
 [[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
   source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
 
-alias yt='yt-dlp -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
+alias yt='yt-dlp --cookies-from-browser brave -S res:720 -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
+
+alias s="kitten ssh"
+
+autoload -Uz compinit
+compinit
