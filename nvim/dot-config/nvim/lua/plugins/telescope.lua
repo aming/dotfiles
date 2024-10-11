@@ -7,36 +7,37 @@ return {
     'nvim-telescope/telescope.nvim',
     branch = '0.1.x',
     dependencies = {
-      'nvim-telescope/telescope-ui-select.nvim',
-      'nvim-lua/plenary.nvim',
+      'nvim-lua/plenary.nvim',  -- required dependencies
       {
         'nvim-telescope/telescope-fzf-native.nvim',
         build = 'make'
       },
-    },
-    opts = {
-      defaults = {
-        layout_strategy = 'horizontal',
-        layout_config = { prompt_position = 'top' },
-        sorting_strategy = 'ascending',
-        winblend = 0,
-      },
+      'nvim-telescope/telescope-ui-select.nvim',  -- Allow nvim core to use telescope picker
+      'nvim-tree/nvim-web-devicons',
+      'nvim-treesitter/nvim-treesitter',
     },
     config = function()
       require('telescope').setup {
+        defaults = {
+          layout_strategy = 'horizontal',
+          layout_config = {
+            width = 0.9,
+            prompt_position = 'bottom',
+          },
+          sorting_strategy = 'ascending',
+        },
         extensions = {
           fzf = {
-            fuzzy = true,
+            fuzzy = true,                     -- false will only do exact matching
             override_generic_sorter = true,
             override_file_sorter = true,
-            case_mode = 'smart_case',
+            case_mode = 'smart_case',         -- smart_case, ignore_case or respect_case
           },
           ['ui-select'] = { require('telescope.themes').get_dropdown() },
         },
-        vimgrep_argument = { 'rg', '--smart-case' },
       }
-      require('telescope').load_extension 'fzf'
-      require('telescope').load_extension 'ui-select'
+      require('telescope').load_extension('fzf')
+      require('telescope').load_extension('ui-select')
     end,
   },
 }
