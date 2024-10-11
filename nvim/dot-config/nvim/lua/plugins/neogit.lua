@@ -10,4 +10,5 @@ return {
     "nvim-telescope/telescope.nvim", -- optional
   },
   config = true,
+  cmd = { 'Neogit' },
 }

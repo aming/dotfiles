@@ -6,9 +6,10 @@
 return {
   {
     'crispgm/cmp-beancount',
-    lazy = true,
-    ft = {"beancount"},
-    filetypes = {"beancount"},
+    ft = {
+      "beancount",
+      "bean",
+    },
     config = function()
       local lspconfig = require('lspconfig')
       local util = require 'lspconfig.util'
@@ -17,7 +18,7 @@ return {
       end;
       lspconfig.beancount.setup({
         init_options = {
-          journal_file = root_dir.."/main.bean"
+          journal_file = root_dir..'/main.bean'
         },
       })
     end

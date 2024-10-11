@@ -16,6 +16,8 @@ return {
       'nvim-tree/nvim-web-devicons',
       'nvim-treesitter/nvim-treesitter',
     },
+    lazy = true,
+    cmd = {'Telescope'},
     config = function()
       require('telescope').setup {
         defaults = {
