@@ -13,14 +13,30 @@ return {
       "3rd/image.nvim", -- Optional image support in preview window
     },
     cmd = { 'Neotree' },
-    config = function()
-      require('neo-tree').setup({
-        window = {
-          mappings = {
-            ["P"] = { "toggle_preview", config = { use_float = false, use_image_nvim = true } },
+    keys = {
+      { '\\', ':Neotree reveal<CR>', { desc = 'Reveal the current file in NeoTree' } },
+      { '<leader>n', ':Neotree toggle left<CR>' },
+    },
+    opts = {
+      close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
+      enable_git_status = true,
+      enable_diagnostics = true,
+      open_files_do_not_replace_types = { "terminal", "trouble", "qf" }, -- when opening files, do not use windows containing these filetypes or buftypes
+      filesystem = {
+        hijack_netrw_behavior = 'open_default', -- open a directory in neo-tree
+        use_libuv_file_watcher = true,  -- use the OS level file watchers to detect changes
+      },
+      window = {
+        mappings = {
+          ['P'] = {
+            'toggle_preview',
+            config = {
+              use_float = true,
+              use_image_nvim = true,
+            },
           },
         },
-      })
-    end
+      },
+    },
   },
 }

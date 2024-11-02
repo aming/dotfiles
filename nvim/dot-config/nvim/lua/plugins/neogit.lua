@@ -11,4 +11,7 @@ return {
   },
   config = true,
   cmd = { 'Neogit' },
+  keys = {
+    { '<leader>gg', ':Neogit<CR>' },
+  },
 }
