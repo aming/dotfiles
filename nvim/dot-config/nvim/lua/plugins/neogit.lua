@@ -14,4 +14,9 @@ return {
   keys = {
     { '<leader>gg', ':Neogit<CR>' },
   },
+  opts = {
+    extensions = {
+      lazy_nvim = true,
+    },
+  },
 }
