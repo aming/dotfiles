@@ -5,6 +5,7 @@
 return {
   {
     'folke/trouble.nvim',
+    cmd = "Trouble",
     opts = {
       group = true, -- group results by file
       padding = true, -- add an extra new line on top of the list

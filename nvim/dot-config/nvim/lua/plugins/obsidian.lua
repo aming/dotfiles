@@ -44,6 +44,7 @@ return {
         path = workVaultPath,
       },
     },
+    new_notes_location = '/+',
     conceallevel = 1,
   },
 }

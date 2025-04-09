@@ -3,111 +3,48 @@
 --------------------
 return {
   {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v3.x',
-    lazy = true,
-    config = false,
-    init = function()
-      -- Disable automatic setup, we are doing it manually
-      vim.g.lsp_zero_extend_cmp = 0
-      vim.g.lsp_zero_extend_lspconfig = 0
-    end,
-  },
-  {
-    'williamboman/mason.nvim',
-    lazy = false,
-    config = true,
-  },
-  -- Autocompletion plugin
-  {
-    'hrsh7th/nvim-cmp',
-    event = 'InsertEnter',
+    -- Collection of configurations for neovim LSP client
+    -- https://github.com/neovim/nvim-lspconfig
+    'neovim/nvim-lspconfig',
+    cmd = { 'LspInfo', 'LspInstall', 'LspStart' },
+    event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
-      'hrsh7th/cmp-buffer',
-      'L3MON4D3/LuaSnip',
-      {
-        "supermaven-inc/supermaven-nvim",  -- https://github.com/supermaven-inc/supermaven-nvim
-        config = function()
-          require("supermaven-nvim").setup({
-            disable_inline_completion = false, -- disables inline completion for use with cmp
-            disable_keymaps = false, -- disables built in keymaps for more manual control
-            condition = function()
-              return true
-            end -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
-          })
-        end
-      },
+      'williamboman/mason-lspconfig.nvim', -- bridges mason.nvim with the nvim-lspconfig plugin
+      'williamboman/mason.nvim',           -- manage external tooling such as LSP servers, DAP servers, linters, and formatters
     },
     config = function()
-      -- Here is where you configure the autocompletion settings.
-      local lsp_zero = require('lsp-zero')
-      lsp_zero.extend_cmp()
-
-      -- And you can configure cmp even more, if you want to.
-      local cmp = require('cmp')
-      local cmp_action = lsp_zero.cmp_action()
-
-      cmp.setup({
-        formatting = lsp_zero.cmp_format({details = true}),
-        sources = {
-          { name = "supermaven" },
-        },
-        mapping = cmp.mapping.preset.insert({
-          ['<Tab>'] = cmp_action.luasnip_supertab(),
-          ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
-          ['<C-n>'] = cmp.mapping.complete(),
-          ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-d>'] = cmp.mapping.scroll_docs(4),
-          ['<C-f>'] = cmp_action.luasnip_jump_forward(),
-          ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-        }),
-        snippet = {
-          expand = function(args)
-            require('luasnip').lsp_expand(args.body)
-          end,
-        },
-      })
-    end
-  },
-  -- LSP
-  {
-    'neovim/nvim-lspconfig',           -- Collection of configurations for built-in LSP client
-    cmd = {'LspInfo', 'LspInstall', 'LspStart'},
-    event = {'BufReadPre', 'BufNewFile'},
-    dependencies = {
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'williamboman/mason-lspconfig.nvim'},
-    },
-    config = function()
-      local lsp_zero = require'lsp-zero'
-      lsp_zero.extend_lspconfig()
-
-      -- if you want to know more about mason.nvim
-      -- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guides/integrate-with-mason-nvim.md
-      lsp_zero.on_attach(function(client, bufnr)
-        -- see :help lsp-zero-keybindings
-        -- to learn the available actions
-        lsp_zero.default_keymaps({buffer = bufnr})
-      end)
-
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      require('mason').setup({})
       require('mason-lspconfig').setup({
-        ensure_installed = {},
+        -- ensure_installed = { 'lua-ls' },
+        auto_installed = true,
         handlers = {
           -- this first function is the "default handler"
           -- it applies to every language server without a "custom handler"
           function(server_name)
-            require('lspconfig')[server_name].setup({})
-          end,
-
-          -- this is the "custom handler" for `lua_ls`
-          lua_ls = function()
-            -- (Optional) Configure lua language server for neovim
-            local lua_opts = lsp_zero.nvim_lua_ls()
-            require('lspconfig').lua_ls.setup(lua_opts)
+            require('lspconfig')[server_name].setup({
+              capabilities = capabilities
+            })
           end,
         }
       })
     end
+  },
+  {
+    'nvimtools/none-ls.nvim', -- Inject LSP diagnostics, code actions to Neovim
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    config = function()
+      local null_ls = require("null-ls")
+      null_ls.setup({
+        sources = {
+          null_ls.builtins.formatting.stylua,
+          null_ls.builtins.formatting.prettier,
+          null_ls.builtins.diagnostics.erb_lint,
+        },
+      })
+    end,
   },
 }
 
