@@ -41,13 +41,6 @@ return {
         { name = "luasnip" }, -- For luasnip users.
         { name = "supermaven" },
       }, { { name = "buffer" } }),
-      mapping = cmp.mapping.preset.insert({
-        ["<Tab>"] = cmp.mapping.complete(),
-        ["<C-u>"] = cmp.mapping.scroll_docs(-4),
-        ["<C-f>"] = cmp.mapping.scroll_docs(4),
-        ["<C-c>"] = cmp.mapping.abort(),
-        ["<CR>"] = cmp.mapping.confirm({ select = true }),
-      }),
     })
   end,
 }

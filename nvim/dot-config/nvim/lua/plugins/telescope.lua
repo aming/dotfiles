@@ -18,21 +18,6 @@ return {
     },
     lazy = true,
     cmd = { 'Telescope' },
-    keys = {
-      { '<C-p>', ':Telescope find_files<CR>' },
-      { '<C-g>', ':Telescope live_grep<CR>' },
-      { '<leader>t', ':Telescope<CR>' },
-      { '<leader>tr', ':Telescope resume<CR>' },
-      { '<leader>ts', ':Telescope grep_string<CR>' },
-      { '<leader>tb', ':Telescope buffers<CR>' },
-      { '<leader>to', ':Telescope oldfiles<CR>' },
-      { '<leader>tc', ':Telescope quickfix<CR>' },
-      { '<leader>tj', ':Telescope jumplist<CR>' },
-      { '<leader>th', ':Telescope help_tags<CR>' },
-      { '<leader>tm', ':Telescope marks<CR>' },
-      { '<leader>tt', ':Telescope treesitter<CR>' },
-      { '<leader>tk', ':Telescope keymaps<CR>' },
-    },
     config = function()
       require('telescope').setup {
         defaults = {

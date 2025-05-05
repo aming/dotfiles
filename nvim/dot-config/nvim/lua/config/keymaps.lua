@@ -29,6 +29,45 @@ vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format, opts)
 vim.keymap.set('n', '<leader>gd', vim.lsp.buf.definition, opts)
 vim.keymap.set('n', '<leader>gr', vim.lsp.buf.references, opts)
 vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+-- Telepscope Shortcuts
+vim.keymap.set('n', '<C-p>', ':Telescope find_files<CR>', opts)
+vim.keymap.set('n', '<C-g>', ':Telescope live_grep<CR>', opts)
+vim.keymap.set('n', '<leader>t', ':Telescope<CR>', opts)
+vim.keymap.set('n', '<leader>tr', ':Telescope<CR>', opts)
+vim.keymap.set('n', '<leader>ts', ':Telescope grep_string<CR>', opts)
+vim.keymap.set('n', '<leader>tb', ':Telescope buffers<CR>', opts)
+vim.keymap.set('n', '<leader>to', ':Telescope oldfiles<CR>', opts)
+vim.keymap.set('n', '<leader>tc', ':Telescope quickfix<CR>', opts)
+vim.keymap.set('n', '<leader>tj', ':Telescope jumplist<CR>', opts)
+vim.keymap.set('n', '<leader>th', ':Telescope help_tags<CR>', opts)
+vim.keymap.set('n', '<leader>tm', ':Telescope marks<CR>', opts)
+vim.keymap.set('n', '<leader>tt', ':Telescope treesitter<CR>', opts)
+vim.keymap.set('n', '<leader>tk', ':Telescope keymaps<CR>', opts)
+
+
+-- Insert Mode (i) --
+-- Completion Shortcuts
+local cmp = require("cmp")
+vim.keymap.set('i', '<Tab>', cmp.mapping.complete(), opts)
+vim.keymap.set('i', '<C-u>', cmp.mapping.scroll_docs(-4), opts)
+vim.keymap.set('i', '<C-f>', cmp.mapping.scroll_docs(4), opts)
+vim.keymap.set('i', '<C-e>', cmp.mapping.abort(), opts)
+vim.keymap.set('i', '<CR>', cmp.mapping.confirm({ select = true }), opts)
+
+
+-- Visual Mode (v) --
+
+
+-- Terminal Mode (t) --
+
+
+-- Command Mode (c) --
+
+
+-- File Navigation (n) --
+
+
+-- File Navigation (n) --
 
 
 -- Insert (i) --
