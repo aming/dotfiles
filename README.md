@@ -1,5 +1,7 @@
 # Installation
 
+[Repository Guidelines](AGENTS.md) provide contributor-focused instructions on structure, workflows, and review expectations.
+
 ## Clone the repos
 
 ```bash
@@ -92,4 +94,3 @@ Install the plugin by adding a new submodule to this repos
 
 1. To add a new plugin, create a new Lazy spec file under _nvim/lua/plugins_. And run the `:Lazy` to start the Lazy
 Console to install the plugins list. And remember to check in  _nvim/lazy-lock.json_ for locked plugin versions.
-
