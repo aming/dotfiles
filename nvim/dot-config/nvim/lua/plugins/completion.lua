@@ -14,18 +14,10 @@ return {
         "rafamadriz/friendly-snippets",
       },
     },
-    "supermaven-inc/supermaven-nvim", -- https://github.com/supermaven-inc/supermaven-nvim
   },
   config = function()
     local cmp = require("cmp")
     require("luasnip.loaders.from_vscode").lazy_load()
-    require("supermaven-nvim").setup({
-      disable_inline_completion = false, -- disables inline completion for use with cmp
-      disable_keymaps = false,        -- disables built in keymaps for more manual control
-      condition = function()
-        return true
-      end, -- condition to check for stopping supermaven, `true` means to stop supermaven when the condition is true.
-    })
     cmp.setup({
       snippet = {
         expand = function(args)
@@ -39,7 +31,6 @@ return {
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "luasnip" }, -- For luasnip users.
-        { name = "supermaven" },
       }, { { name = "buffer" } }),
     })
   end,
