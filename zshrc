@@ -42,7 +42,7 @@ export FZF_ALT_C_OPTS='--height 40% --layout=reverse --border --preview-window=d
 export _ZO_FZF_OPTS='--height 40% --layout=reverse --border --no-preview'
 export _ZO_DATA_DIR=$HOME/.local/share
 
-plugins=(brew uv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck zoxide)
+plugins=(brew uv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit zoxide)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
@@ -75,8 +75,6 @@ export PATH="$HOME/bin":$PATH
 
 # uv Python version manager
 export PATH="$HOME/.local/bin":$PATH
-
-eval $(thefuck --alias)
 
 # ASDF
 [[ -f $(brew --prefix asdf)/libexec/asdf.sh ]] &&
