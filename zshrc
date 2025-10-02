@@ -23,9 +23,6 @@ ZSH_TMUX_CONFIG="$DOTFILES/tmux/tmux.conf"
 
 HYPHEN_INSENSITIVE='true'  # _ and - will be interchangeable.
 
-# pyenv settings
-ZSH_PYENV_QUIET='true'
-
 # fzf settings
 export FZF_DEFAULT_OPTS="\
   --height 40% \
@@ -45,7 +42,7 @@ export FZF_ALT_C_OPTS='--height 40% --layout=reverse --border --preview-window=d
 export _ZO_FZF_OPTS='--height 40% --layout=reverse --border --no-preview'
 export _ZO_DATA_DIR=$HOME/.local/share
 
-plugins=(brew pyenv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck zoxide)
+plugins=(brew uv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit thefuck zoxide)
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
@@ -76,6 +73,9 @@ export BAT_CONFIG_PATH="$DOTFILES/bat.config"
 export PATH="$HOME/bin":$PATH
 [[ -e "$HOME/lib/oracle-cli/lib/python3.11/site-packages/oci_cli/bin/oci_autocomplete.sh" ]] && source "$HOME/lib/oracle-cli/lib/python3.11/site-packages/oci_cli/bin/oci_autocomplete.sh"
 
+# uv Python version manager
+export PATH="$HOME/.local/bin":$PATH
+
 eval $(thefuck --alias)
 
 # ASDF
@@ -98,3 +98,4 @@ alias s="kitten ssh"
 
 autoload -Uz compinit
 compinit
+
