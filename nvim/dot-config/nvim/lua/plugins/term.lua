@@ -8,12 +8,11 @@ return {
         size = 20,
         start_in_insert = true,
       })
-
       -- Create a dedicated Aider Watch terminal
       local Terminal = require("toggleterm.terminal").Terminal
       AiderWatch = Terminal:new({
         cmd = "aider --watch-files",
-        direction = "horizontal",
+        direction = "horizontal", -- Move to right hand side AI!
         close_on_exit = false,
         hidden = true,
       })
