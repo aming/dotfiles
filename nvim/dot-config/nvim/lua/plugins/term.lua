@@ -12,7 +12,7 @@ return {
       local Terminal = require("toggleterm.terminal").Terminal
       AiderWatch = Terminal:new({
         cmd = "aider --watch-files",
-        direction = "horizontal", -- Move to right hand side AI!
+        direction = "left",
         close_on_exit = false,
         hidden = true,
       })
