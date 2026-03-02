@@ -1,9 +1,3 @@
----
-name: web-search-advanced-research-paper
-description: Search for research papers and academic content using Exa advanced search. Full filter support including date ranges and text filtering. Use when searching for academic papers, arXiv preprints, or scientific research.
-context: fork
----
-
 # Web Search Advanced - Research Paper Category
 
 ## Tool Restriction (Critical)
@@ -92,4 +86,3 @@ Return:
 1) Results (structured list with title, authors, date, abstract summary)
 2) Sources (URLs with publication venue)
 3) Notes (methodology differences, conflicting findings)
-

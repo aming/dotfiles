@@ -1,9 +1,3 @@
----
-name: get-code-context-exa
-description: Code context using Exa. Finds real snippets and docs from GitHub, StackOverflow, and technical docs. Use when searching for code examples, API syntax, library documentation, or debugging help.
-context: fork
----
-
 # Code Context (Exa)
 
 ## Tool Restriction (Critical)
@@ -59,16 +53,3 @@ Return:
 
 Before presenting:
 - Deduplicate similar results and keep only the best representative snippet per approach.
-
-## MCP Configuration
-
-```json
-{
-  "servers": {
-    "exa": {
-      "type": "http",
-      "url": "https://mcp.exa.ai/mcp?tools=get_code_context_exa"
-    }
-  }
-}
-```

@@ -1,9 +1,3 @@
----
-name: web-search-advanced-tweet
-description: Search tweets and Twitter/X content using Exa advanced search. Limited filter support - text and domain filters are NOT supported. Use when searching for tweets, Twitter/X discussions, or social media sentiment.
-context: fork
----
-
 # Web Search Advanced - Tweet Category
 
 ## Tool Restriction (Critical)
@@ -27,7 +21,7 @@ The `tweet` category has **LIMITED filter support**. The following parameters ar
 - `numResults`
 - `type` ("auto", "fast", "deep", "neural")
 
-### Date filtering (ISO 8601) - Use these instead of text filters!
+### Date filtering (ISO 8601) - Use these instead of text filters
 - `startPublishedDate` / `endPublishedDate`
 - `startCrawlDate` / `endCrawlDate`
 
@@ -101,5 +95,3 @@ Return:
 3) Notes (sentiment summary, notable accounts, threads vs single tweets)
 
 Important: Be aware that tweet content can be informal, sarcastic, or context-dependent.
-
-

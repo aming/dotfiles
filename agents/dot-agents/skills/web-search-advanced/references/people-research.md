@@ -1,9 +1,3 @@
----
-name: people-research
-description: People research using Exa search. Finds LinkedIn profiles, professional backgrounds, experts, team members, and public bios across the web. Use when searching for people, finding experts, or looking up professional profiles.
-context: fork
----
-
 # People Research
 
 ## Tool Restriction (Critical)
@@ -57,14 +51,7 @@ When searching without a category, all parameters are available (but `includeTex
 ## LinkedIn
 
 Public LinkedIn via Exa: `category: "people"`, no other filters.
-Auth-required LinkedIn → use Claude in Chrome browser fallback.
-
-## Browser Fallback
-
-Auto-fallback to Claude in Chrome when:
-- Exa returns insufficient results
-- Content is auth-gated
-- Dynamic pages need JavaScript
+Auth-required LinkedIn → explain limitation and ask for alternative sources.
 
 ## Examples
 

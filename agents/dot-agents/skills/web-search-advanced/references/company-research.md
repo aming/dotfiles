@@ -1,9 +1,3 @@
----
-name: company-research
-description: Company research using Exa search. Finds company info, competitors, news, tweets, financials, LinkedIn profiles, builds company lists. Use when researching companies, doing competitor analysis, market research, or building company lists.
-context: fork
----
-
 # Company Research
 
 ## Tool Restriction (Critical)
@@ -58,14 +52,7 @@ When searching without a category (or with `news`), domain and date filters work
 ## LinkedIn
 
 Public LinkedIn via Exa: `category: "people"`, no other filters.
-Auth-required LinkedIn → use Claude in Chrome browser fallback.
-
-## Browser Fallback
-
-Auto-fallback to Claude in Chrome when:
-- Exa returns insufficient results
-- Content is auth-gated
-- Dynamic pages need JavaScript
+Auth-required LinkedIn → explain limitation and ask for alternative sources.
 
 ## Examples
 

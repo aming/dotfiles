@@ -1,9 +1,3 @@
----
-name: web-search-advanced-financial-report
-description: Search for financial reports using Exa advanced search. Near-full filter support for finding SEC filings, earnings reports, and financial documents. Use when searching for 10-K filings, quarterly earnings, or annual reports.
-context: fork
----
-
 # Web Search Advanced - Financial Report Category
 
 ## Tool Restriction (Critical)
@@ -27,13 +21,13 @@ The `financial report` category has one known restriction:
 - `includeDomains` (e.g., ["sec.gov", "investor.apple.com"])
 - `excludeDomains`
 
-### Date filtering (ISO 8601) - Very useful for financial reports!
+### Date filtering (ISO 8601) - Very useful for financial reports
 - `startPublishedDate` / `endPublishedDate`
 - `startCrawlDate` / `endCrawlDate`
 
 ### Text filtering
 - `includeText` (must contain ALL) - **single-item arrays only**; multi-item causes 400
-- ~~`excludeText`~~ - NOT SUPPORTED
+- `excludeText` - NOT SUPPORTED
 
 ### Content extraction
 - `textMaxCharacters` / `contextMaxCharacters`
@@ -115,4 +109,3 @@ Return:
 1) Results (company name, filing type, date, key figures/highlights)
 2) Sources (Filing URLs)
 3) Notes (reporting period, any restatements, auditor notes)
-
