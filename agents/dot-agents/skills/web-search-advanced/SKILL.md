@@ -1,6 +1,17 @@
 ---
 name: web-search-advanced
-description: Advanced web research using Exa tools. Use this whenever the user needs external sources or up-to-date info: market/competitor scans, company or people research, academic papers, financial filings, tweet or social sentiment summaries, or authoritative code examples from docs/GitHub/StackOverflow. Trigger even if they do not say "search" explicitly whenever the task depends on web discovery, citations, or multiple third-party sources (e.g., “find 15 competitors,” “latest 10-K/10-Q,” “pull LinkedIn profiles,” “recent arXiv papers,” “tweet sentiment”). Avoid for tasks limited to local files, pasted data, reasoning-only questions, or when the user already provided the exact URLs and asks for summaries only.
+description: >
+  Advanced web research using Exa tools. Use this whenever the user needs
+  external sources or up-to-date info: market/competitor scans, company or
+  people research, academic papers, financial filings, tweet or social
+  sentiment summaries, or authoritative code examples from
+  docs/GitHub/StackOverflow. Trigger even if they do not say "search"
+  explicitly whenever the task depends on web discovery, citations, or
+  multiple third-party sources (e.g., "find 15 competitors," "latest
+  10-K/10-Q," "pull LinkedIn profiles," "recent arXiv papers," "tweet
+  sentiment"). Avoid for tasks limited to local files, pasted data,
+  reasoning-only questions, or when the user already provided the exact URLs
+  and asks for summaries only.
 ---
 
 # Web Search Advanced
