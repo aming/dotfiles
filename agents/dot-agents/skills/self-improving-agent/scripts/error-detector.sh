@@ -43,7 +43,7 @@ done
 if [ "$contains_error" = true ]; then
     cat << 'EOF'
 <error-detected>
-A command error was detected. Consider logging this to .learnings/ERRORS.md if:
+A command error was detected. Consider logging this to agents/learnings/ERRORS.md if:
 - The error was unexpected or non-obvious
 - It required investigation to resolve
 - It might recur in similar contexts

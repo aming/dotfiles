@@ -2,6 +2,16 @@
 
 Concrete examples of well-formatted entries with all fields.
 
+Use these examples when writing entries under `agents/learnings/`:
+
+```text
+agents/
+  learnings/
+    LEARNINGS.md
+    ERRORS.md
+    FEATURE_REQUESTS.md
+```
+
 ## Learning: Correction
 
 ```markdown

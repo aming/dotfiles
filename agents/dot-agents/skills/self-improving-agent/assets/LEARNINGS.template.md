@@ -1,5 +1,7 @@
 # Learnings
 
+Template for `agents/learnings/LEARNINGS.md` in an OpenCode project.
+
 Corrections, insights, and knowledge gaps captured during development.
 
 **Categories**: correction | insight | knowledge_gap | best_practice
@@ -41,5 +43,16 @@ Docker build fails on Apple Silicon due to platform mismatch
 ...
 ```
 
----
+## Recommended Project Layout
 
+Create and keep these files together:
+
+```text
+agents/
+  learnings/
+    LEARNINGS.md
+    ERRORS.md
+    FEATURE_REQUESTS.md
+```
+
+---
