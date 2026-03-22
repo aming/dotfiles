@@ -1,3 +1,7 @@
+--------------------
+-- Toggleterm
+-- https://github.com/akinsho/toggleterm.nvim
+--------------------
 return {
   {
     "akinsho/toggleterm.nvim",
@@ -12,7 +16,7 @@ return {
       local Terminal = require("toggleterm.terminal").Terminal
       AiderWatch = Terminal:new({
         cmd = "aider --watch-files",
-        direction = "left",
+        direction = "horizontal",
         close_on_exit = false,
         hidden = true,
       })
