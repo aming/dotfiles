@@ -66,6 +66,12 @@ then
   alias tree='eza -T --level=3'
 fi
 
+# # opencode settings
+# if type opencode &>/dev/null
+# then
+#   alias occ='opencode run'
+# fi
+
 # bat settings
 export BAT_CONFIG_PATH="$DOTFILES/bat.config"
 
@@ -75,6 +81,12 @@ export PATH="$HOME/bin":$PATH
 
 # uv Python version manager
 export PATH="$HOME/.local/bin":$PATH
+
+# Added by Antigravity
+export PATH="/Users/tolau/.antigravity/antigravity/bin:$PATH"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/tolau/.lmstudio/bin"
 
 # ASDF
 [[ -f $(brew --prefix asdf)/libexec/asdf.sh ]] &&
@@ -92,8 +104,5 @@ fi
 
 alias yt='yt-dlp --cookies-from-browser brave -S res:720 -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
 
-alias s="kitten ssh"
-
 autoload -Uz compinit
 compinit
-
