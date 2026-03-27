@@ -83,10 +83,13 @@ export PATH="$HOME/bin":$PATH
 export PATH="$HOME/.local/bin":$PATH
 
 # Added by Antigravity
-export PATH="/Users/tolau/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/tolau/.lmstudio/bin"
+export PATH="$PATH:$HOME/.lmstudio/bin"
+
+# BUN
+export PATH="$HOME/.bun/bin:$PATH"
 
 # ASDF
 [[ -f $(brew --prefix asdf)/libexec/asdf.sh ]] &&
