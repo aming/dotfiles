@@ -101,9 +101,9 @@ if type brew &>/dev/null; then
   FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
-# Repo-Cli Need to be after compinit
-[[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
-  source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
+# # Repo-Cli Need to be after compinit
+# [[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
+#   source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
 
 alias yt='yt-dlp --cookies-from-browser brave -S res:720 -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
 
