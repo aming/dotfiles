@@ -1,7 +1,6 @@
 ---
 name: pdf
 description: Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.
-license: Proprietary. LICENSE.txt has complete terms
 ---
 
 # PDF Processing Guide
@@ -31,13 +30,11 @@ for page in reader.pages:
 
 #### Merge PDFs
 ```python
-from pypdf import PdfWriter, PdfReader
+from pypdf import PdfWriter
 
 writer = PdfWriter()
 for pdf_file in ["doc1.pdf", "doc2.pdf", "doc3.pdf"]:
-    reader = PdfReader(pdf_file)
-    for page in reader.pages:
-        writer.add_page(page)
+    writer.append(pdf_file)
 
 with open("merged.pdf", "wb") as output:
     writer.write(output)
@@ -168,7 +165,7 @@ doc.build(story)
 
 #### Subscripts and Superscripts
 
-**IMPORTANT**: Never use Unicode subscript/superscript characters (₀₁₂₃₄₅₆₇₈₉, ⁰¹²³⁴⁵⁶⁷⁸⁹) in ReportLab PDFs. The built-in fonts do not include these glyphs, causing them to render as solid black boxes.
+**IMPORTANT**: Do not rely on Unicode subscript/superscript characters with ReportLab's built-in fonts. Those fonts often lack the needed glyphs, so the characters can render as empty boxes or the wrong symbol.
 
 Instead, use ReportLab's XML markup tags in Paragraph objects:
 ```python
@@ -184,7 +181,7 @@ chemical = Paragraph("H<sub>2</sub>O", styles['Normal'])
 squared = Paragraph("x<super>2</super> + y<super>2</super>", styles['Normal'])
 ```
 
-For canvas-drawn text (not Paragraph objects), manually adjust font the size and position rather than using Unicode subscripts/superscripts.
+If you need direct Unicode glyphs, register a TrueType font that supports them. For canvas-drawn text (not `Paragraph` objects), manually adjust font size and position instead of assuming the built-in fonts will render subscript/superscript characters correctly.
 
 ## Command-Line Tools
 
@@ -233,6 +230,7 @@ pdftk input.pdf rotate 1east output rotated.pdf
 ### Extract Text from Scanned PDFs
 ```python
 # Requires: pip install pytesseract pdf2image
+# Also requires Poppler (`pdftoppm`/`pdftocairo`) to be installed.
 import pytesseract
 from pdf2image import convert_from_path
 
@@ -287,7 +285,7 @@ for page in reader.pages:
     writer.add_page(page)
 
 # Add password
-writer.encrypt("userpassword", "ownerpassword")
+writer.encrypt("userpassword", "ownerpassword", algorithm="AES-256-R5")
 
 with open("encrypted.pdf", "wb") as output:
     writer.write(output)
@@ -297,7 +295,8 @@ with open("encrypted.pdf", "wb") as output:
 
 | Task | Best Tool | Command/Code |
 |------|-----------|--------------|
-| Merge PDFs | pypdf | `writer.add_page(page)` |
+| Merge PDFs | pypdf | `writer.append("input.pdf")` |
+| Render PDF pages to images | pypdfium2 | `page.render(...).to_pil()` |
 | Split PDFs | pypdf | One page per file |
 | Extract text | pdfplumber | `page.extract_text()` |
 | Extract tables | pdfplumber | `page.extract_tables()` |
