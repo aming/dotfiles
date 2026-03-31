@@ -5,14 +5,13 @@ This document contains advanced PDF processing features, detailed examples, and 
 ## pypdfium2 Library (Apache/BSD License)
 
 ### Overview
-pypdfium2 is a Python binding for PDFium (Chromium's PDF library). It's excellent for fast PDF rendering, image generation, and serves as a PyMuPDF replacement.
+pypdfium2 is a Python binding for PDFium (Chromium's PDF library). It is a strong default for fast rendering, page previews, and rasterizing PDFs for downstream OCR or image analysis.
 
 ### Render PDF to Images
 ```python
 import pypdfium2 as pdfium
-from PIL import Image
 
-# Load PDF
+# PDFium is not thread-safe. Use separate processes for parallel work.
 pdf = pdfium.PdfDocument("document.pdf")
 
 # Render page to image
@@ -31,6 +30,8 @@ for i, page in enumerate(pdf):
     bitmap = page.render(scale=1.5)
     img = bitmap.to_pil()
     img.save(f"page_{i+1}.jpg", "JPEG", quality=90)
+
+pdf.close()
 ```
 
 ### Extract Text with pypdfium2
@@ -39,8 +40,11 @@ import pypdfium2 as pdfium
 
 pdf = pdfium.PdfDocument("document.pdf")
 for i, page in enumerate(pdf):
-    text = page.get_text()
+    text_page = page.get_textpage()
+    text = text_page.get_text_bounded()
     print(f"Page {i+1} text length: {len(text)} chars")
+
+pdf.close()
 ```
 
 ## JavaScript Libraries
@@ -434,6 +438,8 @@ pdfimages -all document.pdf images/img
 ```
 
 #### Method 2: Using pypdfium2 + Image Processing
+
+This does **not** extract embedded images from the PDF object model. It renders each page, then heuristically looks for figure-like regions in the bitmap. Use `pdfimages` when you need the original embedded assets.
 ```python
 import pypdfium2 as pdfium
 from PIL import Image
@@ -535,7 +541,7 @@ with open("cropped.pdf", "wb") as output:
 ### 2. For Text Extraction
 - `pdftotext -bbox-layout` is fastest for plain text extraction
 - Use pdfplumber for structured data and tables
-- Avoid `pypdf.extract_text()` for very large documents
+- Use `pypdf` text extraction for structural workflows, but be mindful of memory use on very large or graphics-heavy pages
 
 ### 3. For Image Extraction
 - `pdfimages` is much faster than rendering pages
@@ -589,6 +595,7 @@ qpdf --replace-input corrupted.pdf
 ### Text Extraction Issues
 ```python
 # Fallback to OCR for scanned PDFs
+# Requires Poppler (`pdftoppm`/`pdftocairo`) for pdf2image.
 import pytesseract
 from pdf2image import convert_from_path
 
