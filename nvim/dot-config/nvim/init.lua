@@ -5,6 +5,10 @@
 -- To use it, copy or link nvim to ~/.config/nvim
 ----------------------------------------
 
+if vim.fn.has('nvim-0.11') == 0 then
+  error('This Neovim config requires Neovim 0.11 or newer.')
+end
+
 -- Set the runtime path to Dotfiles directory
 vim.cmd('set runtimepath=$HOME/dotfiles/nvim/dot-config/nvim,$VIMRUNTIME')
 vim.cmd('let packpath=&runtimepath')

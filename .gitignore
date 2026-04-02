@@ -5,3 +5,5 @@ tags
 vim/plugged
 nvim/plugin/
 .aider*
+.worktrees/
+__pycache__/

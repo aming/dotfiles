@@ -9,26 +9,9 @@ return {
     cmd = { 'LspInfo', 'LspInstall', 'LspStart' },
     event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
-      'williamboman/mason-lspconfig.nvim', -- bridges mason.nvim with the nvim-lspconfig plugin
-      'williamboman/mason.nvim',           -- manage external tooling such as LSP servers, DAP servers, linters, and formatters
+      { 'mason-org/mason.nvim', opts = {} },
+      { 'mason-org/mason-lspconfig.nvim', opts = {} },
     },
-    config = function()
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      require('mason').setup({})
-      require('mason-lspconfig').setup({
-        -- ensure_installed = { 'lua-ls' },
-        auto_installed = true,
-        handlers = {
-          -- this first function is the "default handler"
-          -- it applies to every language server without a "custom handler"
-          function(server_name)
-            require('lspconfig')[server_name].setup({
-              capabilities = capabilities
-            })
-          end,
-        }
-      })
-    end
   },
   {
     'nvimtools/none-ls.nvim', -- Inject LSP diagnostics, code actions to Neovim
@@ -47,4 +30,3 @@ return {
     end,
   },
 }
-

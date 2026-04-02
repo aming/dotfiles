@@ -45,4 +45,10 @@ for k, v in pairs(options) do
   vim.opt[k] = v
 end
 
+vim.filetype.add({
+  extension = {
+    bean = 'beancount',
+  },
+})
+
 -- vim: ts=2 sw=2 ft=lua expandtab:
