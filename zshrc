@@ -66,12 +66,6 @@ then
   alias tree='eza -T --level=3'
 fi
 
-# # opencode settings
-# if type opencode &>/dev/null
-# then
-#   alias occ='opencode run'
-# fi
-
 # bat settings
 export BAT_CONFIG_PATH="$DOTFILES/bat.config"
 
@@ -101,11 +95,26 @@ if type brew &>/dev/null; then
   FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
-# # Repo-Cli Need to be after compinit
-# [[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
-#   source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
+# # opencode settings
+if type opencode &>/dev/null
+then
+  if type ocx &>/dev/null
+  then
+    alias omo='ocx oc -p omo'
+    alias ows='ocx oc -p ws'
+    alias occ='opencode run --agent oneliner'
+  fi
+fi
 
 alias yt='yt-dlp --cookies-from-browser brave -S res:720 -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
 
 autoload -Uz compinit
 compinit
+
+# bun completions
+[ -s "/Users/tolau/.bun/_bun" ] && source "/Users/tolau/.bun/_bun"
+
+# # Repo-Cli Need to be after compinit
+# [[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
+#   source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
+
