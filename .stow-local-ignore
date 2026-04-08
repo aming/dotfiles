@@ -7,5 +7,5 @@
 \.git
 \.gitignore
 
-*.md
-*.bak
+\.bak$
+AGENTS.md
