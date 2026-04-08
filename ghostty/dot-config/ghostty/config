@@ -1,0 +1,16 @@
+shell-integration-features = ssh-terminfo,ssh-env
+macos-option-as-alt = true
+macos-titlebar-style = transparent
+macos-shortcuts = allow
+
+# Theme
+macos-icon = xray
+theme = Gruvbox Material
+font-family = Monaspace Neon
+font-feature = calt, ss01, ss02, ss03, ss09, liga # https://monaspace.githubnext.com/#Code-ligatures
+font-size = 14
+
+# Kitty keyboard protocol
+keybind = alt+backspace=text:\x1b\x7f
+keybind = global:cmd+shift+backquote=toggle_quick_terminal
+
