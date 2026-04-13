@@ -8,6 +8,11 @@
   //     Text-only orchestration model. Used by Oracle, Prometheus, Metis, Momus.
   //   MiniMax M2.7	Fast and smart 
   // 	 Ultra-cheap, fast responses. Used by Librarian, Explore, Atlas, and Sisyphus-Junior for utility work.
+  "tmux": {
+    "enabled": true,
+    "layout": "main-vertical",
+    "main_pane_size": 60
+  },
   "agents": {
     // Communicators -> Claude / Kimi / GLM
     // GPT is still not the default recommendation for the orchestrator.
