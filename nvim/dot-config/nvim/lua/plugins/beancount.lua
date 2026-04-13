@@ -20,6 +20,7 @@ return {
         -- },
       })
       vim.lsp.enable('beancount')
+      vim.treesitter.start()
     end
   },
 }

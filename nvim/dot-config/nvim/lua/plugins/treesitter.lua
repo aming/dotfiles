@@ -1,20 +1,19 @@
 --------------------
 -- Treesitter plugins settings
+-- tree-sitter cli in required
+--   apt install tree-sitter-cli / brew install tree-sitter
+-- Supported langauge: https://github.com/nvim-treesitter/nvim-treesitter/blob/main/SUPPORTED_LANGUAGES.md
 --------------------
 return {
   {
     -- https://github.com/nvim-treesitter/nvim-treesitter
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false,  -- This plugin does not support lazy-loading.
     build = ":TSUpdate",
     config = function()
-      require("nvim-treesitter.configs").setup({
-        -- Automatically install missing parsers when entering buffer
-        -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-        auto_install = true,
-        -- List of parsers to ignore installing (or "all")
-        ignore_install = { },
-        highlight = { enable = true },
-        indent = { enable = true },
+      require("nvim-treesitter").setup({
+        install_dir = vim.fn.stdpath("data") .. "/site",
       })
     end
   }
