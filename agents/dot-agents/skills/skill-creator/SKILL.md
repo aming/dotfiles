@@ -94,7 +94,8 @@ These word counts are approximate and you can feel free to go longer if needed.
 
 **Key patterns:**
 - Keep SKILL.md under 500 lines; if you're approaching this limit, add an additional layer of hierarchy along with clear pointers about where the model using the skill should go next to follow up.
-- Reference files clearly from SKILL.md with guidance on when to read them
+- Reference files clearly from SKILL.md with **condition-based triggers** for when to read them (e.g., "If the API returns non-200, read `references/api-errors.md`.")
+- Avoid vague guidance like "See references/ for details." Always state exact conditions and exact file paths.
 - For large reference files (>300 lines), include a table of contents
 
 **Domain organization**: When a skill supports multiple domains/frameworks, organize by variant:
@@ -115,6 +116,24 @@ This goes without saying, but skills must not contain malware, exploit code, or 
 #### Writing Patterns
 
 Prefer using the imperative form in instructions.
+
+**Default-first pattern** - Do not present broad equal-weight menus of tools/approaches unless truly necessary. Pick one default approach for normal cases, then document alternatives as explicit exception paths.
+
+```markdown
+Default: Use Playwright for browser automation tasks.
+If the environment lacks a browser runtime, fall back to requests + BeautifulSoup.
+If the task requires JS-executed content and Playwright is blocked, ask the user for permission to run in a browser-capable environment.
+```
+
+**Gotchas pattern** - Add a dedicated gotchas section to capture mistakes that repeatedly cause failures.
+
+```markdown
+## Gotchas
+- If the repo uses pnpm workspaces, run commands from the workspace root; package-level installs can fail silently.
+- If API responses are gzip-compressed, decode before JSON parsing; raw bytes can look like malformed JSON.
+```
+
+Whenever a user correction reveals a recurring pitfall, update this section.
 
 **Defining output formats** - You can do it like this:
 ```markdown
@@ -161,6 +180,8 @@ Save test cases to `evals/evals.json`. Don't write assertions yet — just the p
 See `references/schemas.md` for the full schema (including the `assertions` field, which you'll add later).
 
 ## Running and evaluating test cases
+
+Before running evals, ensure the skill draft includes a `## Gotchas` section and at least one condition-based reference-loading instruction when references exist.
 
 This section is one continuous sequence — don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
 
