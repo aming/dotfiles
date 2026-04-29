@@ -4,7 +4,6 @@ Quick validation script for skills - minimal version
 """
 
 import sys
-import os
 import re
 import yaml
 from pathlib import Path
@@ -93,6 +92,50 @@ def validate_skill(skill_path):
 
     return True, "Skill is valid!"
 
+
+def lint_skill(skill_path):
+    """Best-practices lint checks (warning-only)."""
+    skill_path = Path(skill_path)
+    skill_md = skill_path / 'SKILL.md'
+    warnings = []
+
+    content = skill_md.read_text()
+    lines = content.splitlines()
+
+    if len(lines) > 500:
+        warnings.append(
+            f"SKILL.md has {len(lines)} lines (>500). Consider progressive disclosure and moving details to references/."
+        )
+
+    if not re.search(r'^\s*##\s+Gotchas\b', content, re.MULTILINE):
+        warnings.append("Missing '## Gotchas' section. Add recurring pitfalls discovered during real usage.")
+
+    references_dir = skill_path / "references"
+    mentions_references = "references/" in content or references_dir.exists()
+    has_conditional_reference = bool(
+        re.search(r'\bif\b.{0,160}references\/[A-Za-z0-9._/-]+', content, re.IGNORECASE | re.DOTALL)
+    )
+    if mentions_references and not has_conditional_reference:
+        warnings.append(
+            "References are present but no condition-based loading trigger was found. "
+            "Use patterns like: 'If X happens, read references/<file>.md'."
+        )
+
+    generic_phrases = [
+        "best practices",
+        "as needed",
+        "when appropriate",
+        "leverage",
+    ]
+    for phrase in generic_phrases:
+        if content.lower().count(phrase) >= 4:
+            warnings.append(
+                f"Phrase '{phrase}' appears frequently; check for generic filler and replace with concrete procedures."
+            )
+            break
+
+    return warnings
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python quick_validate.py <skill_directory>")
@@ -100,4 +143,10 @@ if __name__ == "__main__":
     
     valid, message = validate_skill(sys.argv[1])
     print(message)
+    if valid:
+        warnings = lint_skill(sys.argv[1])
+        if warnings:
+            print("\nWarnings:")
+            for warning in warnings:
+                print(f"- {warning}")
     sys.exit(0 if valid else 1)
