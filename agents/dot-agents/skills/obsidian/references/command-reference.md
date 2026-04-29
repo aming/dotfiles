@@ -196,9 +196,12 @@ obsidian property:set path="note.md" name="tags" value="[project, alpha]"
 obsidian property:set path="note.md" name="date" value="2026-02-27"
 ```
 
-> **Note:** `property:set` always stores `value=` as a string. Passing `value="[project, alpha]"` writes
-> the literal string `[project, alpha]`, not a YAML array. For true array-typed properties (e.g. `tags`),
-> edit the note's frontmatter directly or use `eval` with the Obsidian API.
+> **Note:** `property:set` is best for scalar properties. It stores `value=` as a scalar and can turn
+> wikilink/list properties into strings. Passing `value="[project, alpha]"` writes the literal string
+> `[project, alpha]`, not a YAML array. For true array-typed properties (e.g. `up`, `related`, `in`,
+> `tags`, `aliases`), preserve the vault's existing YAML list shape or use `eval` with the Obsidian API.
+> Always verify property writes by reading the exact note afterward; some outdated installers print a
+> warning or exit successfully without applying the change.
 
 ### Remove Property
 

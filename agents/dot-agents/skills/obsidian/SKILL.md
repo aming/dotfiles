@@ -1,6 +1,6 @@
 ---
 name: obsidian-cli
-version: "1.3.0"
+version: "1.3.1"
 description: >
   Use this skill whenever the user wants Claude to directly interact with their
   Obsidian vault — reading a note or daily note, writing or appending content,
@@ -124,9 +124,24 @@ obsidian create path="folder/note" template="meeting-notes"
 obsidian append path="folder/note.md" content="New paragraph"
 obsidian prepend path="folder/note.md" content="Top content"
 obsidian move path="old/note.md" to="new/note.md"
+obsidian rename path="folder/old-name.md" name="new-name"
 obsidian delete path="folder/note.md"
 obsidian delete path="folder/note.md" permanent
 ```
+
+### Moving & Renaming Notes
+
+Prefer first-class file subcommands over low-level API calls because they are easier to audit, align with documented CLI behavior, and preserve Obsidian's link-aware handling.
+
+```bash
+# Move and/or rename in one operation; target includes .md
+obsidian move path="old/folder/Old Name.md" to="new/folder/New Name.md"
+
+# Rename within the same folder; name omits .md
+obsidian rename path="folder/Old Name.md" name="New Name"
+```
+
+Use `eval` for file moves or renames only when no suitable documented subcommand exists.
 
 ### Daily Notes
 
@@ -156,6 +171,18 @@ obsidian property:remove path="note.md" name="draft"
 obsidian tags counts sort=count
 obsidian tag name="project/alpha"
 ```
+
+Use `property:set` for scalar properties such as `status`, `summary`, and `created`. It serializes `value=` as a scalar string/date and can turn wikilink/list properties into strings, for example `in: "[[Maps]]"`. For array/list properties such as `up`, `related`, `in`, `tags`, and `aliases`, preserve the vault's existing YAML list shape unless the user explicitly wants scalar values:
+
+```yaml
+up:
+  - "[[Sources]]"
+created: 2020-06-01
+in:
+  - "[[Maps]]"
+```
+
+After every property write, verify by reading the exact note. If `property:set` prints only the outdated-installer warning or exits successfully without changing the file, report that limitation before using another approach. If `property:set` damages list-valued properties, repair them to the vault's established list format.
 
 ### Tasks
 
@@ -259,7 +286,7 @@ obsidian command id="dataview:dataview-force-refresh-views"
 5. **JSON output** — use `format=json` on `search` for a JSON array of file paths. The `files` command does not support JSON output.
 6. **Stderr noise** — GPU/Electron warnings on headless are harmless; filter with `2>/dev/null`.
 7. **`daily:prepend`** inserts content after frontmatter, not at byte 0.
-8. **Use `eval`** to run arbitrary JavaScript against the Obsidian API (`app.*`).
+8. **Use first-class subcommands before `eval`** — for example, use `obsidian move` or `obsidian rename` for file moves/renames. Reserve `eval` for cases where no suitable documented CLI subcommand exists or direct Obsidian API access is truly needed.
 9. **`template:insert`** inserts into the currently active file in the Obsidian UI — it does not accept a `path=` parameter. If no file is open, it returns `Error: No active editor. Open a file first.` To create a file from a template via CLI, use `obsidian create path="..." template="..."` instead.
 10. **`property:set` stores list values as strings** — `value="tag1, tag2"` writes a literal comma-separated string, not a YAML array. For proper array fields, edit the note's frontmatter directly (e.g. via `read` → modify → `create --force`) or use `eval` to call the Obsidian API.
 11. **`eval` requires single-line JavaScript** — multiline JS passed inline fails with a token error. Write the script to a temp file instead:
