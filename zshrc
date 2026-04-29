@@ -118,3 +118,4 @@ compinit
 # [[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
 #   source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
 
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"

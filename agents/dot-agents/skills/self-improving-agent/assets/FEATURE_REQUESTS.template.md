@@ -1,6 +1,6 @@
 # Feature Requests
 
-Template for `agents/learnings/FEATURE_REQUESTS.md` in an OpenCode project.
+Template for `.agent/learnings/FEATURE_REQUESTS.md` in an OpenCode project.
 
 Requested capabilities that the current workflow or tooling does not support yet.
 

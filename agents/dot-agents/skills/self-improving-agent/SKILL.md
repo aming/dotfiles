@@ -1,16 +1,16 @@
 ---
 name: self-improvement
-description: "Captures corrections, failures, missing capabilities, and reusable discoveries in OpenCode so future work improves. Use this skill whenever a command, tool, or API fails unexpectedly; the user corrects the agent; the agent realizes its knowledge is outdated or wrong; a missing capability is exposed; or a better recurring approach is discovered. Record the result under agents/learnings/, review related entries before major tasks, and promote durable workflow rules into AGENTS.md when they should change future behavior."
+description: "Captures corrections, failures, missing capabilities, and reusable discoveries in agent so future work improves. Use this skill whenever a command, tool, or API fails unexpectedly; the user corrects the agent; the agent realizes its knowledge is outdated or wrong; a missing capability is exposed; or a better recurring approach is discovered. Record the result under .agent/learnings/, review related entries before major tasks, and promote durable workflow rules into AGENTS.md when they should change future behavior."
 ---
 
 # Self-Improvement Skill
 
-Use this skill in OpenCode to turn mistakes, surprises, and reusable discoveries into durable project memory.
+Use this skill in Agent hardness to turn mistakes, surprises, and reusable discoveries into durable project memory.
 
 Default storage location:
 
 ```
-<project-root>/agents/learnings/
+<project-root>/.agent/learnings/
   LEARNINGS.md
   ERRORS.md
   FEATURE_REQUESTS.md
@@ -22,16 +22,16 @@ Keep the workflow lightweight: log the important thing, link it to the right fil
 
 | Situation | Action |
 |-----------|--------|
-| Command, tool, or API fails unexpectedly | Append an entry to `agents/learnings/ERRORS.md` |
-| User corrects the agent or supplies missing facts | Append an entry to `agents/learnings/LEARNINGS.md` with category `correction` or `knowledge_gap` |
-| Agent discovers a clearly better recurring approach | Append an entry to `agents/learnings/LEARNINGS.md` with category `best_practice` |
-| User asks for a capability the workflow does not support | Append an entry to `agents/learnings/FEATURE_REQUESTS.md` |
+| Command, tool, or API fails unexpectedly | Append an entry to `.agent/learnings/ERRORS.md` |
+| User corrects the agent or supplies missing facts | Append an entry to `.agent/learnings/LEARNINGS.md` with category `correction` or `knowledge_gap` |
+| Agent discovers a clearly better recurring approach | Append an entry to `.agent/learnings/LEARNINGS.md` with category `best_practice` |
+| User asks for a capability the workflow does not support | Append an entry to `.agent/learnings/FEATURE_REQUESTS.md` |
 | Similar issue already exists | Link it with `See Also`, update recurrence metadata, and consider a higher priority |
 | Learning should change future agent behavior | Promote a concise rule into `AGENTS.md` |
 
 ## OpenCode Workflow
 
-1. Capture the learning immediately in `agents/learnings/` while the context is still fresh.
+1. Capture the learning immediately in `.agent/learnings/` while the context is still fresh.
 2. Search for related entries before creating a new one.
 3. Record the concrete fix, correction, or missing capability in a format another agent can reuse quickly.
 4. Promote the learning into `AGENTS.md` when it should change future behavior across tasks.
@@ -42,20 +42,20 @@ Keep the workflow lightweight: log the important thing, link it to the right fil
 Create the learning directory inside the project:
 
 ```bash
-mkdir -p agents/learnings
+mkdir -p .agent/learnings
 ```
 
 Recommended files:
 
-- `agents/learnings/LEARNINGS.md` - corrections, knowledge gaps, best practices
-- `agents/learnings/ERRORS.md` - command failures, tool failures, API errors
-- `agents/learnings/FEATURE_REQUESTS.md` - user-requested capabilities that do not exist yet
+- `.agent/learnings/LEARNINGS.md` - corrections, knowledge gaps, best practices
+- `.agent/learnings/ERRORS.md` - command failures, tool failures, API errors
+- `.agent/learnings/FEATURE_REQUESTS.md` - user-requested capabilities that do not exist yet
 
 ## Logging Format
 
 ### Learning Entry
 
-Append to `agents/learnings/LEARNINGS.md`:
+Append to `.agent/learnings/LEARNINGS.md`:
 
 ```markdown
 ## [LRN-YYYYMMDD-XXX] category
@@ -87,7 +87,7 @@ Specific fix or improvement to make
 
 ### Error Entry
 
-Append to `agents/learnings/ERRORS.md`:
+Append to `.agent/learnings/ERRORS.md`:
 
 ````markdown
 ## [ERR-YYYYMMDD-XXX] skill_or_command_name
@@ -121,7 +121,7 @@ If identifiable, what might resolve this
 
 ### Feature Request Entry
 
-Append to `agents/learnings/FEATURE_REQUESTS.md`:
+Append to `.agent/learnings/FEATURE_REQUESTS.md`:
 
 ```markdown
 ## [FEAT-YYYYMMDD-XXX] capability_name
@@ -165,8 +165,8 @@ Good candidates:
 When a new issue feels familiar, search the project logs first:
 
 ```bash
-grep -n "keyword" agents/learnings/*.md
-grep -n "Pattern-Key: <pattern_key>" agents/learnings/LEARNINGS.md
+grep -n "keyword" .agent/learnings/*.md
+grep -n "Pattern-Key: <pattern_key>" .agent/learnings/LEARNINGS.md
 ```
 
 ## Detection Triggers
@@ -184,7 +184,7 @@ Use this skill when you notice any of these:
 Example `.gitignore` if you want the log local only:
 
 ```gitignore
-agents/learnings/
+.agent/learnings/
 ```
 
 ## Skill Extraction
@@ -200,18 +200,18 @@ When a learning becomes broadly reusable outside the current project, turn it in
 
 - `references/examples.md` - complete example entries
 - `references/hooks-setup.md` - optional hook setup notes for OpenCode-compatible hook setups
-- `assets/LEARNINGS.template.md` - reusable template for `agents/learnings/LEARNINGS.md`
-- `assets/ERRORS.template.md` - reusable template for `agents/learnings/ERRORS.md`
-- `assets/FEATURE_REQUESTS.template.md` - reusable template for `agents/learnings/FEATURE_REQUESTS.md`
+- `assets/LEARNINGS.template.md` - reusable template for `.agent/learnings/LEARNINGS.md`
+- `assets/ERRORS.template.md` - reusable template for `.agent/learnings/ERRORS.md`
+- `assets/FEATURE_REQUESTS.template.md` - reusable template for `.agent/learnings/FEATURE_REQUESTS.md`
 - `assets/SKILL.template.md` - template for extracted skills
 
 ## Original Notes
 
-The text you pasted reflects the pre-cleanup version of this skill. It was centered on OpenClaw, `.learnings/`, and several non-OpenCode integrations. This skill now intentionally uses an OpenCode-first workflow with `agents/learnings/` and a smaller, more focused instruction set.
+The text you pasted reflects the pre-cleanup version of this skill. It was centered on OpenClaw, `.learnings/`, and several non-OpenCode integrations. This skill now intentionally uses an OpenCode-first workflow with `.agent/learnings/` and a smaller, more focused instruction set.
 
 Key changes from the older version:
 
-- storage moved from `.learnings/` to `agents/learnings/`
+- storage moved from `.learnings/` to `.agent/learnings/`
 - OpenClaw-specific setup and hook docs were removed
 - promotion guidance was narrowed to `AGENTS.md`
 - cross-agent boilerplate was removed so the skill stays focused on OpenCode behavior

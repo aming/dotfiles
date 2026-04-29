@@ -2,7 +2,7 @@
 
 Concrete examples of well-formatted entries with all fields.
 
-Use these examples when writing entries under `agents/learnings/`:
+Use these examples when writing entries under `.agent/learnings/`:
 
 ```text
 agents/

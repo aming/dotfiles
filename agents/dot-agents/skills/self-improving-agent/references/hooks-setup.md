@@ -122,7 +122,7 @@ After completing tasks that involved:
 - Learning project-specific patterns
 - Resolving unexpected errors
 
-Consider logging the learning to `agents/learnings/` using the format from the self-improvement skill.
+Consider logging the learning to `.agent/learnings/` using the format from the self-improvement skill.
 
 For high-value learnings that would benefit other sessions, consider skill extraction.
 ```

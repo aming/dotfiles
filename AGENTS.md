@@ -11,7 +11,7 @@ Personal macOS dotfiles managed with GNU Stow. Most top-level directories map to
 ```text
 dotfiles/
 ├── aerospace/   # AeroSpace window manager config
-├── agents/      # OpenCode skills, helper scripts, learnings
+├── agents/      # OpenCode skills, helper scripts
 ├── docs/        # plans and retained project notes
 ├── nvim/        # Neovim config, Lazy specs, lockfile
 ├── opencode/    # OpenCode/OCX profiles
@@ -34,7 +34,7 @@ dotfiles/
 | tmux entrypoint | `tmux/dot-tmux.conf` | TPM loaded at end |
 | OpenCode profiles | `opencode/dot-config/opencode/profiles/` | `default/` and `omo/` diverge |
 | Agent skills and utilities | `agents/dot-agents/skills/` | first-party skill definitions |
-| Agent learnings | `agents/learnings/ERRORS.md` | environment-specific failures |
+| Agent learnings | `.agent/learnings/ERRORS.md` | environment-specific failures |
 | Project plans | `docs/superpowers/plans/` | change plans and retained notes |
 
 ## CODE MAP

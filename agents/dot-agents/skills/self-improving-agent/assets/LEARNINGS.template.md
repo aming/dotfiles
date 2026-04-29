@@ -1,6 +1,6 @@
 # Learnings
 
-Template for `agents/learnings/LEARNINGS.md` in an OpenCode project.
+Template for `.agent/learnings/LEARNINGS.md` in an OpenCode project.
 
 Corrections, insights, and knowledge gaps captured during development.
 
