@@ -83,7 +83,9 @@ export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 export PATH="$PATH:$HOME/.lmstudio/bin"
 
 # BUN
-export PATH="$HOME/.bun/bin:$PATH"
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+[ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
 # ASDF
 [[ -f $(brew --prefix asdf)/libexec/asdf.sh ]] &&
@@ -108,14 +110,8 @@ fi
 
 alias yt='yt-dlp --cookies-from-browser brave -S res:720 -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
 
+# For PG library
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
 autoload -Uz compinit
 compinit
-
-# bun completions
-[ -s "/Users/tolau/.bun/_bun" ] && source "/Users/tolau/.bun/_bun"
-
-# # Repo-Cli Need to be after compinit
-# [[ -f $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli ]] &&
-#   source $(brew --prefix repo-cli)/share/zsh/site-functions/_repo-cli
-
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
