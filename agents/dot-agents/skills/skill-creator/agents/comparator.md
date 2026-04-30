@@ -65,7 +65,7 @@ For each output (A and B):
 2. **Calculate dimension totals**: Content score, Structure score
 3. **Calculate overall score**: Average of dimension scores, scaled to 1-10
 
-### Step 5: Check Assertions (if provided)
+### Step 5: Check Expectations (if provided)
 
 If expectations are provided:
 
@@ -79,7 +79,7 @@ If expectations are provided:
 Compare A and B based on (in priority order):
 
 1. **Primary**: Overall rubric score (content + structure)
-2. **Secondary**: Assertion pass rates (if applicable)
+2. **Secondary**: Expectation pass rates (if applicable)
 3. **Tiebreaker**: If truly equal, declare a TIE
 
 Be decisive - ties should be rare. One output is usually better, even if marginally.

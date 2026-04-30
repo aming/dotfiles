@@ -8,6 +8,8 @@ This document defines the JSON schemas used by skill-creator.
 
 Defines the evals for a skill. Located at `evals/evals.json` within the skill directory.
 
+Terminology note: the public Agents Skills docs call these verifiable checks `assertions`. In this skill-creator tooling, store them as `expectations` so the grader, comparator, analyzer, and benchmark scripts all use the same field name.
+
 ```json
 {
   "skill_name": "example-skill",
@@ -32,7 +34,7 @@ Defines the evals for a skill. Located at `evals/evals.json` within the skill di
 - `evals[].prompt`: The task to execute
 - `evals[].expected_output`: Human-readable description of success
 - `evals[].files`: Optional list of input file paths (relative to skill root)
-- `evals[].expectations`: List of verifiable statements
+- `evals[].expectations`: List of objective, verifiable statements. Add these after the first draft prompts, then revise them after seeing initial outputs so they are neither too vague nor too brittle.
 
 ---
 
@@ -87,6 +89,8 @@ Tracks version progression in Improve mode. Located at workspace root.
 
 Output from the grader agent. Located at `<run-dir>/grading.json`.
 
+Use the `expectations` array shown below, not `assertion_results`. The benchmark aggregator and viewer expect each item to contain `text`, `passed`, and `evidence`.
+
 ```json
 {
   "expectations": [
@@ -140,11 +144,11 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
   "eval_feedback": {
     "suggestions": [
       {
-        "assertion": "The output includes the name 'John Smith'",
+        "expectation": "The output includes the name 'John Smith'",
         "reason": "A hallucinated document that mentions the name would also pass"
       }
     ],
-    "overall": "Assertions check presence but not correctness."
+    "overall": "Expectations check presence but not correctness."
   }
 }
 ```
@@ -156,7 +160,7 @@ Output from the grader agent. Located at `<run-dir>/grading.json`.
 - `timing`: Wall clock timing (from timing.json)
 - `claims`: Extracted and verified claims from the output
 - `user_notes_summary`: Issues flagged by the executor
-- `eval_feedback`: (optional) Improvement suggestions for the evals, only present when the grader identifies issues worth raising
+- `eval_feedback`: (optional) Improvement suggestions for the evals, only present when the grader identifies issues worth raising. Suggestions may include an `expectation` field when they relate to a specific check.
 
 ---
 

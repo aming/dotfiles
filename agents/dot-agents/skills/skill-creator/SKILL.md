@@ -36,7 +36,7 @@ The skill creator is liable to be used by people across a wide range of familiar
 So please pay attention to context cues to understand how to phrase your communication! In the default case, just to give you some idea:
 
 - "evaluation" and "benchmark" are borderline, but OK
-- for "JSON" and "assertion" you want to see serious cues from the user that they know what those things are before using them without explaining them
+- for "JSON", "expectation", and "assertion" you want to see serious cues from the user that they know what those things are before using them without explaining them
 
 It's OK to briefly explain terms if you're in doubt, and feel free to clarify terms with a short definition if you're unsure if the user will get it.
 
@@ -109,6 +109,12 @@ cloud-deploy/
 ```
 The model reads only the relevant reference file.
 
+#### Script Resources
+
+Use `scripts/` when the skill has deterministic or repetitive work that future agents would otherwise reimplement, or when a command becomes complex enough that quoting, flags, parsing, or retries are easy to get wrong. For short one-off commands, reference the command directly and pin tool versions when practical.
+
+If you are creating or improving a skill that includes bundled scripts, one-off tool commands, script dependencies, or script interface design, read `references/script-resources.md` and apply its checklist before shipping.
+
 #### Principle of Lack of Surprise
 
 This goes without saying, but skills must not contain malware, exploit code, or any content that could compromise system security. A skill's contents should not surprise the user in their intent if described. Don't go along with requests to create misleading skills or skills designed to facilitate unauthorized access, data exfiltration, or other malicious activities. Things like a "roleplay as an XYZ" are OK though.
@@ -159,9 +165,9 @@ Try to explain to the model why things are important in lieu of heavy-handed mus
 
 ### Test Cases
 
-After writing the skill draft, come up with 2-3 realistic test prompts — the kind of thing a real user would actually say. Share them with the user: [you don't have to use this exact language] "Here are a few test cases I'd like to try. Do these look right, or do you want to add more?" Then run them.
+After writing the skill draft, come up with 2-3 realistic test prompts — the kind of thing a real user would actually say. Vary the prompts by phrasing, detail level, and formality; include realistic file paths, field names, or user context; and include at least one edge or boundary case where the skill instructions might be ambiguous. Share them with the user: [you don't have to use this exact language] "Here are a few test cases I'd like to try. Do these look right, or do you want to add more?" Then run them.
 
-Save test cases to `evals/evals.json`. Don't write assertions yet — just the prompts. You'll draft assertions in the next step while the runs are in progress.
+Save test cases to `evals/evals.json`. Don't write expectations yet — just the prompts. Expectations are verifiable checks; the public Agents Skills docs call these assertions, but this skill-creator tooling stores them under `expectations` for compatibility with the grader and benchmark scripts. You'll draft expectations in the next step while the runs are in progress, then revise them after seeing the outputs.
 
 ```json
 {
@@ -177,7 +183,7 @@ Save test cases to `evals/evals.json`. Don't write assertions yet — just the p
 }
 ```
 
-See `references/schemas.md` for the full schema (including the `assertions` field, which you'll add later).
+See `references/schemas.md` for the full schema (including the `expectations` field, which you'll add later).
 
 ## Running and evaluating test cases
 
@@ -206,24 +212,24 @@ Execute this task:
 - **Creating a new skill**: no skill at all. Same prompt, no skill path, save to `without_skill/outputs/`.
 - **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/outputs/`.
 
-Write an `eval_metadata.json` for each test case (assertions can be empty for now). Give each eval a descriptive name based on what it's testing — not just "eval-0". Use this name for the directory too. If this iteration uses new or modified eval prompts, create these files for each new eval directory — don't assume they carry over from previous iterations.
+Write an `eval_metadata.json` for each test case (expectations can be empty for now). Give each eval a descriptive name based on what it's testing — not just "eval-0". Use this name for the directory too. If this iteration uses new or modified eval prompts, create these files for each new eval directory — don't assume they carry over from previous iterations.
 
 ```json
 {
   "eval_id": 0,
   "eval_name": "descriptive-name-here",
   "prompt": "The user's task prompt",
-  "assertions": []
+  "expectations": []
 }
 ```
 
-### Step 2: While runs are in progress, draft assertions
+### Step 2: While runs are in progress, draft expectations
 
-Don't just wait for the runs to finish — you can use this time productively. Draft quantitative assertions for each test case and explain them to the user. If assertions already exist in `evals/evals.json`, review them and explain what they check.
+Don't just wait for the runs to finish — you can use this time productively. Draft quantitative expectations for each test case and explain them to the user. If expectations already exist in `evals/evals.json`, review them and explain what they check.
 
-Good assertions are objectively verifiable and have descriptive names — they should read clearly in the benchmark viewer so someone glancing at the results immediately understands what each one checks. Subjective skills (writing style, design quality) are better evaluated qualitatively — don't force assertions onto things that need human judgment.
+Good expectations are objectively verifiable and have descriptive names — they should read clearly in the benchmark viewer so someone glancing at the results immediately understands what each one checks. Subjective skills (writing style, design quality) are better evaluated qualitatively — don't force expectations onto things that need human judgment.
 
-Update the `eval_metadata.json` files and `evals/evals.json` with the assertions once drafted. Also explain to the user what they'll see in the viewer — both the qualitative outputs and the quantitative benchmark.
+Update the `eval_metadata.json` files and `evals/evals.json` with the expectations once drafted. Also explain to the user what they'll see in the viewer — both the qualitative outputs and the quantitative benchmark. After the first outputs are available, revisit the expectations: remove checks that are too vague, too brittle, or impossible to verify from the saved outputs; add checks for important outcomes that the first runs revealed.
 
 ### Step 3: As runs complete, capture timing data
 
@@ -243,7 +249,7 @@ This is the only opportunity to capture this data — it comes through the task 
 
 Once all runs are done:
 
-1. **Grade each run** — spawn a grader subagent (or grade inline) that reads `agents/grader.md` and evaluates each assertion against the outputs. Save results to `grading.json` in each run directory. The grading.json expectations array must use the fields `text`, `passed`, and `evidence` (not `name`/`met`/`details` or other variants) — the viewer depends on these exact field names. For assertions that can be checked programmatically, write and run a script rather than eyeballing it — scripts are faster, more reliable, and can be reused across iterations.
+1. **Grade each run** — use an available general-purpose subagent with instructions to read `agents/grader.md`, or grade inline if subagents are unavailable. The grader must evaluate each expectation against the outputs and save results to `grading.json` in each run directory. The grading.json `expectations` array must use the fields `text`, `passed`, and `evidence` (not `assertion_results`, `name`/`met`/`details`, or other variants) — the viewer and benchmark scripts depend on these exact field names. For expectations that can be checked programmatically, write and run a script rather than eyeballing it — scripts are faster, more reliable, and can be reused across iterations.
 
 2. **Aggregate into benchmark** — run the aggregation script from the skill-creator directory:
    ```bash
@@ -252,7 +258,7 @@ Once all runs are done:
    This produces `benchmark.json` and `benchmark.md` with pass_rate, time, and tokens for each configuration, with mean ± stddev and the delta. If generating benchmark.json manually, see `references/schemas.md` for the exact schema the viewer expects.
 Put each with_skill version before its baseline counterpart.
 
-3. **Do an analyst pass** — read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for — things like assertions that always pass regardless of skill (non-discriminating), high-variance evals (possibly flaky), and time/token tradeoffs.
+3. **Do an analyst pass** — read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for — things like expectations that always pass regardless of skill (non-discriminating), expectations that fail in both configurations, high-variance evals (possibly flaky), and time/token outliers.
 
 4. **Launch the viewer** with both qualitative outputs and quantitative data:
    ```bash
@@ -277,7 +283,7 @@ The "Outputs" tab shows one test case at a time:
 - **Prompt**: the task that was given
 - **Output**: the files the skill produced, rendered inline where possible
 - **Previous Output** (iteration 2+): collapsed section showing last iteration's output
-- **Formal Grades** (if grading was run): collapsed section showing assertion pass/fail
+- **Formal Grades** (if grading was run): collapsed section showing expectation pass/fail
 - **Feedback**: a textbox that auto-saves as they type
 - **Previous Feedback** (iteration 2+): their comments from last time, shown below the textbox
 
@@ -313,6 +319,8 @@ kill $VIEWER_PID 2>/dev/null
 ## Improving the skill
 
 This is the heart of the loop. You've run the test cases, the user has reviewed the results, and now you need to make the skill better based on their feedback.
+
+Before proposing changes, synthesize all available eval signals together: failed expectations, human feedback, execution transcripts, benchmark/analyzer notes, and the current `SKILL.md`. This prevents overreacting to one metric or one comment when the real issue is visible only across the full run context.
 
 ### How to think about improvements
 
@@ -442,12 +450,13 @@ After packaging, direct the user to the resulting `.skill` file path so they can
 
 The agents/ directory contains instructions for specialized subagents. Read them when you need to spawn the relevant subagent.
 
-- `agents/grader.md` — How to evaluate assertions against outputs
+- `agents/grader.md` — How to evaluate expectations against outputs
 - `agents/comparator.md` — How to do blind A/B comparison between two outputs
 - `agents/analyzer.md` — How to analyze why one version beat another
 
 The references/ directory has additional documentation:
 - `references/schemas.md` — JSON structures for evals.json, grading.json, etc.
+- `references/script-resources.md` — How to choose, design, document, and review bundled scripts.
 
 ---
 

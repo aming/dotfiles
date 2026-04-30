@@ -20,7 +20,7 @@ agents/
 | Adjust skill automation | `agents/dot-agents/skills/<skill>/scripts/` | Python and shell helpers |
 | Review system skills | `agents/dot-agents/skills/.system/` | curated skills mirrored into repo |
 | Check package dependency | `agents/dot-agents/.opencode/package.json` | currently only plugin dependency |
-| Capture prior failures | `agents/learnings/ERRORS.md` | repo-specific environment traps |
+| Capture prior failures | `agents/learnings/{ERRORS.md,LEARNINGS.md}` | repo-specific environment traps |
 
 ## CONVENTIONS
 - Skill roots are documentation-first: `SKILL.md` defines behavior; scripts and references support it.
