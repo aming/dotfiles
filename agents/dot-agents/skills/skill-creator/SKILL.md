@@ -191,28 +191,29 @@ Before running evals, ensure the skill draft includes a `## Gotchas` section and
 
 This section is one continuous sequence — don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
 
-Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory (`eval-0/`, `eval-1/`, etc.). Don't create all of this upfront — just create directories as you go.
+Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory whose name starts with `eval-`, for example `eval-0-ace-structure-lint/` or `eval-1-vault-topic-coverage/`. Keep the `eval-<id>-` prefix even when you add a human-readable suffix, because the benchmark tooling discovers evals by that prefix. Don't create all of this upfront — just create directories as you go.
 
 ### Step 1: Spawn all runs (with-skill AND baseline) in the same turn
 
-For each test case, spawn two subagents in the same turn — one with the skill, one without. This is important: don't spawn the with-skill runs first and then come back for baselines later. Launch everything at once so it all finishes around the same time.
+For each test case, spawn two subagents in the same turn — one with the skill, one without. In OpenAgent, default both runs to `Task` with `subagent_type: "general"` unless you have a concrete reason to use another built-in type. Do not invent custom subagent types for eval execution. This is important: don't spawn the with-skill runs first and then come back for baselines later. Launch everything at once so it all finishes around the same time.
 
 **With-skill run:**
 
 ```
 Execute this task:
+- Use `Task` with `subagent_type: "general"`
 - Skill path: <path-to-skill>
 - Task: <eval prompt>
 - Input files: <eval files if any, or "none">
-- Save outputs to: <workspace>/iteration-<N>/eval-<ID>/with_skill/outputs/
+- Save outputs to: <workspace>/iteration-<N>/eval-<ID>-<descriptive-name>/with_skill/run-1/outputs/
 - Outputs to save: <what the user cares about — e.g., "the .docx file", "the final CSV">
 ```
 
-**Baseline run** (same prompt, but the baseline depends on context):
-- **Creating a new skill**: no skill at all. Same prompt, no skill path, save to `without_skill/outputs/`.
-- **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/outputs/`.
+**Baseline run** (same prompt, same default `Task` `subagent_type: "general"`, but the baseline depends on context):
+- **Creating a new skill**: no skill at all. Same prompt, no skill path, save to `without_skill/run-1/outputs/`.
+- **Improving an existing skill**: the old version. Before editing, snapshot the skill (`cp -r <skill-path> <workspace>/skill-snapshot/`), then point the baseline subagent at the snapshot. Save to `old_skill/run-1/outputs/`.
 
-Write an `eval_metadata.json` for each test case (expectations can be empty for now). Give each eval a descriptive name based on what it's testing — not just "eval-0". Use this name for the directory too. If this iteration uses new or modified eval prompts, create these files for each new eval directory — don't assume they carry over from previous iterations.
+Write an `eval_metadata.json` for each test case (expectations can be empty for now). Give each eval a descriptive name based on what it's testing — not just "eval-0". Use that descriptive name as a suffix in the directory name, for example `eval-0-ace-structure-lint`, rather than replacing the `eval-<id>` prefix. If this iteration uses new or modified eval prompts, create these files for each new eval directory — don't assume they carry over from previous iterations.
 
 ```json
 {
@@ -233,7 +234,7 @@ Update the `eval_metadata.json` files and `evals/evals.json` with the expectatio
 
 ### Step 3: As runs complete, capture timing data
 
-When each subagent task completes, you receive a notification containing `total_tokens` and `duration_ms`. Save this data immediately to `timing.json` in the run directory:
+When each subagent task completes, you receive a notification containing `total_tokens` and `duration_ms`. Save this data immediately to `timing.json` in the run directory when it is available:
 
 ```json
 {
@@ -243,13 +244,13 @@ When each subagent task completes, you receive a notification containing `total_
 }
 ```
 
-This is the only opportunity to capture this data — it comes through the task notification and isn't persisted elsewhere. Process each notification as it arrives rather than trying to batch them.
+This is the only opportunity to capture this data — it comes through the task notification and isn't persisted elsewhere. Process each notification as it arrives rather than trying to batch them. If timing data was not captured for a run, do not invent or backfill fake numbers later; proceed with the eval and treat timing as missing in the benchmark.
 
 ### Step 4: Grade, aggregate, and launch the viewer
 
 Once all runs are done:
 
-1. **Grade each run** — use an available general-purpose subagent with instructions to read `agents/grader.md`, or grade inline if subagents are unavailable. The grader must evaluate each expectation against the outputs and save results to `grading.json` in each run directory. The grading.json `expectations` array must use the fields `text`, `passed`, and `evidence` (not `assertion_results`, `name`/`met`/`details`, or other variants) — the viewer and benchmark scripts depend on these exact field names. For expectations that can be checked programmatically, write and run a script rather than eyeballing it — scripts are faster, more reliable, and can be reused across iterations.
+1. **Grade each run** — do not invent a custom subagent type like `grader`. OpenAgent only supports built-in subagent types here. Spawn a new `Task` with `subagent_type: "general"` and tell it to read `agents/grader.md` before doing any grading work, or grade inline if subagents are unavailable. The grader must evaluate each expectation against the outputs and save results to `grading.json` in each run directory. The grading.json `expectations` array must use the fields `text`, `passed`, and `evidence` (not `assertion_results`, `name`/`met`/`details`, or other variants) — the viewer and benchmark scripts depend on these exact field names. For expectations that can be checked programmatically, write and run a script rather than eyeballing it — scripts are faster, more reliable, and can be reused across iterations.
 
 2. **Aggregate into benchmark** — run the aggregation script from the skill-creator directory:
    ```bash
@@ -258,7 +259,7 @@ Once all runs are done:
    This produces `benchmark.json` and `benchmark.md` with pass_rate, time, and tokens for each configuration, with mean ± stddev and the delta. If generating benchmark.json manually, see `references/schemas.md` for the exact schema the viewer expects.
 Put each with_skill version before its baseline counterpart.
 
-3. **Do an analyst pass** — read the benchmark data and surface patterns the aggregate stats might hide. See `agents/analyzer.md` (the "Analyzing Benchmark Results" section) for what to look for — things like expectations that always pass regardless of skill (non-discriminating), expectations that fail in both configurations, high-variance evals (possibly flaky), and time/token outliers.
+3. **Do an analyst pass** — do not invent a custom `analyzer` subagent type. If you want a subagent, spawn a new `Task` with `subagent_type: "general"` and instruct it to read the benchmark-analysis section of `agents/analyzer.md` first, then surface patterns the aggregate stats might hide. Otherwise, do this analysis inline. Look for things like expectations that always pass regardless of skill (non-discriminating), expectations that fail in both configurations, high-variance evals (possibly flaky), and time/token outliers.
 
 4. **Launch the viewer** with both qualitative outputs and quantitative data:
    ```bash
@@ -353,9 +354,9 @@ Keep going until:
 
 ## Advanced: Blind comparison
 
-For situations where you want a more rigorous comparison between two versions of a skill (e.g., the user asks "is the new version actually better?"), there's a blind comparison system. Read `agents/comparator.md` and `agents/analyzer.md` for the details. The basic idea is: give two outputs to an independent agent without telling it which is which, and let it judge quality. Then analyze why the winner won.
+For situations where you want a more rigorous comparison between two versions of a skill (e.g., the user asks "is the new version actually better?"), there's a blind comparison system. Do not invent custom `comparator` or `analyzer` subagent types. If you use subagents, spawn new `Task` calls with `subagent_type: "general"` and explicitly tell each one to read `agents/comparator.md` or `agents/analyzer.md` first. The basic idea is: give two outputs to an independent agent without telling it which is which, and let it judge quality. Then analyze why the winner won.
 
-This is optional, requires subagents, and most users won't need it. The human review loop is usually sufficient.
+This is optional, usually uses `general` subagents that first read the relevant `agents/*.md` file, and most users won't need it. The human review loop is usually sufficient.
 
 ---
 
@@ -448,7 +449,7 @@ After packaging, direct the user to the resulting `.skill` file path so they can
 
 ## Reference files
 
-The agents/ directory contains instructions for specialized subagents. Read them when you need to spawn the relevant subagent.
+The `agents/` directory contains instruction files for helper roles. They are not valid custom `Task` subagent types by themselves. When you want one of these roles, spawn a `Task` with `subagent_type: "general"` and explicitly tell that subagent to read the relevant file first.
 
 - `agents/grader.md` — How to evaluate expectations against outputs
 - `agents/comparator.md` — How to do blind A/B comparison between two outputs

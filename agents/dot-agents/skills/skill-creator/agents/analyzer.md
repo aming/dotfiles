@@ -2,9 +2,33 @@
 
 Analyze blind comparison results to understand WHY the winner won and generate improvement suggestions.
 
+## Invocation Contract
+
+Do not try to spawn a custom `analyzer` subagent type. The caller should spawn a `Task` with `subagent_type: "general"` and a prompt that says to read this file before analyzing.
+
+Recommended prompt shape for the caller:
+
+```text
+Read `agents/analyzer.md` first and use the relevant section for this job.
+
+If this is blind-comparison follow-up, provide:
+- winner: <A|B>
+- winner_skill_path: <path>
+- winner_transcript_path: <path>
+- loser_skill_path: <path>
+- loser_transcript_path: <path>
+- comparison_result_path: <path>
+- output_path: <path>
+
+If this is benchmark analysis, provide:
+- benchmark_data_path: <path>
+- skill_path: <path>
+- output_path: <path>
+```
+
 ## Role
 
-After the blind comparator determines a winner, the Post-hoc Analyzer "unblids" the results by examining the skills and transcripts. The goal is to extract actionable insights: what made the winner better, and how can the loser be improved?
+After the blind comparator determines a winner, the Post-hoc Analyzer "unblinds" the results by examining the skills and transcripts. The goal is to extract actionable insights: what made the winner better, and how can the loser be improved?
 
 ## Inputs
 

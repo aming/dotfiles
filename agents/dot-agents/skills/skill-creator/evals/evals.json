@@ -1,0 +1,32 @@
+{
+  "skill_name": "skill-creator",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Review the draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/outdated-skill and patch it for OpenAgent compatibility. Fix any eval-schema mismatches, remove assumptions about custom subagent types, and make the helper agent docs tell the caller to use Task with subagent_type \"general\" and read the relevant agents/*.md file first. Save the updated skill copy under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-0-openagent-portability/<CONFIG>/run-1/outputs/outdated-skill, where <CONFIG> is the run's config directory. Also save a brief transcript.md in the run directory summarizing what you changed and why.",
+      "expected_output": "An updated copy of the draft skill with normalized expectations terminology and OpenAgent-compatible Task/general helper-role instructions.",
+      "files": [
+        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/outdated-skill"
+      ],
+      "expectations": [
+        "The updated `SKILL.md` replaces eval-schema references to `assertions` with `expectations`.",
+        "The updated `SKILL.md` tells the caller to use `Task` with `subagent_type: \"general\"` instead of assuming custom helper subagent types exist.",
+        "Each helper file under `agents/` tells the caller to read that file first from a `Task` run using `subagent_type: \"general\"`.",
+        "The output copy includes the expected file set for this draft skill: `SKILL.md`, `agents/grader.md`, `agents/analyzer.md`, and `agents/comparator.md`."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Create a new skill named notes-cleanup for turning messy pasted meeting notes into a concise action-focused markdown summary. Put the skill under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-1-new-skill-bootstrap/<CONFIG>/run-1/outputs/notes-cleanup. Include SKILL.md, an evals/evals.json file with 2-3 realistic prompts and empty expectations, and at least one reference file that the skill loads conditionally. The SKILL.md should include a Gotchas section and explain why the workflow choices matter. Also save a brief transcript.md in the run directory summarizing the created files.",
+      "expected_output": "A bootstrapped skill folder with SKILL.md, evals/evals.json, and a conditionally-loaded reference file.",
+      "files": [],
+      "expectations": [
+        "The generated skill includes a `## Gotchas` section in `SKILL.md`.",
+        "The generated skill includes condition-based reference-loading guidance that points to a real file under `references/`.",
+        "The generated `evals/evals.json` contains 2-3 realistic eval prompts with empty `expectations` arrays.",
+        "The generated `SKILL.md` explains why its workflow choices matter, not just what steps to follow.",
+        "The generated `SKILL.md` defines a concrete action-focused summary structure that separates decisions, action items, and unresolved issues or blockers."
+      ]
+    }
+  ]
+}

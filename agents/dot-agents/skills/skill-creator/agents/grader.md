@@ -2,6 +2,22 @@
 
 Evaluate expectations against an execution transcript and outputs.
 
+## Invocation Contract
+
+Do not try to spawn a custom `grader` subagent type. The caller should spawn a `Task` with `subagent_type: "general"` and a prompt that says to read this file before grading.
+
+Recommended prompt shape for the caller:
+
+```text
+Read `agents/grader.md` first and follow it exactly.
+
+Then grade this run with these inputs:
+- expectations: <list>
+- transcript_path: <path>
+- outputs_dir: <path>
+- output_path: <path to grading.json if the caller wants to make it explicit>
+```
+
 ## Role
 
 The Grader reviews a transcript and output files, then determines whether each expectation passes or fails. Provide clear evidence for each judgment.
@@ -15,6 +31,7 @@ You receive these parameters in your prompt:
 - **expectations**: List of expectations to evaluate (strings)
 - **transcript_path**: Path to the execution transcript (markdown file)
 - **outputs_dir**: Directory containing output files from execution
+- **output_path**: Optional explicit destination for the grading JSON. If omitted, write to `{outputs_dir}/../grading.json`.
 
 ## Process
 

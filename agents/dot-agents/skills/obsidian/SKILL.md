@@ -143,6 +143,14 @@ obsidian rename path="folder/Old Name.md" name="New Name"
 
 Use `eval` for file moves or renames only when no suitable documented subcommand exists.
 
+There is no reliable Obsidian CLI folder-rename workflow to depend on. For folder renames, default to this safer workflow instead:
+
+1. Create the destination folder.
+2. Move each note from the old folder into the new folder with `obsidian move`.
+3. Remove the old folder only after it is empty.
+
+This keeps note moves link-aware without depending on unsupported folder-level rename behavior.
+
 ### Daily Notes
 
 ```bash
@@ -287,9 +295,10 @@ obsidian command id="dataview:dataview-force-refresh-views"
 6. **Stderr noise** — GPU/Electron warnings on headless are harmless; filter with `2>/dev/null`.
 7. **`daily:prepend`** inserts content after frontmatter, not at byte 0.
 8. **Use first-class subcommands before `eval`** — for example, use `obsidian move` or `obsidian rename` for file moves/renames. Reserve `eval` for cases where no suitable documented CLI subcommand exists or direct Obsidian API access is truly needed.
-9. **`template:insert`** inserts into the currently active file in the Obsidian UI — it does not accept a `path=` parameter. If no file is open, it returns `Error: No active editor. Open a file first.` To create a file from a template via CLI, use `obsidian create path="..." template="..."` instead.
-10. **`property:set` stores list values as strings** — `value="tag1, tag2"` writes a literal comma-separated string, not a YAML array. For proper array fields, edit the note's frontmatter directly (e.g. via `read` → modify → `create --force`) or use `eval` to call the Obsidian API.
-11. **`eval` requires single-line JavaScript** — multiline JS passed inline fails with a token error. Write the script to a temp file instead:
+9. **There is no dependable folder-rename command** — create the new folder, move each note with `obsidian move`, then remove the empty source folder.
+10. **`template:insert`** inserts into the currently active file in the Obsidian UI — it does not accept a `path=` parameter. If no file is open, it returns `Error: No active editor. Open a file first.` To create a file from a template via CLI, use `obsidian create path="..." template="..."` instead.
+11. **`property:set` stores list values as strings** — `value="tag1, tag2"` writes a literal comma-separated string, not a YAML array. For proper array fields, edit the note's frontmatter directly (e.g. via `read` → modify → `create --force`) or use `eval` to call the Obsidian API.
+12. **`eval` requires single-line JavaScript** — multiline JS passed inline fails with a token error. Write the script to a temp file instead:
     ```bash
     cat > /tmp/obs.js << 'JS'
     var files = app.vault.getMarkdownFiles();
@@ -297,8 +306,8 @@ obsidian command id="dataview:dataview-force-refresh-views"
     JS
     obsidian eval code="$(cat /tmp/obs.js)"
     ```
-12. **Multi-vault targeting may not work in all environments** — `obsidian "My Vault" command` can return `Error: Command "My Vault" not found` on some setups. If this happens, omit the vault name (CLI targets the most recently active vault) and switch vaults manually in the Obsidian UI.
-13. **When colon subcommands are unavailable** (e.g. Windows Git Bash without wrapper), prefer non-colon alternatives: use `properties` instead of `property:read`, and `obsidian daily:path` + `append` instead of `daily:append`.
+13. **Multi-vault targeting may not work in all environments** — `obsidian "My Vault" command` can return `Error: Command "My Vault" not found` on some setups. If this happens, omit the vault name (CLI targets the most recently active vault) and switch vaults manually in the Obsidian UI.
+14. **When colon subcommands are unavailable** (e.g. Windows Git Bash without wrapper), prefer non-colon alternatives: use `properties` instead of `property:read`, and `obsidian daily:path` + `append` instead of `daily:append`.
 
 ## Troubleshooting
 

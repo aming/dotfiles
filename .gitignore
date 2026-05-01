@@ -7,3 +7,5 @@ nvim/plugin/
 .aider*
 .worktrees/
 __pycache__/
+
+agents/dot-agents/skills/*-workspace/

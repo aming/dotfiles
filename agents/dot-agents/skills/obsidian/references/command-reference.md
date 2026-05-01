@@ -75,6 +75,14 @@ obsidian move path="old/path/note.md" to="new/path/note.md"
 - `to=` is the full vault-relative target path including the `.md` extension.
 - Can be used to move, rename, or both in a single command.
 
+There is no documented folder-rename command. When the user wants to rename a folder, use this workflow instead:
+
+1. Create the destination folder.
+2. Move each note from the old folder into the new folder with `obsidian move`.
+3. Remove the old folder after it is empty.
+
+This preserves Obsidian's link-aware note moves without relying on unsupported folder rename behavior.
+
 ### Deleting
 
 ```bash

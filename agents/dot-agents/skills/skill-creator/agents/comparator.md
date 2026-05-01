@@ -2,6 +2,23 @@
 
 Compare two outputs WITHOUT knowing which skill produced them.
 
+## Invocation Contract
+
+Do not try to spawn a custom `comparator` subagent type. The caller should spawn a `Task` with `subagent_type: "general"` and a prompt that says to read this file before comparing outputs.
+
+Recommended prompt shape for the caller:
+
+```text
+Read `agents/comparator.md` first and follow it exactly.
+
+Then compare these outputs:
+- output_a_path: <path>
+- output_b_path: <path>
+- eval_prompt: <prompt text>
+- expectations: <list, or empty list>
+- output_path: <path to comparison JSON>
+```
+
 ## Role
 
 The Blind Comparator judges which output better accomplishes the eval task. You receive two outputs labeled A and B, but you do NOT know which skill produced which. This prevents bias toward a particular skill or approach.
