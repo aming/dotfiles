@@ -1,0 +1,42 @@
+{
+  "skill_name": "obsidian-cli",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Update the Obsidian properties in `+/skill-eval/frontmatter-scalar.md` so the note has `status: active` and `created: 2026-05-01`. Keep the note body unchanged, use the Obsidian CLI, and verify both the final note content and the property values with `obsidian property:read name=<property> file=\"...\"`.",
+      "expected_output": "The note keeps valid YAML frontmatter, updates the two scalar properties, preserves the body, and the dedicated property-read command returns the expected values.",
+      "files": [],
+      "expectations": [
+        "The final note frontmatter contains `status: active`.",
+        "The final note frontmatter contains `created: 2026-05-01`.",
+        "The final note body still contains the exact line `Keep this body exactly as it is.`",
+        "`obsidian property:read` returns `active` for `status` and `2026-05-01` for `created`."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Fix `+/skill-eval/frontmatter-list.md` so its Obsidian properties use proper YAML list values instead of scalar strings. Set `tags` to `[project/atlas, draft]`, `in` to `[[Maps]]`, and `up` to `[[Sources]]`. Keep the body unchanged and verify both the final note content and the property values with `obsidian property:read name=<property> file=\"...\"`.",
+      "expected_output": "The note ends with valid YAML frontmatter where list-valued properties are YAML arrays, not comma-separated or wikilink strings, and property-read returns the expected items.",
+      "files": [],
+      "expectations": [
+        "The final note frontmatter renders `tags` as a YAML list with `project/atlas` and `draft` as separate items.",
+        "The final note frontmatter renders both `in` and `up` as YAML lists, each containing exactly one wikilink item.",
+        "The final note body still contains the exact line `Keep this body exactly as it is.`",
+        "`obsidian property:read` returns two lines for `tags`, one line `[[Maps]]` for `in`, and one line `[[Sources]]` for `up`."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Update `+/skill-eval/frontmatter-mixed.md` so its Obsidian properties have `aliases` set to `[Idea Verse, Ideaverse Lite]`, `summary` set to `Skill eval fixture`, and `related` set to `[[Atlas]]` and `[[Home]]`. Preserve unrelated content, keep valid frontmatter, and verify both the final note content and the property values with `obsidian property:read name=<property> file=\"...\"`.",
+      "expected_output": "The note keeps valid YAML frontmatter, preserves existing body content, writes scalar and list properties in the right shape, and property-read returns the expected values.",
+      "files": [],
+      "expectations": [
+        "The final note frontmatter renders `aliases` as a YAML list with `Idea Verse` and `Ideaverse Lite` as separate items.",
+        "The final note frontmatter contains the scalar line `summary: Skill eval fixture`.",
+        "The final note frontmatter renders `related` as a YAML list with `[[Atlas]]` and `[[Home]]` as separate items.",
+        "The final note body still contains the exact line `Keep this body exactly as it is.`",
+        "`obsidian property:read` returns two lines for `aliases`, one line `Skill eval fixture` for `summary`, and two lines for `related`."
+      ]
+    }
+  ]
+}

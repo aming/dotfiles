@@ -1,21 +1,17 @@
 ---
-name: obsidian-cli
+name: obsidian
 version: "1.3.1"
 description: >
-  Use this skill whenever the user wants Claude to directly interact with their
-  Obsidian vault — reading a note or daily note, writing or appending content,
-  searching vault contents, counting or listing notes, managing tasks, moving or
-  renaming files, finding orphaned notes or broken links. Without this skill, Claude
-  has no way to access vault data or execute vault operations. Treat any request that
-  implies "go into my vault and do X" as a trigger — the user is asking Claude to act,
-  not to explain. Also trigger for vault automation, CLI scripting, or cron-based
-  workflows involving Obsidian, managing sync history, querying Bases, restoring file
-  versions via history, managing bookmarks, or running JavaScript against the Obsidian
-  API. Skip for pure conceptual questions: how Obsidian's GUI works, navigating settings
-  menus, theme or plugin installation via the UI, iCloud/third-party sync conflicts,
-  general Dataview query syntax, keyboard shortcuts, or parsing vault files with external
-  scripts — anything where the user needs an explanation rather than Claude performing a
-  vault operation.
+  Use this skill when the user wants direct operations on an Obsidian vault: read
+  or edit notes and daily notes, search vault contents, count or list notes,
+  manage tasks, move or rename files, find orphaned notes or broken links,
+  inspect frontmatter/properties, manage sync or file history, query Bases,
+  manage bookmarks, script the CLI, or run JavaScript against the Obsidian API.
+  Trigger when the request implies "go into my vault and do X"; the user wants
+  action on vault data, not an explanation. Skip pure conceptual or GUI-help
+  questions such as settings navigation, theme/plugin installation, sync
+  troubleshooting, Dataview syntax, keyboard shortcuts, or parsing vault files
+  with unrelated external scripts.
 triggers:
   - "obsidian"
   - "vault"
@@ -192,6 +188,15 @@ in:
 
 After every property write, verify by reading the exact note. If `property:set` prints only the outdated-installer warning or exits successfully without changing the file, report that limitation before using another approach. If `property:set` damages list-valued properties, repair them to the vault's established list format.
 
+When the task is specifically about Obsidian properties, do a second verification pass with `obsidian property:read` for each property you changed. Prefer the explicit file form the user asked for when it works in the environment:
+
+```bash
+obsidian property:read file="note.md" name="status"
+obsidian property:read file="note.md" name="tags"
+```
+
+If the environment or docs use `path=` instead of `file=`, treat them as equivalent command shapes and use the one that actually works, but still verify the property values through `property:read` rather than only inspecting raw YAML.
+
 ### Tasks
 
 ```bash
@@ -308,6 +313,14 @@ obsidian command id="dataview:dataview-force-refresh-views"
     ```
 13. **Multi-vault targeting may not work in all environments** — `obsidian "My Vault" command` can return `Error: Command "My Vault" not found` on some setups. If this happens, omit the vault name (CLI targets the most recently active vault) and switch vaults manually in the Obsidian UI.
 14. **When colon subcommands are unavailable** (e.g. Windows Git Bash without wrapper), prefer non-colon alternatives: use `properties` instead of `property:read`, and `obsidian daily:path` + `append` instead of `daily:append`.
+
+## Gotchas
+
+- `property:set` is safe for scalar values such as `status`, `summary`, and `created`, but it can serialize list-shaped properties as plain strings. Treat `tags`, `aliases`, `up`, `in`, and similar multi-value properties as YAML you must preserve.
+- When the user asks to add or fix Obsidian properties, remember that those properties live in YAML frontmatter. The real success condition is not "a property command ran"; it is "the note now has valid frontmatter in the expected shape."
+- After any property write, read the exact note back and verify both the frontmatter shape and the body content. Do not assume a success exit code means the note changed correctly.
+- For property tasks, do not stop after `obsidian read`. Also verify each changed property with `obsidian property:read name="..." file="..."` or the working `path=` form in that environment. The skill should prove the properties are readable through the dedicated property command.
+- If the note already has frontmatter, preserve unrelated keys and keep the body intact.
 
 ## Troubleshooting
 
