@@ -42,7 +42,8 @@ export FZF_ALT_C_OPTS='--height 40% --layout=reverse --border --preview-window=d
 export _ZO_FZF_OPTS='--height 40% --layout=reverse --border --no-preview'
 export _ZO_DATA_DIR=$HOME/.local/share
 
-plugins=(brew uv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit zoxide)
+plugins=(brew uv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit zoxide bgnotify)
+bgnotify_threshold=10
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
@@ -97,7 +98,7 @@ if type brew &>/dev/null; then
   FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
 fi
 
-# # opencode settings
+# opencode settings
 if type opencode &>/dev/null
 then
   if type ocx &>/dev/null
@@ -106,6 +107,13 @@ then
     alias ows='ocx oc -p ws'
     alias occ='opencode run --agent oneliner'
   fi
+fi
+
+# Codex settings
+if type codex &>/dev/null
+then
+  alias cx='codex --profile readable'
+  alias cxdeep='codex --profile deep'
 fi
 
 alias yt='yt-dlp --cookies-from-browser brave -S res:720 -f mp4 -o "~/Downloads/%(title)s.%(ext)s"'
