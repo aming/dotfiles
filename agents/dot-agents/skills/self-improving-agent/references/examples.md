@@ -2,10 +2,10 @@
 
 Concrete examples of well-formatted entries with all fields.
 
-Use these examples when writing entries under `.agent/learnings/`:
+Use these examples when writing entries under `.agents/learnings/`:
 
 ```text
-agents/
+.agents/
   learnings/
     LEARNINGS.md
     ERRORS.md

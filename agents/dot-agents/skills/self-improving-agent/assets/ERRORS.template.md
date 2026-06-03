@@ -1,6 +1,6 @@
 # Errors
 
-Template for `.agent/learnings/ERRORS.md` in an OpenCode project.
+Template for `.agents/learnings/ERRORS.md` in an OpenCode project.
 
 Unexpected command, tool, and API failures worth remembering.
 
@@ -42,7 +42,7 @@ If identifiable, what might resolve this
 ## Recommended Project Layout
 
 ```text
-agents/
+.agents/
   learnings/
     LEARNINGS.md
     ERRORS.md

@@ -162,7 +162,7 @@ description: "[TODO: Add a concise description of what this skill does and when 
 
 This skill was extracted from a learning entry.
 - Learning ID: [TODO: Add original learning ID]
-- Original File: .learnings/LEARNINGS.md
+- Original File: .agents/learnings/LEARNINGS.md
 TEMPLATE
     echo "---"
     exit 0
@@ -202,7 +202,7 @@ description: "[TODO: Add a concise description of what this skill does and when 
 
 This skill was extracted from a learning entry.
 - Learning ID: [TODO: Add original learning ID]
-- Original File: .learnings/LEARNINGS.md
+- Original File: .agents/learnings/LEARNINGS.md
 TEMPLATE
 
 log_info "Created: $SKILL_PATH/SKILL.md"

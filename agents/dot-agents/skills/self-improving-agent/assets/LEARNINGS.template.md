@@ -1,6 +1,6 @@
 # Learnings
 
-Template for `.agent/learnings/LEARNINGS.md` in an OpenCode project.
+Template for `.agents/learnings/LEARNINGS.md` in an OpenCode project.
 
 Corrections, insights, and knowledge gaps captured during development.
 
@@ -48,7 +48,7 @@ Docker build fails on Apple Silicon due to platform mismatch
 Create and keep these files together:
 
 ```text
-agents/
+.agents/
   learnings/
     LEARNINGS.md
     ERRORS.md
