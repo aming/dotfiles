@@ -27,18 +27,23 @@ Of course, you should always be flexible and if the user is like "I don't need t
 
 Then after the skill is done (but again, the order is flexible), you can also run the skill description improver, which we have a whole separate script for, to optimize the triggering of the skill.
 
-Cool? Cool.
+## Path map
+
+- To create a new skill, capture concrete examples, decide the reusable resources, run `scripts/init_skill.py`, then replace every TODO before validating.
+- To update an existing skill, read current evals and recent feedback first, then make the smallest general improvement that helps future prompts rather than only one example.
+- To evaluate skill outputs, run with-skill and baseline/old-skill outputs in the same iteration, grade `expectations`, aggregate benchmarks, and launch the viewer.
+- To optimize trigger description, build realistic should-trigger and should-not-trigger queries, review them with the user, then run `scripts/run_loop.py`.
 
 ## Communicating with the user
 
-The skill creator is liable to be used by people across a wide range of familiarity with coding jargon. If you haven't heard (and how could you, it's only very recently that it started), there's a trend now where the power of OpenCode-style assistants is inspiring plumbers to open up their terminals, parents and grandparents to google "how to install npm". On the other hand, the bulk of users are probably fairly computer-literate.
+Match the user's familiarity with skill tooling. Briefly define terms like `expectations`, benchmark, or trigger eval when the user has not shown they already know them.
 
-So please pay attention to context cues to understand how to phrase your communication! In the default case, just to give you some idea:
+## Gotchas
 
-- "evaluation" and "benchmark" are borderline, but OK
-- for "JSON", "expectation", and "assertion" you want to see serious cues from the user that they know what those things are before using them without explaining them
-
-It's OK to briefly explain terms if you're in doubt, and feel free to clarify terms with a short definition if you're unsure if the user will get it.
+- Do not treat helper files under `agents/` as custom subagent types; tell the agent to run a general task and read the helper file first.
+- Do not add broad reference links without a trigger. State when to read each reference file.
+- If adding `agents/openai.yaml`, read `references/openai_yaml.md` and keep it separate from helper-agent markdown.
+- If changing eval schemas or grading output, read `references/schemas.md` before editing JSON fields.
 
 ---
 
@@ -66,6 +71,7 @@ Based on the user interview, fill in these components:
 - **name**: Skill identifier
 - **description**: When to trigger, what it does. This is the primary triggering mechanism - include both what the skill does AND specific contexts for when to use it. All "when to use" info goes here, not in the body. Note: models have a tendency to "undertrigger" skills -- to not use them when they'd be useful. To combat this, please make the skill descriptions a little bit "pushy". So for instance, instead of "How to build a simple fast dashboard to display internal Anthropic data.", you might write "How to build a simple fast dashboard to display internal Anthropic data. Make sure to use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a 'dashboard.'"
 - **compatibility**: Required tools, dependencies (optional, rarely needed)
+- **agents/openai.yaml**: UI metadata for skill lists. If adding or updating it, read `references/openai_yaml.md` first.
 - **the rest of the skill :)**
 
 ### Skill Writing Guide

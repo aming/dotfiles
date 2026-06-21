@@ -27,6 +27,47 @@
         "The generated `SKILL.md` explains why its workflow choices matter, not just what steps to follow.",
         "The generated `SKILL.md` defines a concrete action-focused summary structure that separates decisions, action items, and unresolved issues or blockers."
       ]
+    },
+    {
+      "id": 2,
+      "prompt": "Update an existing draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/metadata-missing-skill so it has Codex/OpenAI UI metadata. Add or update agents/openai.yaml, keep any agents/grader.md helper-role markdown separate from metadata, and save the updated skill under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-2-openai-metadata/<CONFIG>/run-1/outputs/metadata-missing-skill. Also save transcript.md explaining what metadata fields you created.",
+      "expected_output": "An updated skill copy with agents/openai.yaml that includes display_name, short_description, and a default_prompt mentioning the skill name.",
+      "files": [
+        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/metadata-missing-skill"
+      ],
+      "expectations": [
+        "The output copy includes `agents/openai.yaml`.",
+        "`agents/openai.yaml` includes `display_name`, `short_description`, and `default_prompt`.",
+        "`default_prompt` mentions the skill name using `$skill-name` syntax.",
+        "Any helper-role markdown such as `agents/grader.md` remains separate from `agents/openai.yaml`."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a new skill using the skill-creator scaffolding flow and save it under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-3-safe-initializer/<CONFIG>/run-1/outputs/metadata-skill. Use the name Metadata Skill, include scripts/ and references/ resource directories, include agents/openai.yaml, and show that init_skill.py would refuse to overwrite an existing metadata-skill directory. Save transcript.md with the commands or steps used.",
+      "expected_output": "A safely initialized metadata-skill folder with SKILL.md, agents/openai.yaml, requested resource directories, and overwrite-protection evidence.",
+      "files": [],
+      "expectations": [
+        "The generated folder name is normalized to `metadata-skill`.",
+        "The output includes `SKILL.md` and `agents/openai.yaml`.",
+        "The output includes `scripts/` and `references/`, but does not create unrequested `assets/`.",
+        "The transcript records that an existing `metadata-skill` directory is refused rather than overwritten.",
+        "The prompt or transcript references `init_skill.py` as the initializer path."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Review the validator and helper-agent guidance in a draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/validator-dependency-skill. Patch it so quick validation does not require PyYAML, malformed frontmatter still fails clearly, and agents/grader.md is treated as helper-role markdown read by a general task rather than a custom subagent type. Save the updated copy under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-4-validator-helper-role/<CONFIG>/run-1/outputs/validator-dependency-skill plus transcript.md.",
+      "expected_output": "An updated skill copy whose validator guidance is dependency-light and whose helper-agent files are not described as custom subagent types.",
+      "files": [
+        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/validator-dependency-skill"
+      ],
+      "expectations": [
+        "The updated validation guidance says default Python should not fail from a missing PyYAML package.",
+        "Malformed frontmatter is still expected to fail with an actionable validation message.",
+        "`agents/grader.md` is described as helper-role markdown read by a general task.",
+        "The output avoids describing grader, analyzer, or comparator as custom subagent types."
+      ]
     }
   ]
 }

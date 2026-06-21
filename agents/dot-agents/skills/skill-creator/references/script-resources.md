@@ -65,6 +65,26 @@ For Bun scripts, pin versions in imports when relying on Bun auto-install.
 
 For Ruby scripts, use `bundler/inline` and pin gems.
 
+## Runtime Categories
+
+### Dependency-light scripts
+
+These scripts must run with default `python3` and the Python standard library:
+
+- `quick_validate.py`
+- `generate_openai_yaml.py`
+- `init_skill.py`
+- `aggregate_benchmark.py`
+- `package_skill.py`
+
+### Model-dependent scripts
+
+These scripts require configured model or CLI access and should not be part of the default offline validation suite:
+
+- `run_eval.py` requires the `claude` CLI.
+- `run_loop.py` requires the `anthropic` Python package and model credentials.
+- `improve_description.py` requires the `anthropic` Python package and model credentials.
+
 ## Script Review Checklist
 
 - Does `SKILL.md` list each script and explain when to use it?
