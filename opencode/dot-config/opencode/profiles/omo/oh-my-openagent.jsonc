@@ -15,7 +15,7 @@
     // Main orchestrator
     // claude-opus-4-7 (max) → kimi-k2.5 → gpt-5.4 (medium) → glm-5 → big-pickle
     "sisyphus": {
-      "model": "opencode-go/kimi-k2.5"
+      "model": "opencode-go/kimi-k2.7-code"
     },
     // Plan gap analyzer
     // claude-opus-4-7 (max) → gpt-5.4 (high) → glm-5 → k2p5
@@ -31,14 +31,14 @@
     // claude-opus-4-7 (max) → gpt-5.4 (high) → glm-5 → gemini-3.1-pro
     "prometheus": {
       // "model": "openai/gpt-5.4",
-      // "model": "opencode-go/glm-5"
-      "model": "opencode-go/mimo-v2-pro",
+      "model": "opencode-go/glm-5.2",
+      // "model": "opencode-go/minimax-m3",
       "variant": "high"
     },
     // Todo orchestrator
     // claude-sonnet-4-6 → kimi-k2.5 → gpt-5.4 (medium) → minimax-m2.7
     "atlas": {
-      "model": "opencode-go/kimi-k2.5"
+      "model": "opencode-go/kimi-k2.7-code"
     },
     //
     // Deep Specialists -> GPT
@@ -79,12 +79,12 @@
     // Vision/screenshots
     // gpt-5.4 (medium) → kimi-k2.5 → glm-4.6v → gpt-5-nano
     "multimodal-looker": {
-      "model": "opencode-go/mimo-v2-omni"
+      "model": "opencode-go/mimo-v2.5"
     },
     // Category executor
     // claude-sonnet-4-6 → kimi-k2.5 → gpt-5.4 (medium) → minimax-m2.7 → big-pickle
     "sisyphus-junior": {
-      "model": "opencode-go/kimi-k2.5"
+      "model": "opencode-go/kimi-k2.7-code"
     }
   },
   "categories": {
@@ -92,7 +92,7 @@
     // gemini-3.1-pro (high) → glm-5 → opus-4-7 (max) → glm-5 → kimi-k2.5
     "visual-engineering": {
       // "model": "google/gemini-3.1-pro-preview",
-      "model": "opencode-go/mimo-v2-omni",
+      "model": "opencode-go/mimo-v2.5",
       "variant": "high"
     },
     // Maximum reasoning needed
@@ -112,7 +112,7 @@
     // gemini-3.1-pro (high) → claude-opus-4-7 (max) → gpt-5.4
     "artistry": {
       // "model": "google/gemini-3.1-pro-preview",
-      "model": "opencode-go/mimo-v2-omni",
+      "model": "opencode-go/mimo-v2.5",
       "variant": "high"
     },
     // Simple, fast tasks
@@ -126,7 +126,7 @@
     "unspecified-high": {
       // "model": "openai/gpt-5.4",
       // "model": "opencode-go/glm-5"
-      "model": "opencode-go/mimo-v2-pro",
+      "model": "opencode-go/mimo-v2.5-pro",
       "variant": "medium"
     },
     // General standard work
@@ -134,15 +134,15 @@
     "unspecified-low": {
       // "model": "openai/gpt-5.1-codex-mini",
       // "model": "opencode-go/kimi-k2.5"
-      "model": "opencode-go/minimax-m2.7",
+      "model": "opencode-go/minimax-m3",
       "variant": "medium"
     },
     // Text, docs, prose
     // gemini-3-flash → kimi-k2.5 → claude-sonnet-4-6 → minimax-m2.7
     "writing": {
       // "model": "opencode-go/kimi-k2.5"
-      // "model": "opencode-go/mimo-v2-omni"
-      "model": "opencode-go/minimax-m2.7"
+      // "model": "opencode-go/mimo-v2.5"
+      "model": "opencode-go/minimax-m3"
     }
   },
   "background_task": {
@@ -157,3 +157,4 @@
     }
   }
 }
+

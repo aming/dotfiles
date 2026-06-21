@@ -42,7 +42,7 @@ export FZF_ALT_C_OPTS='--height 40% --layout=reverse --border --preview-window=d
 export _ZO_FZF_OPTS='--height 40% --layout=reverse --border --no-preview'
 export _ZO_DATA_DIR=$HOME/.local/share
 
-plugins=(brew uv rbenv nvm git macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit zoxide bgnotify)
+plugins=(brew uv rbenv nvm macos zsh-syntax-highlighting zsh-autosuggestions tmux fzf fzf-tab forgit zoxide bgnotify)
 bgnotify_threshold=10
 source $ZSH/oh-my-zsh.sh
 

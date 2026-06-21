@@ -21,6 +21,7 @@
     ff = ! git diff --name-only | fzf -m --ansi --preview \"git diff --color=always  -- {-1}\"
 [push]
     default = simple
+	autoSetupRemote = true
 [rebase]
     autosquash = true
 [core]
