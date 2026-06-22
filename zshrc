@@ -47,7 +47,7 @@ bgnotify_threshold=10
 source $ZSH/oh-my-zsh.sh
 
 # add settings specific to one system for zsh
-[ -f "$HOME/.config/zsh/zshrc" ] && source "$HOME/.config/zsh/zshrc"
+[ -f "$HOME/.config/zsh/zshrc.local" ] && source "$HOME/.config/zsh/zshrc.local"
 
 # Use vim as the default editor
 export EDITOR="vim"
@@ -123,3 +123,4 @@ export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 
 autoload -Uz compinit
 compinit
+
