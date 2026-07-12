@@ -68,6 +68,20 @@
         "`agents/grader.md` is described as helper-role markdown read by a general task.",
         "The output avoids describing grader, analyzer, or comparator as custom subagent types."
       ]
+    },
+    {
+      "id": 5,
+      "prompt": "Eval and improve the draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/no-subagent-skill from a host where Task/general subagents are unavailable or policy-gated. Save the patched skill under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-5-static-eval-fallback/<CONFIG>/run-1/outputs/no-subagent-skill and include transcript.md with what eval layer did and did not run.",
+      "expected_output": "A scoped skill improvement based on deterministic validation rather than fabricated subagent benchmark output.",
+      "files": [
+        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/no-subagent-skill"
+      ],
+      "expectations": [
+        "The transcript states that full with-skill/baseline subagent evals were unavailable or not permitted.",
+        "The transcript records at least two deterministic checks such as `evals.json` parsing, `scripts/quick_validate.py`, local unit tests, or eval coverage inspection.",
+        "The output avoids fabricated `timing.json`, `benchmark.json`, viewer URLs, or pass-rate claims for runs that did not happen.",
+        "The patched skill includes a general fallback path for static validation when subagent evals cannot run."
+      ]
     }
   ]
 }

@@ -32,6 +32,7 @@ Then after the skill is done (but again, the order is flexible), you can also ru
 - To create a new skill, capture concrete examples, decide the reusable resources, run `scripts/init_skill.py`, then replace every TODO before validating.
 - To update an existing skill, read current evals and recent feedback first, then make the smallest general improvement that helps future prompts rather than only one example.
 - To evaluate skill outputs, run with-skill and baseline/old-skill outputs in the same iteration, grade `expectations`, aggregate benchmarks, and launch the viewer.
+- If subagent evals are unavailable or not permitted by the current host, run a static eval pass instead: validate JSON, run `scripts/quick_validate.py`, run local tests when present, inspect eval coverage, then report that full comparative output evals were not run.
 - To optimize trigger description, build realistic should-trigger and should-not-trigger queries, review them with the user, then run `scripts/run_loop.py`.
 
 ## Communicating with the user
@@ -44,6 +45,7 @@ Match the user's familiarity with skill tooling. Briefly define terms like `expe
 - Do not add broad reference links without a trigger. State when to read each reference file.
 - If adding `agents/openai.yaml`, read `references/openai_yaml.md` and keep it separate from helper-agent markdown.
 - If changing eval schemas or grading output, read `references/schemas.md` before editing JSON fields.
+- If Task/subagent tools are missing or policy-gated, do not fabricate timing, benchmark, or viewer results. Say which eval layer ran and which layer is still pending.
 
 ---
 
@@ -195,7 +197,7 @@ See `references/schemas.md` for the full schema (including the `expectations` fi
 
 Before running evals, ensure the skill draft includes a `## Gotchas` section and at least one condition-based reference-loading instruction when references exist.
 
-This section is one continuous sequence — don't stop partway through. Do NOT use `/skill-test` or any other testing skill.
+First check the current host's capabilities. If Task/general subagents are available and permitted for this request, run the full comparative loop below as one continuous sequence. If they are missing or policy-gated, do not stop empty-handed: run the static eval pass from the Path map, make only improvements supported by that evidence, and clearly label the full with-skill/baseline eval as not run. Do NOT use `/skill-test` or any other testing skill.
 
 Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Within the workspace, organize results by iteration (`iteration-1/`, `iteration-2/`, etc.) and within that, each test case gets a directory whose name starts with `eval-`, for example `eval-0-ace-structure-lint/` or `eval-1-vault-topic-coverage/`. Keep the `eval-<id>-` prefix even when you add a human-readable suffix, because the benchmark tooling discovers evals by that prefix. Don't create all of this upfront — just create directories as you go.
 
@@ -466,17 +468,6 @@ The references/ directory has additional documentation:
 - `references/script-resources.md` — How to choose, design, document, and review bundled scripts.
 
 ---
-
-Repeating one more time the core loop here for emphasis:
-
-- Figure out what the skill is about
-- Draft or edit the skill
-- Run OpenCode subagent tests (Task tool) on test prompts
-- With the user, evaluate the outputs:
-  - Create benchmark.json and run `eval-viewer/generate_review.py` to help the user review them
-  - Run quantitative evals
-- Repeat until you and the user are satisfied
-- Package the final skill and return it to the user.
 
 Please add steps to your TodoList, if you have such a thing, to make sure you don't forget.
 
