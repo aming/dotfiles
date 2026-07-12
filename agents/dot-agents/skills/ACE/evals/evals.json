@@ -1,0 +1,41 @@
+{
+  "skill_name": "ACE",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Please check whether this Obsidian vault follows the ACE folder contract. Distinguish essential ACE issues from recommended improvements, and tell me the smallest sensible next fixes. Inspect the real vault structure, but do not change any files yet.",
+      "expected_output": "A concise lint-style report grounded in the actual vault, separating essential ACE compliance from recommended improvements.",
+      "files": [],
+      "expectations": [
+        "The report states that the vault passes the essential ACE folder contract.",
+        "The report cites the required top-level ACE folders `+`, `Atlas`, `Calendar`, and `Efforts` as present.",
+        "The report separates essential issues from recommended improvements rather than merging them.",
+        "The report mentions the Obsidian config checks for capture folder, daily note location, or template setup separately from core ACE folder compliance, including the `x/Templates` support area, canonical base template, and Note Composer template path."
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "What ACE notes do I already have about ACE itself in this vault? Check whether there is already a map/MOC for the topic, point me to the strongest related notes, and tell me whether the topic looks scattered or already well-shaped. Inspect the real vault and answer from evidence; do not edit anything.",
+      "expected_output": "An evidence-based vault question answer that cites existing ACE-related notes and any relevant MOC/map status.",
+      "files": [],
+      "expectations": [
+        "The answer identifies `Atlas/Maps/ACE.md` as an existing ACE map or MOC.",
+        "The answer points to at least three concrete ACE-related notes in the vault, not just generic advice.",
+        "The answer gives an overall judgment about whether the ACE topic is already well-shaped, scattered, or mixed.",
+        "The answer is grounded in vault evidence such as note paths, wikilinks, or line references."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I captured a rough note titled `Zettelkasten - need to look into this later`. There is no more content than that. In the ACE way, should it stay in `+` or be moved somewhere else? Do not edit or move real files. Return a concise routing report with destination, reason, whether it should stay in the cooling pad, and what the next useful action would be.",
+      "expected_output": "A routing decision that keeps the sparse capture in `+` unless there is enough intent to justify moving it.",
+      "files": [],
+      "expectations": [
+        "The routing report keeps the sparse note in `+`.",
+        "The routing report explicitly says the note should stay in the cooling pad for now.",
+        "The routing report explains that a recognizable topic alone is not enough to force the note into Atlas or Efforts.",
+        "The routing report suggests a sensible next action, such as adding why the topic matters or clarifying intent."
+      ]
+    }
+  ]
+}
