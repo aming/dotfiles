@@ -47,6 +47,18 @@ To remove the configuration from the system by adding **-D** flag.
 stow -D nvim vim zsh
 ```
 
+
+If there are conflict with the exiting files. We can adopt and compare the changes. And then restore the git versions
+
+
+```
+stow --dotfiles --adopt hypr
+
+git diff
+
+git restore hypr
+```
+
 ## Initial Neovim plugins
 
 During the first time starting the Neovim, it will automatically download the _Lazy.nvim_ to the _.config/_ folder.
