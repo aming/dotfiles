@@ -4,12 +4,10 @@ hl.config({
   input = {
     -- Cursor focus will be detached from keyboard focus. Clicking on a window will move keyboard focus to that window.
     follow_mouse = 2,
---     -- Use multiple keyboard layouts and switch between them with Left Alt + Right Alt.
---     kb_layout = "us,dk,eu",
---     kb_options = "compose:caps,shift:both_capslock_cancel,grp:alts_toggle",
---
---     -- Use a specific keyboard variant if needed (e.g. intl for international keyboards).
---     kb_variant = "intl",
+    -- Use the US Dvorak layout by default. To use multiple keyboard layouts and switch between them with Left Alt + Right Alt.
+    kb_layout = "us",
+    -- kb_options = "compose:caps,shift:both_capslock_cancel,grp:alts_toggle",
+    kb_variant = "dvorak",
 --
 --     -- Change speed of keyboard repeat.
 --     repeat_rate = 40,
