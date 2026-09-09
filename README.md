@@ -48,15 +48,34 @@ stow -D nvim vim zsh
 ```
 
 
-If there are conflict with the exiting files. We can adopt and compare the changes. And then restore the git versions
+### Omarchy / Hypr overrides
 
+On a fresh Omarchy install, `~/.config/hypr` may already contain real files. For the first installation, make sure the dotfiles repository is clean, let Stow adopt the existing file, review the difference, and then restore the version tracked in Git:
 
-```
+```bash
+git status
 stow --dotfiles --adopt hypr
-
 git diff
-
 git restore hypr
+```
+
+After the initial adoption, normal Stow runs do not need `--adopt`:
+
+```bash
+stow --dotfiles hypr
+```
+
+Verify that the Omarchy config is now linked to the repository:
+
+```bash
+readlink -f ~/.config/hypr/input.lua
+```
+
+After changing a Hypr configuration file, reload Hyprland and check for configuration errors:
+
+```bash
+hyprctl reload
+hyprctl configerrors
 ```
 
 ## Initial Neovim plugins
