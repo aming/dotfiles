@@ -1,13 +1,17 @@
--- Hypr Keyboard layout and options.
+-- Keep only your personal input overrides here. Uncommented settings below
+-- replace Omarchy's defaults.
+
+-- Keyboard layout and options.
 -- See https://wiki.hypr.land/Configuring/Basics/Variables/#input
 hl.config({
   input = {
     -- Cursor focus will be detached from keyboard focus. Clicking on a window will move keyboard focus to that window.
     follow_mouse = 2,
-    -- Use the US Dvorak layout by default. To use multiple keyboard layouts and switch between them with Left Alt + Right Alt.
+    -- Pick keyboard layouts and switch between them with Left Alt + Right Alt.
     kb_layout = "us",
-    -- kb_options = "compose:caps,shift:both_capslock_cancel,grp:alts_toggle",
+    -- Use US Dvorak keyboard variant (e.g. intl for international keyboards).
     kb_variant = "dvorak",
+--     kb_options = "compose:caps,shift:both_capslock_cancel,grp:alts_toggle",
 --
 --     -- Change speed of keyboard repeat.
 --     repeat_rate = 40,
@@ -52,3 +56,9 @@ hl.config({
 -- Enable touchpad gestures for moving focus (helpful on scrolling layout).
 -- hl.gesture({ fingers = 3, direction = "left", action = function() hl.dispatch(hl.dsp.focus({ direction = "l" })) end })
 -- hl.gesture({ fingers = 3, direction = "right", action = function() hl.dispatch(hl.dsp.focus({ direction = "r" })) end })
+
+-- Try Omarchy's host pinch device carries gestures only.
+dofile("/usr/share/try-omarchy/pinch-input.lua")
+
+-- Match Apple keyboard geometry (ansi/iso/jis) from the host cmdline.
+dofile("/usr/share/try-omarchy/apple-keyboard-input.lua")
