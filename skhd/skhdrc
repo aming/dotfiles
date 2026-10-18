@@ -162,8 +162,8 @@ alt + shift - z : yabai -m window --space recent; \
 # ctrl + alt - h : yabai -m window --insert west
 
 # toggle window zoom
-cmd - return : yabai -m window --toggle zoom-parent
-shift + cmd - return : yabai -m window --toggle zoom-fullscreen
+# cmd - return : yabai -m window --toggle zoom-parent
+# shift + cmd - return : yabai -m window --toggle zoom-fullscreen
 
 # toggle window split type
 # alt - e : yabai -m window --toggle split
