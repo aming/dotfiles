@@ -1,20 +1,33 @@
 ---
 name: self-improvement
-description: "Captures corrections, failures, missing capabilities, and reusable discoveries in agent so future work improves. Use this skill whenever a command, tool, or API fails unexpectedly; the user corrects the agent; the agent realizes its knowledge is outdated or wrong; a missing capability is exposed; or a better recurring approach is discovered. Record the result under .agents/learnings/, review related entries before major tasks, and promote durable workflow rules into AGENTS.md when they should change future behavior."
+description: "Captures corrections, failures, missing capabilities, and reusable discoveries in agent so future work improves. Use this skill whenever a command, tool, or API fails unexpectedly; the user corrects the agent; the agent realizes its knowledge is outdated or wrong; a missing capability is exposed; or a better recurring approach is discovered. Record the result under the git repository root's .agents/learnings/ (resolve it with `git rev-parse --show-toplevel`, never the current working directory), review related entries before major tasks, and promote durable workflow rules into AGENTS.md when they should change future behavior."
 ---
 
 # Self-Improvement Skill
 
 Use this skill in Agent hardness to turn mistakes, surprises, and reusable discoveries into durable project memory.
 
-Default storage location:
+## Storage Location
+
+Write learnings to the **root of the current git repository**, never to the current working directory. Agents frequently run with a nested cwd (a Terraform stack, a subproject, a service directory); resolving `.agents/learnings/` against that cwd fragments one log into several copies and defeats the purpose of shared memory.
+
+Resolve the repository root once, then reuse that absolute path:
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+mkdir -p "$ROOT/.agents/learnings"
+```
 
 ```
-<project-root>/.agents/learnings/
+<repo-root>/.agents/learnings/
   LEARNINGS.md
   ERRORS.md
   FEATURE_REQUESTS.md
 ```
+
+- Not a git repository? Fall back to the workspace or project root — still never to a nested subdirectory.
+- If `.agents/learnings/` already exists somewhere other than the repository root (created by an earlier run with a subdirectory cwd), consolidate: merge those entries into the root log, then delete the nested copy. Never add a symlink and never keep two copies.
+- Log in exactly one place per repository, and read that root log before appending.
 
 Keep the workflow lightweight: log the important thing, link it to the right files, and promote it when it becomes a durable rule.
 
@@ -31,7 +44,7 @@ Keep the workflow lightweight: log the important thing, link it to the right fil
 
 ## OpenCode Workflow
 
-1. Capture the learning immediately in `.agents/learnings/` while the context is still fresh.
+1. Capture the learning immediately in the repository-root `.agents/learnings/` while the context is still fresh (resolve `$ROOT` first, even when working in a subdirectory).
 2. Search for related entries before creating a new one.
 3. Record the concrete fix, correction, or missing capability in a format another agent can reuse quickly.
 4. Promote the learning into `AGENTS.md` when it should change future behavior across tasks.
@@ -39,17 +52,18 @@ Keep the workflow lightweight: log the important thing, link it to the right fil
 
 ## Project Layout
 
-Create the learning directory inside the project:
+Create the learning directory at the repository root:
 
 ```bash
-mkdir -p .agents/learnings
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+mkdir -p "$ROOT/.agents/learnings"
 ```
 
 Recommended files:
 
-- `.agents/learnings/LEARNINGS.md` - corrections, knowledge gaps, best practices
-- `.agents/learnings/ERRORS.md` - command failures, tool failures, API errors
-- `.agents/learnings/FEATURE_REQUESTS.md` - user-requested capabilities that do not exist yet
+- `$ROOT/.agents/learnings/LEARNINGS.md` - corrections, knowledge gaps, best practices
+- `$ROOT/.agents/learnings/ERRORS.md` - command failures, tool failures, API errors
+- `$ROOT/.agents/learnings/FEATURE_REQUESTS.md` - user-requested capabilities that do not exist yet
 
 ## Logging Format
 
@@ -162,11 +176,12 @@ Good candidates:
 
 ## Recurring Pattern Detection
 
-When a new issue feels familiar, search the project logs first:
+When a new issue feels familiar, search the repository-root log first:
 
 ```bash
-grep -n "keyword" .agents/learnings/*.md
-grep -n "Pattern-Key: <pattern_key>" .agents/learnings/LEARNINGS.md
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+grep -n "keyword" "$ROOT/.agents/learnings/"*.md
+grep -n "Pattern-Key: <pattern_key>" "$ROOT/.agents/learnings/LEARNINGS.md"
 ```
 
 ## Detection Triggers

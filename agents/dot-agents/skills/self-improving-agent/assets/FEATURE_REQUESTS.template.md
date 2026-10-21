@@ -1,6 +1,6 @@
 # Feature Requests
 
-Template for `.agents/learnings/FEATURE_REQUESTS.md` in an OpenCode project.
+Template for the repository-root `.agents/learnings/FEATURE_REQUESTS.md` file in an OpenCode project.
 
 Requested capabilities that the current workflow or tooling does not support yet.
 

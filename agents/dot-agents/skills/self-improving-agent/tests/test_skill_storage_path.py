@@ -20,13 +20,13 @@ class TestSkillStoragePath(unittest.TestCase):
             LEGACY_DOT_LEARNINGS_FILE,
         )
         expected_paths = (
-            "<project-root>/.agents/learnings/",
-            "mkdir -p .agents/learnings",
-            ".agents/learnings/LEARNINGS.md",
-            ".agents/learnings/ERRORS.md",
-            ".agents/learnings/FEATURE_REQUESTS.md",
-            'grep -n "keyword" .agents/learnings/*.md',
-            'grep -n "Pattern-Key: <pattern_key>" .agents/learnings/LEARNINGS.md',
+            "<repo-root>/.agents/learnings/",
+            'mkdir -p "$ROOT/.agents/learnings"',
+            "$ROOT/.agents/learnings/LEARNINGS.md",
+            "$ROOT/.agents/learnings/ERRORS.md",
+            "$ROOT/.agents/learnings/FEATURE_REQUESTS.md",
+            'grep -n "keyword" "$ROOT/.agents/learnings/"*.md',
+            'grep -n "Pattern-Key: <pattern_key>" "$ROOT/.agents/learnings/LEARNINGS.md"',
             ".agents/learnings/",
         )
 
@@ -45,6 +45,23 @@ class TestSkillStoragePath(unittest.TestCase):
                     expected_path,
                     content,
                     f"canonical storage path should be present: {expected_path}",
+                )
+
+    def test_skill_anchors_storage_to_git_repository_root(self) -> None:
+        # Given: agents may run with a nested cwd (a stack, a subproject).
+        content = SKILL_MD.read_text(encoding="utf-8")
+
+        # Then: the skill resolves the git root and forbids nested or symlinked copies.
+        for expected_rule in (
+            "git rev-parse --show-toplevel",
+            "never to the current working directory",
+            "Never add a symlink and never keep two copies",
+        ):
+            with self.subTest(expected_rule=expected_rule):
+                self.assertIn(
+                    expected_rule,
+                    content,
+                    f"repository-root rule should be present: {expected_rule}",
                 )
 
 

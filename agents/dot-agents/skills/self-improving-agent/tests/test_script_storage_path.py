@@ -35,7 +35,8 @@ class TestScriptStoragePath(unittest.TestCase):
     def test_activator_uses_agents_learning_path_when_hook_runs(self) -> None:
         output = run_bash_script("activator.sh")
 
-        self.assertIn("Log to .agents/learnings/", output)
+        self.assertIn("Log to the repository-root .agents/learnings/", output)
+        self.assertIn("git rev-parse --show-toplevel", output)
         self.assertNotIn(LEGACY_AGENT_LEARNINGS, output)
 
     def test_error_detector_uses_agents_learning_path_when_failure_seen(self) -> None:
