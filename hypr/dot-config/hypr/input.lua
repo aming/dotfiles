@@ -57,8 +57,3 @@ hl.config({
 -- hl.gesture({ fingers = 3, direction = "left", action = function() hl.dispatch(hl.dsp.focus({ direction = "l" })) end })
 -- hl.gesture({ fingers = 3, direction = "right", action = function() hl.dispatch(hl.dsp.focus({ direction = "r" })) end })
 
--- Try Omarchy's host pinch device carries gestures only.
-dofile("/usr/share/try-omarchy/pinch-input.lua")
-
--- Match Apple keyboard geometry (ansi/iso/jis) from the host cmdline.
-dofile("/usr/share/try-omarchy/apple-keyboard-input.lua")
