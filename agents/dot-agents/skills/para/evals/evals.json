@@ -1,0 +1,49 @@
+{
+  "skill_name": "para",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Can you sort this `Life Admin/` dump into the right PARA places? Files: `tax-2026-filing.md`, `tax-2024-return.pdf`, `monthly-budget-review.md`, `mortgage-refinance-options.md`, `article-notes-about-index-funds.md`, `receipt-scan-unknown-date.pdf`, `weekly-review-template.md`, `passport-renewal-2026.md`, `fitness-routine.md`, and `old-car-sale-docs-2023.md`.",
+      "expected_output": "Adds a structured PARA routing recommendation even though the user did not request structure, including confidence, assumptions/open questions, next actions, and Inbox for unclear items.",
+      "files": [],
+      "expectations": [
+        "Provides a structured routing table or equivalent clearly labeled mapping with destination, confidence, reason, and next action.",
+        "Routes active finite outcomes `tax-2026-filing.md`, `mortgage-refinance-options.md`, and `passport-renewal-2026.md` to Projects.",
+        "Routes ongoing responsibilities `monthly-budget-review.md` and active `fitness-routine.md` to Areas or explicitly flags fitness as ambiguous if it may be a time-boxed challenge.",
+        "Routes reusable reference/template material `article-notes-about-index-funds.md` and `weekly-review-template.md` to Resources.",
+        "Routes historical/completed records `tax-2024-return.pdf` and `old-car-sale-docs-2023.md` to Archives.",
+        "Routes `receipt-scan-unknown-date.pdf` to Inbox or a triage holding area instead of forcing a permanent category.",
+        "States assumptions or open questions and avoids claiming that files were moved."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "A friend says my folders are too many and I should move `09-System/automation-routing-rules.md`, `05-Daily/2026-06-03.md`, and `03-Resources/templates/weekly-review-template.md` into Resources. Is that right?",
+      "expected_output": "Rejects the oversimplification and preserves local support layers even though the user did not explicitly list all folder rules.",
+      "files": [],
+      "expectations": [
+        "Does not endorse moving all three files into Resources.",
+        "Keeps `09-System/automation-routing-rules.md` in System or an equivalent system/administration layer.",
+        "Keeps `05-Daily/2026-06-03.md` in Daily or an equivalent chronological capture layer.",
+        "Keeps `03-Resources/templates/weekly-review-template.md` in Resources because it is a reusable template.",
+        "Explains that PARA should respect current use and local support layers, not only whether something is knowledge."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Help me clean up `Writing/`: current book proposal due next month, ongoing newsletter checklist, headline examples, completed 2023 essay contest notes, random clipped quotes with no source, and a general writing-style guide.",
+      "expected_output": "Turns a vague cleanup request into a safe migration plan, splits by actionability, and includes safety checks before bulk moves.",
+      "files": [],
+      "expectations": [
+        "Splits `Writing/` by actionability instead of keeping everything under one topic folder.",
+        "Routes the current book proposal to Projects.",
+        "Routes the ongoing newsletter checklist to Areas.",
+        "Routes headline examples and the writing-style guide to Resources, or explicitly flags the style guide as Area if it is a maintained standard.",
+        "Routes completed 2023 essay contest notes to Archives.",
+        "Routes random clipped quotes with no source to Inbox or triage instead of permanent Resources.",
+        "Includes migration safety guidance such as confirmation questions, index/backlink updates, verification, or rollback notes.",
+        "Does not perform moves and makes clear that bulk changes need confirmation."
+      ]
+    }
+  ]
+}
