@@ -1,3 +1,5 @@
+<!-- Storage: follow applicable repository AGENTS.md; examples use the default .agents/learnings/. For this repository under agents/, use agents/learnings/. -->
+
 # Learnings
 
 Template for the repository-root `.agents/learnings/LEARNINGS.md` file in an OpenCode project.
@@ -16,7 +18,7 @@ Corrections, insights, and knowledge gaps captured during development.
 | `in_progress` | Actively being worked on |
 | `resolved` | Issue fixed or knowledge integrated |
 | `wont_fix` | Decided not to address (reason in Resolution) |
-| `promoted` | Elevated to CLAUDE.md, AGENTS.md, or copilot-instructions.md |
+| `promoted` | Elevated to AGENTS.md |
 | `promoted_to_skill` | Extracted as a reusable skill |
 
 ## Skill Extraction Fields

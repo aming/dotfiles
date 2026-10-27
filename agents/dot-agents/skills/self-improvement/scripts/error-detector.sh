@@ -1,13 +1,14 @@
 #!/bin/bash
 # Self-Improvement Error Detector Hook
-# Triggers on PostToolUse for Bash to detect command failures
-# Reads CLAUDE_TOOL_OUTPUT environment variable
+# Run from an OpenCode tool.execute.after adapter or another host wrapper.
+# Accepts TOOL_OUTPUT, legacy CLAUDE_TOOL_OUTPUT, or raw tool output on stdin.
 
 set -e
 
-# Check if tool output indicates an error
-# CLAUDE_TOOL_OUTPUT contains the result of the tool execution
-OUTPUT="${CLAUDE_TOOL_OUTPUT:-}"
+OUTPUT="${TOOL_OUTPUT:-${CLAUDE_TOOL_OUTPUT:-}}"
+if [ -z "$OUTPUT" ] && [ ! -t 0 ]; then
+    OUTPUT=$(cat)
+fi
 
 # Patterns indicating errors (case-insensitive matching)
 ERROR_PATTERNS=(
@@ -43,7 +44,7 @@ done
 if [ "$contains_error" = true ]; then
     cat << 'EOF'
 <error-detected>
-A command error was detected. Consider logging this to the repository-root .agents/learnings/ERRORS.md if:
+A command error was detected. Consider logging this to the canonical ERRORS.md chosen from applicable AGENTS.md storage rules if:
 - The error was unexpected or non-obvious
 - It required investigation to resolve
 - It might recur in similar contexts

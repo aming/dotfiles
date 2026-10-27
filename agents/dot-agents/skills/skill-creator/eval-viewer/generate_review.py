@@ -16,12 +16,8 @@ import argparse
 import base64
 import json
 import mimetypes
-import os
 import re
-import signal
-import subprocess
 import sys
-import time
 import webbrowser
 from functools import partial
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -88,7 +84,10 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
     eval_id = None
 
     # Try eval_metadata.json
-    for candidate in [run_dir / "eval_metadata.json", run_dir.parent / "eval_metadata.json"]:
+    for directory in (run_dir, *run_dir.parents):
+        if directory != root and root not in directory.parents:
+            break
+        candidate = directory / "eval_metadata.json"
         if candidate.exists():
             try:
                 metadata = json.loads(candidate.read_text())
@@ -122,9 +121,11 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
     outputs_dir = run_dir / "outputs"
     output_files: list[dict] = []
     if outputs_dir.is_dir():
-        for f in sorted(outputs_dir.iterdir()):
+        for f in sorted(outputs_dir.rglob("*")):
             if f.is_file() and f.name not in METADATA_FILES:
-                output_files.append(embed_file(f))
+                output = embed_file(f)
+                output["name"] = f.relative_to(outputs_dir).as_posix()
+                output_files.append(output)
 
     # Load grading if present
     grading = None
@@ -285,26 +286,6 @@ def generate_html(
 # HTTP server (stdlib only, zero dependencies)
 # ---------------------------------------------------------------------------
 
-def _kill_port(port: int) -> None:
-    """Kill any process listening on the given port."""
-    try:
-        result = subprocess.run(
-            ["lsof", "-ti", f":{port}"],
-            capture_output=True, text=True, timeout=5,
-        )
-        for pid_str in result.stdout.strip().split("\n"):
-            if pid_str.strip():
-                try:
-                    os.kill(int(pid_str.strip()), signal.SIGTERM)
-                except (ProcessLookupError, ValueError):
-                    pass
-        if result.stdout.strip():
-            time.sleep(0.5)
-    except subprocess.TimeoutExpired:
-        pass
-    except FileNotFoundError:
-        print("Note: lsof not found, cannot check if port is in use", file=sys.stderr)
-
 class ReviewHandler(BaseHTTPRequestHandler):
     """Serves the review HTML and handles feedback saves.
 
@@ -435,14 +416,16 @@ def main() -> None:
         print(f"\n  Static viewer written to: {args.static}\n")
         sys.exit(0)
 
-    # Kill any existing process on the target port
+    # Bind without interfering with existing listeners.
     port = args.port
-    _kill_port(port)
     handler = partial(ReviewHandler, workspace, skill_name, feedback_path, previous, benchmark_path)
     try:
         server = HTTPServer(("127.0.0.1", port), handler)
-    except OSError:
-        # Port still in use after kill attempt — find a free one
+    except OSError as exc:
+        import errno
+        if exc.errno != errno.EADDRINUSE:
+            raise
+        print(f"Port {port} is occupied; choosing a free port.", file=sys.stderr)
         server = HTTPServer(("127.0.0.1", 0), handler)
         port = server.server_address[1]
 

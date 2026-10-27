@@ -60,6 +60,7 @@ Why this knowledge matters. What problems it prevents. Context from the original
 
 Extracted from learning entry.
 - **Learning ID**: LRN-YYYYMMDD-XXX
+- **Original File**: [TODO: canonical learning log path selected by AGENTS.md]
 - **Original Category**: correction | insight | knowledge_gap | best_practice
 - **Extraction Date**: YYYY-MM-DD
 ```
@@ -117,7 +118,7 @@ description: "What this skill does and when to use it."
 ### Automated (Recommended)
 
 \`\`\`bash
-./skills/skill-name/scripts/helper.sh [args]
+bash scripts/helper.sh [args]
 \`\`\`
 
 ### Manual Steps

@@ -1,3 +1,5 @@
+<!-- Storage: follow applicable repository AGENTS.md; examples use the default .agents/learnings/. For this repository under agents/, use agents/learnings/. -->
+
 # Errors
 
 Template for the repository-root `.agents/learnings/ERRORS.md` file in an OpenCode project.
