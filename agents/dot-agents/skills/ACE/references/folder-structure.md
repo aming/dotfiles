@@ -28,9 +28,9 @@ Calendar/
 Efforts/
 ```
 
-### Required Substructure For This Skill
+### Recommended Substructure For This Skill
 
-This skill's routing rules rely on these subfolders being present or being the intended target structure:
+These are recommended routing destinations, not essential requirements. Match the vault's existing structure and create a destination only when needed:
 
 ```text
 Atlas/
@@ -121,7 +121,7 @@ Use them for:
 - utility notes
 - archived support material
 
-Use `x/Templates/template-base.md` as the canonical base template for new notes. Point Note Composer at that file so new derived notes use the same ACE base structure. Avoid keeping multiple legacy base-template filenames around because that makes the vault's default note scaffolding ambiguous.
+For the optional Ideaverse convention, use `x/Templates/template-base.md` as the canonical base template for new notes. If using Note Composer, point it at that file so new derived notes use the same ACE base structure. Avoid keeping multiple legacy base-template filenames around because that makes the vault's default note scaffolding ambiguous.
 
 Do not treat missing `x/` as an ACE failure in the portable ACE profile.
 
@@ -177,7 +177,7 @@ python3 scripts/lint_ace_structure.py --vault "/path/to/vault" --profile ideaver
 
 ### Profile Meaning
 
-- `essential`: checks the portable ACE contract and warns on richer-structure drift.
+- `essential`: requires only `+`, `Atlas`, `Calendar`, and `Efforts`; missing recommended subfolders are warnings. Private template names and plugin setup are optional informational suggestions; malformed present config remains a warning.
 - `ideaverse`: checks the richer example layout from this vault more strictly.
 
 ### How To Interpret Results
@@ -188,7 +188,7 @@ python3 scripts/lint_ace_structure.py --vault "/path/to/vault" --profile ideaver
 
 The lint also checks Obsidian config files so the vault can verify that new raw captures default to `+`, daily notes land in the current `Calendar/Journals/<Year>/` folder, templates point at `x/Templates`, Note Composer uses `x/Templates/template-base.md`, the canonical base template exists at that path, and `.keepme` placeholders stay hidden from the file list. Treat config findings as setup drift, not as a structural ACE failure.
 
-Empty required ACE folders should contain a `.keepme` placeholder so git can keep them checked in. Hide those placeholders from the file list with `userIgnoreFilters` in `.obsidian/app.json`.
+When tracking the vault with git, empty ACE folders can contain a `.keepme` placeholder so git can keep them checked in. Hide those placeholders from the file list with `userIgnoreFilters` in `.obsidian/app.json`.
 
 ### What To Do When The Lint Fails
 

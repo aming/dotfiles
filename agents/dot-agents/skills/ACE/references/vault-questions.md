@@ -15,6 +15,12 @@ The goal is to answer from evidence in the vault, not from generic ACE theory.
 
 When the user asks a vault question, inspect the relevant folders and notes first. Prefer grounded answers based on actual paths, note titles, wikilinks, and frontmatter over abstract advice.
 
+## Tool Selection
+
+Use `obsidian` by default: the official CLI registers that command on macOS and Linux. Check `obsidian version` and `obsidian help` before vault operations. If a deployment actually provides `obsidian-cli` (for example, a local wrapper or bundled variant), verify it with `version` and `help`, then substitute that executable consistently in the examples. Absence of `obsidian-cli` alone is not a registration failure. If neither verified command works, report the exact failure; do not repair PATH or create symlinks during a note task.
+
+Use `path=` for exact vault-relative note paths; `file=` resolves names like wikilinks and can be ambiguous. Use the Obsidian CLI for vault evidence rather than raw filesystem search.
+
 ## Workflow
 
 1. Identify the question type: structure, placement, existing notes, relationships, or gaps.
@@ -23,7 +29,7 @@ When the user asks a vault question, inspect the relevant folders and notes firs
    - `Atlas/Maps` and `Atlas/Dots` for understanding.
    - `Calendar/` for time-based notes.
    - `Efforts/` for active work.
-3. Use targeted `Glob` to find likely filenames and `Grep` to search note contents.
+3. Use `obsidian files folder="Atlas/Maps"` for filenames and `obsidian search query="ACE" path="Atlas"` or `search:context` for note content. Read candidates with `obsidian read path="exact/vault-relative/note.md"`.
 4. Read only the strongest candidate notes needed to answer.
 5. Summarize what you found and what it means in ACE terms.
 6. If the user's real goal is action, transition from answering to note processing.

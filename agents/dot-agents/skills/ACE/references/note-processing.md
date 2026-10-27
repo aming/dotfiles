@@ -2,6 +2,8 @@
 
 Read this file when the user wants to process, edit, move, link, or develop notes inside the vault.
 
+Automatic internal-link updates require the vault setting **Automatically update internal links** to be enabled. Check that setting before moving or renaming notes, including per-note moves during folder renames; if disabled, plan explicit link updates and verification rather than promising automatic preservation. Verify the destination and affected links after each operation.
+
 ## Defaults
 
 - Keep edits small.

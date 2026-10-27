@@ -26,20 +26,18 @@ class Check:
     message: str
 
 
-ESSENTIAL_REQUIRED = [
-    "+",
-    "Atlas",
+ESSENTIAL_REQUIRED = ["+", "Atlas", "Calendar", "Efforts"]
+
+ESSENTIAL_RECOMMENDED = [
     "Atlas/Maps",
     "Atlas/Dots",
     "Atlas/Dots/Things",
     "Atlas/Dots/Statements",
     "Atlas/Dots/People",
     "Atlas/Dots/Sources",
-    "Calendar",
     "Calendar/Journals",
     "Calendar/Reviews",
     "Calendar/Meetings",
-    "Efforts",
     "Efforts/On",
     "Efforts/Ongoing",
     "Efforts/Simmering",
@@ -47,12 +45,7 @@ ESSENTIAL_REQUIRED = [
     "Efforts/Notes",
 ]
 
-ESSENTIAL_RECOMMENDED = [
-]
-
-IDEAVERSE_REQUIRED = ESSENTIAL_REQUIRED + [
-    "x",
-]
+IDEAVERSE_REQUIRED = ESSENTIAL_REQUIRED + ESSENTIAL_RECOMMENDED + ["x"]
 
 IDEAVERSE_RECOMMENDED = [
     "x/Templates",
@@ -107,8 +100,12 @@ def check_directory(vault: Path, relative_path: str, level: str) -> Check | None
 
 def load_json(path: Path) -> tuple[object | None, str | None]:
     try:
-        return json.loads(path.read_text(encoding="utf-8")), None
-    except (OSError, json.JSONDecodeError) as exc:
+        value = json.loads(path.read_text(encoding="utf-8"))
+        expected_type = list if path.name == "community-plugins.json" else dict
+        if not isinstance(value, expected_type):
+            return None, f"Expected JSON {expected_type.__name__}, got {type(value).__name__}."
+        return value, None
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         return None, str(exc)
 
 
@@ -641,7 +638,15 @@ def periodic_notes_checks(vault: Path) -> list[Check]:
     checks: list[Check] = []
     plugins_path = vault / ".obsidian" / "community-plugins.json"
     plugins_config, plugins_error = load_json(plugins_path) if plugins_path.is_file() else (None, None)
-    if plugins_error is not None or not isinstance(plugins_config, list) or "periodic-notes" not in plugins_config:
+    if plugins_error is not None:
+        return [Check("warning", "invalid-community-plugins-config",
+                      ".obsidian/community-plugins.json", plugins_error)]
+    if plugins_config is None:
+        return checks
+    if not all(isinstance(item, str) for item in plugins_config):
+        checks.append(Check("warning", "invalid-community-plugins-config",
+                            ".obsidian/community-plugins.json", "Plugin IDs must be strings."))
+    if "periodic-notes" not in plugins_config:
         return checks
 
     config_path = vault / ".obsidian" / "plugins" / "periodic-notes" / "data.json"
@@ -671,9 +676,14 @@ def periodic_notes_checks(vault: Path) -> list[Check]:
     active_calendar_set = config.get("activeCalendarSet")
     calendar_sets = config.get("calendarSets")
     if not isinstance(calendar_sets, list):
-        return checks
+        return [Check("warning", "invalid-calendar-sets",
+                      ".obsidian/plugins/periodic-notes/data.json", "calendarSets must be a list of objects.")]
+    if any(not isinstance(item, dict) for item in calendar_sets):
+        checks.append(Check("warning", "invalid-calendar-set",
+                            ".obsidian/plugins/periodic-notes/data.json", "Each calendarSets element must be an object."))
 
-    active_set = next((item for item in calendar_sets if item.get("id") == active_calendar_set), None)
+    active_set = next((item for item in calendar_sets
+                       if isinstance(item, dict) and item.get("id") == active_calendar_set), None)
     if not isinstance(active_set, dict):
         checks.append(
             Check(
@@ -686,7 +696,13 @@ def periodic_notes_checks(vault: Path) -> list[Check]:
         return checks
 
     day_config = active_set.get("day")
-    if not isinstance(day_config, dict) or not day_config.get("enabled"):
+    if day_config is None:
+        return checks
+    if not isinstance(day_config, dict):
+        checks.append(Check("warning", "invalid-day-config",
+                            ".obsidian/plugins/periodic-notes/data.json", "Calendar day config must be an object."))
+        return checks
+    if not day_config.get("enabled"):
         return checks
 
     folder = day_config.get("folder")
@@ -760,6 +776,15 @@ def build_checks(vault: Path, profile: str) -> list[Check]:
     checks.extend(templates_config_checks(vault))
     checks.extend(note_composer_checks(vault))
     checks.extend(periodic_notes_checks(vault))
+
+    if profile == "essential":
+        optional_prefixes = ("daily-note-", "missing-daily-", "template-", "missing-templates-",
+                             "missing-base-", "legacy-base-", "note-composer-", "missing-note-composer-",
+                             "periodic-daily-")
+        for check in checks:
+            if check.code.startswith(optional_prefixes) and check.level == "warning":
+                check.level = "info"
+                check.message = "Optional Ideaverse convention: " + check.message
 
     return checks
 
