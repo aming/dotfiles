@@ -1,76 +1,49 @@
 # Web Search Advanced - Tweet Category
 
-## Tool Restriction (Critical)
+## Capability and compatibility
 
-ONLY use `web_search_advanced_exa` with `category: "tweet"`. Do NOT use other categories or tools.
-
-## Filter Restrictions (Critical)
-
-The `tweet` category has **LIMITED filter support**. The following parameters are **NOT supported** and will cause 400 errors:
-
-- `includeText` - NOT SUPPORTED
-- `excludeText` - NOT SUPPORTED
-- `includeDomains` - NOT SUPPORTED
-- `excludeDomains` - NOT SUPPORTED
-- `moderation` - NOT SUPPORTED (causes 500 server error)
-
-## Supported Parameters
-
-### Core
-- `query` (required)
-- `numResults`
-- `type` ("auto", "fast", "deep", "neural")
-
-### Date filtering (ISO 8601) - Use these instead of text filters
-- `startPublishedDate` / `endPublishedDate`
-- `startCrawlDate` / `endCrawlDate`
-
-### Content extraction
-- `textMaxCharacters` / `contextMaxCharacters`
-- `enableHighlights` / `highlightsNumSentences` / `highlightsPerUrl` / `highlightsQuery`
-- `enableSummary` / `summaryQuery`
-
-### Additional
-- `additionalQueries` - useful for hashtag variations
-- `livecrawl` / `livecrawlTimeout` - use "preferred" for recent tweets
-
-## Token Isolation (Critical)
-
-Never run Exa searches in main context. Always spawn Task agents:
-- Agent calls `web_search_advanced_exa` with `category: "tweet"`
-- Agent merges + deduplicates results before presenting
-- Agent returns distilled output (brief markdown or compact JSON)
-- Main context stays clean regardless of search volume
+Prefer `web_search_advanced_exa` with the category described below.
+Read `api-compatibility.md` before choosing fields. Follow the parent SKILL.md's
+capability discovery, permitted-delegation/direct-search fallback, GitHub routing,
+and Results / Sources / Notes answer structure. The examples below require the
+advertised connector schema; use supported fields only and disclose lost controls.
 
 ## When to Use
 
-Use this category when you need:
+Use social-post search when you need:
 - Social discussions on a topic
 - Product announcements from company accounts
 - Developer opinions and experiences
 - Trending topics and community sentiment
 - Expert takes and threads
 
+## Category choice
+
+Current Exa lists no dedicated `tweet` enum. If the connector advertises a
+supported social category, use it; otherwise search generally with platform and
+handle terms, optionally constraining domains when exposed. Verify each X/Twitter
+URL and source date. An accepted `tweet` hint does not guarantee exhaustive posts.
+Use publication filters for the requested time window and `maxAgeHours` for
+retrieval freshness where supported; these are separate controls.
+
 ## Examples
 
 Recent tweets on a topic:
 ```
 web_search_advanced_exa {
-  "query": "Claude Code MCP experience",
-  "category": "tweet",
-  "startPublishedDate": "2025-01-01",
+  "query": "X Twitter Claude Code MCP experience",
+  "startPublishedDate": "2025-01-01T00:00:00Z",
   "numResults": 20,
   "type": "auto",
-  "livecrawl": "preferred"
+  "maxAgeHours": 0
 }
 ```
 
 Search with specific keywords (put keywords in query, not includeText):
 ```
 web_search_advanced_exa {
-  "query": "launching announcing new open source release",
-  "category": "tweet",
-  "startPublishedDate": "2025-12-01",
+  "query": "X Twitter launching announcing new open source release",
+  "startPublishedDate": "2025-12-01T00:00:00Z",
   "numResults": 15,
   "type": "auto"
 }
@@ -79,17 +52,17 @@ web_search_advanced_exa {
 Developer sentiment (use specific query terms instead of excludeText):
 ```
 web_search_advanced_exa {
-  "query": "developer experience DX frustrating painful",
-  "category": "tweet",
+  "query": "X Twitter developer experience DX frustrating painful",
   "numResults": 20,
   "type": "deep",
-  "livecrawl": "preferred"
+  "maxAgeHours": 0
 }
 ```
 
 ## Output Format
 
-Return:
+Use the parent Results / Sources / Notes structure with these category details:
+
 1) Results (tweet content, author handle, date, engagement if visible)
 2) Sources (Tweet URLs)
 3) Notes (sentiment summary, notable accounts, threads vs single tweets)

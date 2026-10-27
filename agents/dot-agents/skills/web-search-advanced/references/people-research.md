@@ -1,16 +1,12 @@
 # People Research
 
-## Tool Restriction (Critical)
+## Capability and compatibility
 
-ONLY use `web_search_advanced_exa`. Do NOT use `web_search_exa` or any other Exa tools.
-
-## Token Isolation (Critical)
-
-Never run Exa searches in main context. Always spawn Task agents:
-- Agent runs Exa search internally
-- Agent processes results using LLM intelligence
-- Agent returns only distilled output (compact JSON or brief markdown)
-- Main context stays clean regardless of search volume
+Prefer `web_search_advanced_exa` with the category described below.
+Read `api-compatibility.md` before choosing fields. Follow the parent SKILL.md's
+capability discovery, permitted-delegation/direct-search fallback, GitHub routing,
+and Results / Sources / Notes answer structure. The examples below require the
+advertised connector schema; use supported fields only and disclose lost controls.
 
 ## Dynamic Tuning
 
@@ -35,18 +31,14 @@ Use appropriate Exa `category` depending on what you need:
 - `news` → press mentions, interviews, speaker bios
 - No category (`type: "auto"`) → general web results, broader context
 
-Start with `category: "people"` for profile discovery, then use other categories or no category with `livecrawl: "fallback"` for deeper research on specific individuals.
+Start with `category: "people"` for profile discovery, then use other categories or no category with `maxAgeHours` where exposed (see `api-compatibility.md`) for deeper research on specific individuals.
 
-### Category-Specific Filter Restrictions
+### Filters
 
-When using `category: "people"`, these parameters cause errors:
-- `startPublishedDate` / `endPublishedDate`
-- `startCrawlDate` / `endCrawlDate`
-- `includeText` / `excludeText`
-- `excludeDomains`
-- `includeDomains` — **LinkedIn domains only** (e.g., "linkedin.com")
-
-When searching without a category, all parameters are available (but `includeText`/`excludeText` still only support single-item arrays).
+Apply `api-compatibility.md`; inspect the connector schema rather than assuming
+historical category restrictions. Publication-date windows are unavailable for
+company and people discovery. For dated coverage, use news or general search
+and verify dates in the retrieved sources.
 
 ## LinkedIn
 
@@ -81,7 +73,7 @@ web_search_advanced_exa {
 web_search_advanced_exa {
   "query": "Dario Amodei Anthropic CEO background",
   "type": "auto",
-  "livecrawl": "fallback",
+  "maxAgeHours": 24,
   "numResults": 15
 }
 ```
@@ -92,13 +84,14 @@ web_search_advanced_exa {
   "query": "Dario Amodei interview",
   "category": "news",
   "numResults": 10,
-  "startPublishedDate": "2024-01-01"
+  "startPublishedDate": "2024-01-01T00:00:00Z"
 }
 ```
 
 ## Output Format
 
-Return:
+Use the parent Results / Sources / Notes structure with these category details:
+
 1) Results (name, title, company, location if available)
 2) Sources (Profile URLs)
 3) Notes (profile completeness, verification status)

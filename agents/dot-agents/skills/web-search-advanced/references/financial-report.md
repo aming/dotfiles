@@ -1,55 +1,16 @@
 # Web Search Advanced - Financial Report Category
 
-## Tool Restriction (Critical)
+## Capability and compatibility
 
-ONLY use `web_search_advanced_exa` with `category: "financial report"`. Do NOT use other categories or tools.
-
-## Filter Restrictions (Critical)
-
-The `financial report` category has one known restriction:
-
-- `excludeText` - NOT SUPPORTED (causes 400 error)
-
-## Supported Parameters
-
-### Core
-- `query` (required)
-- `numResults`
-- `type` ("auto", "fast", "deep", "neural")
-
-### Domain filtering
-- `includeDomains` (e.g., ["sec.gov", "investor.apple.com"])
-- `excludeDomains`
-
-### Date filtering (ISO 8601) - Very useful for financial reports
-- `startPublishedDate` / `endPublishedDate`
-- `startCrawlDate` / `endCrawlDate`
-
-### Text filtering
-- `includeText` (must contain ALL) - **single-item arrays only**; multi-item causes 400
-- `excludeText` - NOT SUPPORTED
-
-### Content extraction
-- `textMaxCharacters` / `contextMaxCharacters`
-- `enableSummary` / `summaryQuery`
-- `enableHighlights` / `highlightsNumSentences` / `highlightsPerUrl` / `highlightsQuery`
-
-### Additional
-- `additionalQueries`
-- `livecrawl` / `livecrawlTimeout`
-- `subpages` / `subpageTarget`
-
-## Token Isolation (Critical)
-
-Never run Exa searches in main context. Always spawn Task agents:
-- Agent calls `web_search_advanced_exa` with `category: "financial report"`
-- Agent merges + deduplicates results before presenting
-- Agent returns distilled output (brief markdown or compact JSON)
-- Main context stays clean regardless of search volume
+Prefer `web_search_advanced_exa` with the category described below.
+Read `api-compatibility.md` before choosing fields. Follow the parent SKILL.md's
+capability discovery, permitted-delegation/direct-search fallback, GitHub routing,
+and Results / Sources / Notes answer structure. The examples below require the
+advertised connector schema; use supported fields only and disclose lost controls.
 
 ## When to Use
 
-Use this category when you need:
+Use `category: "financial report"` when you need:
 - SEC filings (10-K, 10-Q, 8-K, S-1)
 - Quarterly earnings reports
 - Annual reports
@@ -73,7 +34,7 @@ Recent earnings reports:
 web_search_advanced_exa {
   "query": "Q4 2025 earnings report technology",
   "category": "financial report",
-  "startPublishedDate": "2025-10-01",
+  "startPublishedDate": "2025-10-01T00:00:00Z",
   "numResults": 20,
   "type": "auto"
 }
@@ -85,7 +46,7 @@ web_search_advanced_exa {
   "query": "10-K annual report AI companies",
   "category": "financial report",
   "includeDomains": ["sec.gov"],
-  "startPublishedDate": "2025-01-01",
+  "startPublishedDate": "2025-01-01T00:00:00Z",
   "numResults": 15,
   "type": "deep"
 }
@@ -96,7 +57,6 @@ Risk factors analysis:
 web_search_advanced_exa {
   "query": "risk factors cybersecurity",
   "category": "financial report",
-  "includeText": ["cybersecurity"],
   "numResults": 10,
   "enableHighlights": true,
   "highlightsQuery": "What are the main cybersecurity risks?"
@@ -105,7 +65,8 @@ web_search_advanced_exa {
 
 ## Output Format
 
-Return:
+Use the parent Results / Sources / Notes structure with these category details:
+
 1) Results (company name, filing type, date, key figures/highlights)
 2) Sources (Filing URLs)
 3) Notes (reporting period, any restatements, auditor notes)

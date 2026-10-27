@@ -1,16 +1,12 @@
 # Company Research
 
-## Tool Restriction (Critical)
+## Capability and compatibility
 
-ONLY use `web_search_advanced_exa`. Do NOT use `web_search_exa` or any other Exa tools.
-
-## Token Isolation (Critical)
-
-Never run Exa searches in main context. Always spawn Task agents:
-- Agent runs Exa search internally
-- Agent processes results using LLM intelligence
-- Agent returns only distilled output (compact JSON or brief markdown)
-- Main context stays clean regardless of search volume
+Prefer `web_search_advanced_exa` with the category described below.
+Read `api-compatibility.md` before choosing fields. Follow the parent SKILL.md's
+capability discovery, permitted-delegation/direct-search fallback, GitHub routing,
+and Results / Sources / Notes answer structure. The examples below require the
+advertised connector schema; use supported fields only and disclose lost controls.
 
 ## Dynamic Tuning
 
@@ -32,22 +28,18 @@ Exa returns different results for different phrasings. For coverage:
 Use appropriate Exa `category` depending on what you need:
 - `company` → homepages, rich metadata (headcount, location, funding, revenue)
 - `news` → press coverage, announcements
-- `tweet` → social presence, public commentary
+- Social search → public commentary; follow `tweet.md` for category discovery
 - `people` → LinkedIn profiles (public data)
 - No category (`type: "auto"`) → general web results, deep dives, broader context
 
-Start with `category: "company"` for discovery, then use other categories or no category with `livecrawl: "fallback"` for deeper research.
+Start with `category: "company"` for discovery, then use other categories or no category with `maxAgeHours` where exposed (see `api-compatibility.md`) for deeper research.
 
-### Category-Specific Filter Restrictions
+### Filters
 
-When using `category: "company"`, these parameters cause 400 errors:
-- `includeDomains` / `excludeDomains`
-- `startPublishedDate` / `endPublishedDate`
-- `startCrawlDate` / `endCrawlDate`
-
-When searching without a category (or with `news`), domain and date filters work fine.
-
-**Universal restriction:** `includeText` and `excludeText` only support **single-item arrays**. Multi-item arrays cause 400 errors across all categories.
+Apply `api-compatibility.md`; inspect the connector schema rather than assuming
+historical category restrictions. Publication-date windows are unavailable for
+company and people discovery. For dated coverage, use news or general search
+and verify dates in the retrieved sources.
 
 ## LinkedIn
 
@@ -71,7 +63,7 @@ web_search_advanced_exa {
 web_search_advanced_exa {
   "query": "Anthropic funding rounds valuation 2024",
   "type": "deep",
-  "livecrawl": "fallback",
+  "maxAgeHours": 24,
   "numResults": 10,
   "includeDomains": ["techcrunch.com", "crunchbase.com", "bloomberg.com"]
 }
@@ -83,7 +75,7 @@ web_search_advanced_exa {
   "query": "Anthropic AI safety",
   "category": "news",
   "numResults": 15,
-  "startPublishedDate": "2024-01-01"
+  "startPublishedDate": "2024-01-01T00:00:00Z"
 }
 ```
 
@@ -98,7 +90,8 @@ web_search_advanced_exa {
 
 ## Output Format
 
-Return:
+Use the parent Results / Sources / Notes structure with these category details:
+
 1) Results (structured list; one company per row)
 2) Sources (URLs; 1-line relevance each)
 3) Notes (uncertainty/conflicts)
