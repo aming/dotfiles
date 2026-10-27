@@ -52,15 +52,15 @@ Always run the CLI as `obsidian-cli`.
 
 Do not call `obsidian`, and do not fall back to `obsidian`. On macOS, `obsidian` can resolve to the GUI executable inside `/Applications/Obsidian.app/Contents/MacOS/`, especially on case-insensitive filesystems, and may exit with `-1` and no useful output. The real terminal CLI in the app bundle is `obsidian-cli`.
 
-If `obsidian-cli` is unavailable, report that the Obsidian CLI is not correctly registered and use the safest direct file operation only if the task can tolerate bypassing Obsidian-aware behavior. Do not try to repair PATH, create symlinks, or launch the GUI unless the user explicitly asks.
+If the `obsidian-cli` executable is missing, report that the Obsidian CLI is not correctly registered and use the safest direct file operation only if the task can tolerate bypassing Obsidian-aware behavior. Do not repair PATH or create symlinks as part of a note task. Follow the workspace's instructions for starting the desktop app when needed.
 
 ## Prerequisites
 
 | Requirement | Details |
 |---|---|
-| Obsidian Desktop | **v1.12.0+** |
+| Obsidian Desktop | App **v1.12.0+** with installer **v1.12.7+** |
 | CLI enabled | Settings → Command line interface → Toggle ON |
-| Obsidian running | The desktop app **must be running** for CLI to work (IPC) |
+| Obsidian running | The desktop app is required for IPC; a CLI command may launch it if stopped |
 
 ### Platform Notes
 
@@ -315,6 +315,7 @@ obsidian-cli command id="dataview:dataview-force-refresh-views"
 
 ## Gotchas
 
+- `The CLI is unable to find Obsidian` does not prove the app is closed. On macOS, a Codex sandbox can block IPC to a running Obsidian app. Check the main process if possible (process inspection may also be restricted), then retry one needed read-only CLI command such as `obsidian-cli version` outside the sandbox with scoped approval. If it succeeds, use narrowly scoped access for the task's CLI operations, respecting write authorization; never approve a broad CLI prefix because it includes mutating commands. If it still fails, check that the CLI is enabled and a vault is open. Use minimal direct file operations only when safe, and read back affected notes.
 - `property:set` is safe for scalar values such as `status`, `summary`, and `created`, but it can serialize list-shaped properties as plain strings. Treat `tags`, `aliases`, `up`, `in`, and similar multi-value properties as YAML you must preserve.
 - When the user asks to add or fix Obsidian properties, remember that those properties live in YAML frontmatter. The real success condition is not "a property command ran"; it is "the note now has valid frontmatter in the expected shape."
 - After any property write, read the exact note back and verify both the frontmatter shape and the body content. Do not assume a success exit code means the note changed correctly.
@@ -326,6 +327,7 @@ obsidian-cli command id="dataview:dataview-force-refresh-views"
 | Problem | Cause | Fix |
 |---|---|---|
 | Empty output / hangs | Obsidian not running, or admin terminal (Windows) | Start Obsidian; use normal-privilege terminal |
+| `The CLI is unable to find Obsidian` | App not running, CLI disabled, or sandboxed IPC | See **Gotchas** before concluding the app is closed |
 | `obsidian-cli` command not found | CLI not registered in PATH | Re-enable CLI in Settings; restart terminal; on macOS, use `/Applications/Obsidian.app/Contents/MacOS/obsidian-cli` if present |
 | Unicode errors | Fixed in v1.12.2+ | Update Obsidian |
 | Wrong vault targeted | Multi-vault ambiguity | Pass vault name as first arg |
