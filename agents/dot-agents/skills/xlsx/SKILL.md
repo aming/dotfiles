@@ -1,6 +1,7 @@
 ---
 name: xlsx
-description: "Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \"the xlsx in my downloads\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved."
+description: >-
+  Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. For creation or transformation requests, deliver a spreadsheet file; read-only inspection may return findings without a new file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
@@ -69,9 +70,15 @@ Unless otherwise stated by the user or existing template
 
 A user may ask you to create, edit, or analyze the contents of an .xlsx file. You have different tools and workflows available for different tasks.
 
+## Choose the workflow and output
+
+- **Read-only analysis**: inspect existing data and answer the question; no new spreadsheet is required unless requested. Python/pandas calculations are appropriate.
+- **CSV/TSV transformation**: use pandas or the standard csv module, preserve delimiter/encoding and meaningful data types, and export a flat table. Calculated values are static; CSV/TSV cannot preserve workbook formulas, styles or charts. Do not run LibreOffice formula recalculation on text tables.
+- **Excel model authoring**: use `.xlsx` for dynamic formulas, formatting, charts or multiple sheets; use `.xlsm` when preserving VBA. The formula/recalculation rules below apply to these Excel models. Convert a text table to Excel only when the requested features require it, and make that output choice explicit.
+
 ## Important Requirements
 
-**LibreOffice Required for Formula Recalculation**: You can assume LibreOffice is installed for recalculating formula values using the `scripts/recalc.py` script. The script automatically configures LibreOffice on first run, including in sandboxed environments where Unix sockets are restricted (handled by `scripts/office/soffice.py`)
+**LibreOffice required for formula recalculation**: Check `soffice --version` before using `scripts/recalc.py`; install/provision the native LibreOffice application through the host’s supported package manager if missing. The helper configures an isolated profile, it does not install LibreOffice. For VBA or unsupported workbook features, follow the separate `.xlsm` workflow below.
 
 ## Reading and analyzing data
 
@@ -98,7 +105,7 @@ df.to_excel('output.xlsx', index=False)
 
 ## CRITICAL: Use Formulas, Not Hardcoded Values
 
-**Always use Excel formulas instead of calculating values in Python and hardcoding them.** This ensures the spreadsheet remains dynamic and updateable.
+**For dynamic Excel model outputs, use Excel formulas instead of hardcoding calculated values.** This ensures the spreadsheet remains dynamic and updateable.
 
 ### ❌ WRONG - Hardcoding Calculated Values
 ```python
@@ -127,16 +134,16 @@ sheet['C5'] = '=(C4-C2)/C2'
 sheet['D20'] = '=AVERAGE(D2:D19)'
 ```
 
-This applies to ALL calculations - totals, percentages, ratios, differences, etc. The spreadsheet should be able to recalculate when source data changes.
+For dynamic Excel models this applies to calculations such as totals, percentages, ratios and differences. The spreadsheet should be able to recalculate when source data changes.
 
 ## Common Workflow
 1. **Choose tool**: pandas for data, openpyxl for formulas/formatting
 2. **Create/Load**: Create new workbook or load existing file
 3. **Modify**: Add/edit data, formulas, and formatting
 4. **Save**: Write to file
-5. **Recalculate formulas (MANDATORY IF USING FORMULAS)**: Use the scripts/recalc.py script
+5. **Recalculate Excel workbook formulas (required when authoring/changing formulas; use the feature-appropriate Excel route for macro-sensitive workbooks)**: Use the scripts/recalc.py script
    ```bash
-   python scripts/recalc.py output.xlsx
+   "$SKILL_PYTHON" "$SKILL_DIR/scripts/recalc.py" output.xlsx
    ```
 6. **Verify and fix any errors**: 
    - The script returns JSON with error details
@@ -180,7 +187,7 @@ wb.save('output.xlsx')
 ### Editing existing Excel files
 
 ```python
-# Using openpyxl to preserve formulas and formatting
+# Simple cell edits; preserves existing formula strings but does not evaluate them
 from openpyxl import load_workbook
 
 # Load existing file
@@ -194,8 +201,6 @@ for sheet_name in wb.sheetnames:
 
 # Modify cells
 sheet['A1'] = 'New Value'
-sheet.insert_rows(2)  # Insert row at position 2
-sheet.delete_cols(3)  # Delete column 3
 
 # Add new sheet
 new_sheet = wb.create_sheet('NewSheet')
@@ -204,23 +209,28 @@ new_sheet['A1'] = 'Data'
 wb.save('modified.xlsx')
 ```
 
+### Structural edits require dependency management
+
+`openpyxl.insert_rows`, `delete_cols`, and range moves do not maintain all dependent formulas, defined names, tables or chart references. Before changing structure, inventory affected references across all sheets, defined names, table ranges and chart series; keep a backup and write an explicit old-to-new coordinate map. Prefer Excel's native structural operations for complex workbooks. If using openpyxl, update every affected reference deliberately (formula translation alone covers only part of this work), then inspect formulas/names/table ranges/chart series and compare several expected numerical results against a baseline. A formula can point at the wrong cell without producing an Excel error, so a clean error scan is insufficient.
+
 ## Recalculating formulas
 
 Excel files created or modified by openpyxl contain formulas as strings but not calculated values. Use the provided `scripts/recalc.py` script to recalculate formulas:
 
 ```bash
-python scripts/recalc.py <excel_file> [timeout_seconds]
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/recalc.py" <excel_file> [timeout_seconds]
 ```
 
 Example:
 ```bash
-python scripts/recalc.py output.xlsx 30
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/recalc.py" output.xlsx 30
 ```
 
 The script:
 - Automatically sets up LibreOffice macro on first run
 - Recalculates all formulas in all sheets
-- Scans ALL cells for Excel errors (#REF!, #DIV/0!, etc.)
+- Requires a completion marker and populated caches for every formula (explicit cached empty strings are allowed)
+- Checks actual error-typed cells, leaving literal text mentioning error tokens alone
 - Returns JSON with detailed error locations and counts
 - Works on both Linux and macOS
 
@@ -290,3 +300,42 @@ The script returns JSON with error details:
 - Add comments to cells with complex formulas or important assumptions
 - Document data sources for hardcoded values
 - Include notes for key calculations and model sections
+
+### Macro-enabled workbooks (.xlsm)
+
+Load existing `.xlsm` files with `load_workbook(path, keep_vba=True)` and save with the `.xlsm` extension to preserve the VBA archive. For example:
+
+```python
+from openpyxl import load_workbook
+wb = load_workbook("input.xlsm", keep_vba=True)
+wb.active["A1"] = "Updated"
+wb.save("output.xlsm")
+wb.close()
+```
+
+Keep an original backup and verify the VBA archive remains byte-identical before handing off the workbook:
+
+```python
+from zipfile import ZipFile
+with ZipFile("input.xlsm") as original, ZipFile("output.xlsm") as edited:
+    assert original.read("xl/vbaProject.bin") == edited.read("xl/vbaProject.bin")
+```
+
+`keep_vba` preserves the VBA archive but does not execute macros or guarantee every workbook feature. Openpyxl may discard unsupported extensions, drawings or signatures; inspect the output and use Excel when those must be preserved. LibreOffice can alter VBA or unsupported Excel features: run `scripts/recalc.py` on a copy, compare the VBA archive afterward, and use Excel for recalculation when exact macro fidelity is required. Recalculation uses an isolated temporary profile and requires a macro completion marker; a timeout is a failure.
+
+The bundled `scripts/office/validate.py` supports DOCX/PPTX schema checks only. It rejects XLSX rather than claiming schema validation; use openpyxl to reopen the workbook and `scripts/recalc.py` to check formula errors. Packing XLSX requires explicit `--validate false` until an XLSX schema validator is available.
+
+## Local setup and helper paths
+
+Run from the task directory and set `SKILL_DIR` to the installed xlsx skill directory:
+
+```bash
+SKILL_DIR="/absolute/path/to/installed/xlsx"
+TASK_DIR="$PWD"
+python3 -m venv "$TASK_DIR/.venv"
+SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
+"$SKILL_PYTHON" -m pip install 'openpyxl==3.1.5' 'pandas==2.3.3' 'defusedxml==0.7.1' 'lxml==6.0.2'
+soffice --version  # native LibreOffice needed only for its recalculation route
+```
+
+The copied `scripts/office/` utilities support standalone OOXML unpack/pack operations; their schema validators cover DOCX/PPTX only. XLSX packaging is available with explicit `--validate false`; reopen and check the workbook separately. Keep outputs in the task directory.

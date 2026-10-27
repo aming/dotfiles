@@ -21,29 +21,57 @@ from pathlib import Path
 import defusedxml.minidom
 
 
-import re
+import posixpath
+from urllib.parse import unquote, urlsplit
+
+
+def relationship_target(unpacked_dir: Path, rels_file: Path, rel) -> Path | None:
+    if rel.getAttribute("TargetMode").lower() == "external":
+        return None
+    target = urlsplit(rel.getAttribute("Target"))
+    if target.scheme or target.netloc or not target.path:
+        raise ValueError(f"Invalid internal relationship target in {rels_file}")
+    relative = rels_file.relative_to(unpacked_dir).as_posix()
+    source_dir = posixpath.dirname(posixpath.dirname(relative))
+    decoded = unquote(target.path)
+    normalized = posixpath.normpath(decoded.lstrip("/") if decoded.startswith("/") else posixpath.join(source_dir, decoded))
+    if normalized == ".." or normalized.startswith("../"):
+        raise ValueError(f"Relationship escapes package: {decoded}")
+    resolved = (unpacked_dir / normalized).resolve()
+    if not resolved.is_relative_to(unpacked_dir.resolve()):
+        raise ValueError(f"Relationship escapes package: {decoded}")
+    return Path(normalized)
 
 
 def get_slides_in_sldidlst(unpacked_dir: Path) -> set[str]:
-    pres_path = unpacked_dir / "ppt" / "presentation.xml"
-    pres_rels_path = unpacked_dir / "ppt" / "_rels" / "presentation.xml.rels"
-
-    if not pres_path.exists() or not pres_rels_path.exists():
-        return set()
-
-    rels_dom = defusedxml.minidom.parse(str(pres_rels_path))
-    rid_to_slide = {}
-    for rel in rels_dom.getElementsByTagName("Relationship"):
-        rid = rel.getAttribute("Id")
-        target = rel.getAttribute("Target")
-        rel_type = rel.getAttribute("Type")
-        if "slide" in rel_type and target.startswith("slides/"):
-            rid_to_slide[rid] = target.replace("slides/", "")
-
-    pres_content = pres_path.read_text(encoding="utf-8")
-    referenced_rids = set(re.findall(r'<p:sldId[^>]*r:id="([^"]+)"', pres_content))
-
-    return {rid_to_slide[rid] for rid in referenced_rids if rid in rid_to_slide}
+    pres_path = unpacked_dir / "ppt/presentation.xml"
+    rels_path = unpacked_dir / "ppt/_rels/presentation.xml.rels"
+    if not pres_path.is_file() or not rels_path.is_file():
+        raise ValueError("Cannot clean slides without presentation and relationships")
+    rels = defusedxml.minidom.parse(str(rels_path))
+    mapping = {}
+    for rel in rels.getElementsByTagNameNS("*", "Relationship"):
+        if rel.getAttribute("Type").endswith("/slide"):
+            target = relationship_target(unpacked_dir, rels_path, rel)
+            if target is not None:
+                mapping[rel.getAttribute("Id")] = target
+    pres = defusedxml.minidom.parse(str(pres_path))
+    root = pres.documentElement
+    if root.localName != "presentation" or root.namespaceURI not in {
+        "http://schemas.openxmlformats.org/presentationml/2006/main",
+        "http://purl.oclc.org/ooxml/presentationml/main",
+    }:
+        raise ValueError("Cannot clean an invalid presentation root")
+    slides = set()
+    for slide in pres.getElementsByTagNameNS("*", "sldId"):
+        rid = slide.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id")
+        if not rid:
+            rid = slide.getAttributeNS("http://purl.oclc.org/ooxml/officeDocument/relationships", "id")
+        target = mapping.get(rid)
+        if target is None or target.parent != Path("ppt/slides") or not (unpacked_dir / target).is_file():
+            raise ValueError(f"Cannot safely resolve slide relationship {rid}")
+        slides.add(target.name)
+    return slides
 
 
 def remove_orphaned_slides(unpacked_dir: Path) -> list[str]:
@@ -70,20 +98,12 @@ def remove_orphaned_slides(unpacked_dir: Path) -> list[str]:
 
     if removed and pres_rels_path.exists():
         rels_dom = defusedxml.minidom.parse(str(pres_rels_path))
-        changed = False
-
-        for rel in list(rels_dom.getElementsByTagName("Relationship")):
-            target = rel.getAttribute("Target")
-            if target.startswith("slides/"):
-                slide_name = target.replace("slides/", "")
-                if slide_name not in referenced_slides:
-                    if rel.parentNode:
-                        rel.parentNode.removeChild(rel)
-                        changed = True
-
-        if changed:
-            with open(pres_rels_path, "wb") as f:
-                f.write(rels_dom.toxml(encoding="utf-8"))
+        for rel in list(rels_dom.getElementsByTagNameNS("*", "Relationship")):
+            if rel.getAttribute("Type").endswith("/slide"):
+                target = relationship_target(unpacked_dir, pres_rels_path, rel)
+                if target is not None and target.as_posix() in removed:
+                    rel.parentNode.removeChild(rel)
+        pres_rels_path.write_bytes(rels_dom.toxml(encoding="utf-8"))
 
     return removed
 
@@ -104,67 +124,29 @@ def remove_trash_directory(unpacked_dir: Path) -> list[str]:
 
 
 def get_slide_referenced_files(unpacked_dir: Path) -> set:
-    referenced = set()
-    slides_rels_dir = unpacked_dir / "ppt" / "slides" / "_rels"
-
-    if not slides_rels_dir.exists():
-        return referenced
-
-    for rels_file in slides_rels_dir.glob("*.rels"):
-        dom = defusedxml.minidom.parse(str(rels_file))
-        for rel in dom.getElementsByTagName("Relationship"):
-            target = rel.getAttribute("Target")
-            if not target:
-                continue
-            target_path = (rels_file.parent.parent / target).resolve()
-            try:
-                referenced.add(target_path.relative_to(unpacked_dir.resolve()))
-            except ValueError:
-                pass
-
-    return referenced
+    return get_referenced_files(unpacked_dir)
 
 
 def remove_orphaned_rels_files(unpacked_dir: Path) -> list[str]:
-    resource_dirs = ["charts", "diagrams", "drawings"]
     removed = []
-    slide_referenced = get_slide_referenced_files(unpacked_dir)
-
-    for dir_name in resource_dirs:
-        rels_dir = unpacked_dir / "ppt" / dir_name / "_rels"
-        if not rels_dir.exists():
+    for rels_file in unpacked_dir.rglob("*.rels"):
+        if rels_file == unpacked_dir / "_rels/.rels":
             continue
-
-        for rels_file in rels_dir.glob("*.rels"):
-            resource_file = rels_dir.parent / rels_file.name.replace(".rels", "")
-            try:
-                resource_rel_path = resource_file.resolve().relative_to(unpacked_dir.resolve())
-            except ValueError:
-                continue
-
-            if not resource_file.exists() or resource_rel_path not in slide_referenced:
-                rels_file.unlink()
-                rel_path = rels_file.relative_to(unpacked_dir)
-                removed.append(str(rel_path))
-
+        source = rels_file.parent.parent / rels_file.name[:-5]
+        if not source.exists():
+            rels_file.unlink()
+            removed.append(str(rels_file.relative_to(unpacked_dir)))
     return removed
 
 
 def get_referenced_files(unpacked_dir: Path) -> set:
     referenced = set()
-
     for rels_file in unpacked_dir.rglob("*.rels"):
         dom = defusedxml.minidom.parse(str(rels_file))
-        for rel in dom.getElementsByTagName("Relationship"):
-            target = rel.getAttribute("Target")
-            if not target:
-                continue
-            target_path = (rels_file.parent.parent / target).resolve()
-            try:
-                referenced.add(target_path.relative_to(unpacked_dir.resolve()))
-            except ValueError:
-                pass
-
+        for rel in dom.getElementsByTagNameNS("*", "Relationship"):
+            target = relationship_target(unpacked_dir, rels_file, rel)
+            if target is not None:
+                referenced.add(target)
     return referenced
 
 
@@ -239,6 +221,9 @@ def update_content_types(unpacked_dir: Path, removed_files: list[str]) -> None:
 
 
 def clean_unused_files(unpacked_dir: Path) -> list[str]:
+    # Parse all relationships before any deletion; malformed input fails closed.
+    get_referenced_files(unpacked_dir)
+    get_slides_in_sldidlst(unpacked_dir)
     all_removed = []
 
     slides_removed = remove_orphaned_slides(unpacked_dir)

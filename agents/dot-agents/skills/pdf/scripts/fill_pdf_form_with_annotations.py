@@ -51,7 +51,7 @@ def fill_pdf_form(input_pdf_path, fields_json_path, output_pdf_path):
         )
         pdf_width, pdf_height = pdf_dimensions[page_num]
 
-        if "pdf_width" in page_info:
+        if "image_width" not in page_info:
             transformed_entry_box = transform_from_pdf_coords(
                 field["entry_bounding_box"], float(pdf_height)
             )

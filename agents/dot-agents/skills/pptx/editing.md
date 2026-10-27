@@ -6,8 +6,8 @@ When using an existing presentation as a template:
 
 1. **Analyze existing slides**:
    ```bash
-   python scripts/thumbnail.py template.pptx
-   python -m markitdown template.pptx
+   "$SKILL_PYTHON" "$SKILL_DIR/scripts/thumbnail.py" template.pptx
+   "$SKILL_PYTHON" -m markitdown template.pptx
    ```
    Review `thumbnails.jpg` to see layouts, and markitdown output to see placeholder text.
 
@@ -26,7 +26,7 @@ When using an existing presentation as a template:
 
    Match content type to layout style (e.g., key points → bullet slide, team info → multi-column, testimonials → quote slide).
 
-3. **Unpack**: `python scripts/office/unpack.py template.pptx unpacked/`
+3. **Unpack**: `"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/unpack.py" template.pptx unpacked/`
 
 4. **Build presentation** (do this yourself, not with subagents):
    - Delete unwanted slides (remove from `<p:sldIdLst>`)
@@ -37,9 +37,9 @@ When using an existing presentation as a template:
 5. **Edit content**: Update text in each `slide{N}.xml`.
    **Use subagents here if available** — slides are separate XML files, so subagents can edit in parallel.
 
-6. **Clean**: `python scripts/clean.py unpacked/`
+6. **Clean**: `"$SKILL_PYTHON" "$SKILL_DIR/scripts/clean.py" unpacked/`
 
-7. **Pack**: `python scripts/office/pack.py unpacked/ output.pptx --original template.pptx`
+7. **Pack**: `"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/pack.py" unpacked/ output.pptx --original template.pptx`
 
 ---
 
@@ -56,7 +56,7 @@ When using an existing presentation as a template:
 ### unpack.py
 
 ```bash
-python scripts/office/unpack.py input.pptx unpacked/
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/unpack.py" input.pptx unpacked/
 ```
 
 Extracts PPTX, pretty-prints XML, escapes smart quotes.
@@ -64,8 +64,8 @@ Extracts PPTX, pretty-prints XML, escapes smart quotes.
 ### add_slide.py
 
 ```bash
-python scripts/add_slide.py unpacked/ slide2.xml      # Duplicate slide
-python scripts/add_slide.py unpacked/ slideLayout2.xml # From layout
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/add_slide.py" unpacked/ slide2.xml      # Duplicate slide
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/add_slide.py" unpacked/ slideLayout2.xml # From layout
 ```
 
 Prints `<p:sldId>` to add to `<p:sldIdLst>` at desired position.
@@ -73,7 +73,7 @@ Prints `<p:sldId>` to add to `<p:sldIdLst>` at desired position.
 ### clean.py
 
 ```bash
-python scripts/clean.py unpacked/
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/clean.py" unpacked/
 ```
 
 Removes slides not in `<p:sldIdLst>`, unreferenced media, orphaned rels.
@@ -81,7 +81,7 @@ Removes slides not in `<p:sldIdLst>`, unreferenced media, orphaned rels.
 ### pack.py
 
 ```bash
-python scripts/office/pack.py unpacked/ output.pptx --original input.pptx
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/pack.py" unpacked/ output.pptx --original input.pptx
 ```
 
 Validates, repairs, condenses XML, re-encodes smart quotes.
@@ -89,7 +89,7 @@ Validates, repairs, condenses XML, re-encodes smart quotes.
 ### thumbnail.py
 
 ```bash
-python scripts/thumbnail.py input.pptx [output_prefix] [--cols N]
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/thumbnail.py" input.pptx [output_prefix] [--cols N]
 ```
 
 Creates `thumbnails.jpg` with slide filenames as labels. Default 3 columns, max 12 per grid.
@@ -114,7 +114,7 @@ Slide order is in `ppt/presentation.xml` → `<p:sldIdLst>`.
 
 **Subagents:** If available, use them here (after completing step 4). Each slide is a separate XML file, so subagents can edit in parallel. In your prompt to subagents, include:
 - The slide file path(s) to edit
-- **"Use the Edit tool for all changes"**
+- **"Make targeted XML edits with the available editor or patch tool"**
 - The formatting rules and common pitfalls below
 
 For each slide:
@@ -122,7 +122,7 @@ For each slide:
 2. Identify ALL placeholder content—text, images, charts, icons, captions
 3. Replace each placeholder with final content
 
-**Use the Edit tool, not sed or Python scripts.** The Edit tool forces specificity about what to replace and where, yielding better reliability.
+Use the host’s available editor or patch tool for targeted replacements. Read the XML first and review the resulting diff.
 
 ### Formatting Rules
 
@@ -184,7 +184,7 @@ Copy `<a:pPr>` from the original paragraph to preserve line spacing. Use `b="1"`
 
 ### Smart Quotes
 
-Handled automatically by unpack/pack. But the Edit tool converts smart quotes to ASCII.
+Handled automatically by unpack/pack. Some editors normalize smart quotes to ASCII; inspect the output.
 
 **When adding new text with quotes, use XML entities:**
 

@@ -4,8 +4,10 @@ Recalculates all formulas in an Excel file using LibreOffice
 """
 
 import json
-import os
-import platform
+import tempfile
+import zipfile
+import defusedxml.ElementTree as ET
+import uuid
 import subprocess
 import sys
 from pathlib import Path
@@ -14,91 +16,95 @@ from office.soffice import get_soffice_env
 
 from openpyxl import load_workbook
 
-MACRO_DIR_MACOS = "~/Library/Application Support/LibreOffice/4/user/basic/Standard"
-MACRO_DIR_LINUX = "~/.config/libreoffice/4/user/basic/Standard"
-MACRO_FILENAME = "Module1.xba"
-
 RECALCULATE_MACRO = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
-<script:module xmlns:script="http://openoffice.org/2000/script" script:name="Module1" script:language="StarBasic">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="{module}" script:language="StarBasic">
     Sub RecalculateAndSave()
       ThisComponent.calculateAll()
       ThisComponent.store()
+      Dim marker As Integer
+      marker = FreeFile
+      Open "{marker}" For Output As #marker
+      Print #marker, "recalculated-and-saved"
+      Close #marker
       ThisComponent.close(True)
     End Sub
 </script:module>"""
 
 
-def has_gtimeout():
-    try:
-        subprocess.run(
-            ["gtimeout", "--version"], capture_output=True, timeout=1, check=False
-        )
-        return True
-    except (FileNotFoundError, subprocess.TimeoutExpired):
-        return False
-
-
-def setup_libreoffice_macro():
-    macro_dir = os.path.expanduser(
-        MACRO_DIR_MACOS if platform.system() == "Darwin" else MACRO_DIR_LINUX
+def setup_libreoffice_macro(profile, module, marker, timeout):
+    result = subprocess.run(
+        ["soffice", "--headless", f"-env:UserInstallation={profile.as_uri()}", "--terminate_after_init"],
+        capture_output=True, timeout=timeout, env=get_soffice_env(),
     )
-    macro_file = os.path.join(macro_dir, MACRO_FILENAME)
-
-    if (
-        os.path.exists(macro_file)
-        and "RecalculateAndSave" in Path(macro_file).read_text()
-    ):
-        return True
-
-    if not os.path.exists(macro_dir):
-        subprocess.run(
-            ["soffice", "--headless", "--terminate_after_init"],
-            capture_output=True,
-            timeout=10,
-            env=get_soffice_env(),
-        )
-        os.makedirs(macro_dir, exist_ok=True)
-
-    try:
-        Path(macro_file).write_text(RECALCULATE_MACRO)
-        return True
-    except Exception:
-        return False
+    if result.returncode != 0:
+        raise RuntimeError("LibreOffice profile initialization failed")
+    macro_dir = profile / "user/basic/Standard"
+    macro_dir.mkdir(parents=True, exist_ok=True)
+    (macro_dir / f"{module}.xba").write_text(RECALCULATE_MACRO.format(module=module, marker=marker))
+    # Register the unique module in the private Standard library.
+    (macro_dir / "script.xlb").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<library:library xmlns:library="http://openoffice.org/2000/library" library:name="Standard" library:readonly="false" library:passwordprotected="false">'
+        f'<library:element library:name="{module}"/></library:library>'
+    )
 
 
 def recalc(filename, timeout=30):
     if not Path(filename).exists():
         return {"error": f"File {filename} does not exist"}
 
+    if timeout <= 0:
+        return {"error": "Timeout must be positive"}
+
     abs_path = str(Path(filename).absolute())
 
-    if not setup_libreoffice_macro():
-        return {"error": "Failed to setup LibreOffice macro"}
-
-    cmd = [
-        "soffice",
-        "--headless",
-        "--norestore",
-        "vnd.sun.star.script:Standard.Module1.RecalculateAndSave?language=Basic&location=application",
-        abs_path,
-    ]
-
-    if platform.system() == "Linux":
-        cmd = ["timeout", str(timeout)] + cmd
-    elif platform.system() == "Darwin" and has_gtimeout():
-        cmd = ["gtimeout", str(timeout)] + cmd
-
-    result = subprocess.run(cmd, capture_output=True, text=True, env=get_soffice_env())
-
-    if result.returncode != 0 and result.returncode != 124:  
-        error_msg = result.stderr or "Unknown error during recalculation"
-        if "Module1" in error_msg or "RecalculateAndSave" not in error_msg:
-            return {"error": "LibreOffice macro not configured properly"}
-        return {"error": error_msg}
+    try:
+        with tempfile.TemporaryDirectory(prefix="xlsx-recalc-") as temp_dir:
+            profile = Path(temp_dir) / "profile"
+            marker = Path(temp_dir) / "completed"
+            module = "Recalc_" + uuid.uuid4().hex
+            setup_libreoffice_macro(profile, module, marker, timeout)
+            cmd = [
+                "soffice", "--headless", f"-env:UserInstallation={profile.as_uri()}",
+                "--norestore",
+                f"vnd.sun.star.script:Standard.{module}.RecalculateAndSave?language=Basic&location=application",
+                abs_path,
+            ]
+            process = subprocess.run(cmd, capture_output=True, text=True,
+                                     timeout=timeout, env=get_soffice_env())
+            if process.returncode != 0:
+                return {"error": f"LibreOffice failed ({process.returncode}): {process.stderr}"}
+            if not marker.is_file() or marker.read_text().strip() != "recalculated-and-saved":
+                return {"error": "Recalculation completion was not confirmed by the macro"}
+    except subprocess.TimeoutExpired:
+        return {"error": f"LibreOffice timed out after {timeout} seconds; recalculation unverified"}
+    except Exception as exc:
+        return {"error": str(exc)}
 
     try:
-        wb = load_workbook(filename, data_only=True)
+        missing_caches = []
+        sheet_namespace = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+        with zipfile.ZipFile(filename) as archive:
+            for part in archive.namelist():
+                if not part.startswith("xl/") or not part.endswith(".xml"):
+                    continue
+                root = ET.fromstring(archive.read(part))
+                if root.tag != sheet_namespace + "worksheet":
+                    continue
+                for cell in root.iter(sheet_namespace + "c"):
+                    if cell.find(sheet_namespace + "f") is None:
+                        continue
+                    value = cell.find(sheet_namespace + "v")
+                    # A cached empty string is valid; an absent/empty numeric cache is not.
+                    if value is None or (value.text is None and cell.get("t") != "str"):
+                        missing_caches.append(f"{part}!{cell.get('r')}")
+        if missing_caches:
+            return {"error": "Formula cache coverage is incomplete after recalculation",
+                    "missing_formula_caches": missing_caches[:20],
+                    "total_missing_formula_caches": len(missing_caches)}
+
+        wb = load_workbook(filename, data_only=True, keep_vba=Path(filename).suffix.lower() == ".xlsm")
 
         excel_errors = [
             "#VALUE!",
@@ -116,13 +122,9 @@ def recalc(filename, timeout=30):
             ws = wb[sheet_name]
             for row in ws.iter_rows():
                 for cell in row:
-                    if cell.value is not None and isinstance(cell.value, str):
-                        for err in excel_errors:
-                            if err in cell.value:
-                                location = f"{sheet_name}!{cell.coordinate}"
-                                error_details[err].append(location)
-                                total_errors += 1
-                                break
+                    if cell.data_type == "e":
+                        error_details.setdefault(cell.value, []).append(f"{sheet_name}!{cell.coordinate}")
+                        total_errors += 1
 
         wb.close()
 
@@ -139,17 +141,13 @@ def recalc(filename, timeout=30):
                     "locations": locations[:20],  
                 }
 
-        wb_formulas = load_workbook(filename, data_only=False)
+        wb_formulas = load_workbook(filename, data_only=False, keep_vba=Path(filename).suffix.lower() == ".xlsm")
         formula_count = 0
         for sheet_name in wb_formulas.sheetnames:
             ws = wb_formulas[sheet_name]
             for row in ws.iter_rows():
                 for cell in row:
-                    if (
-                        cell.value
-                        and isinstance(cell.value, str)
-                        and cell.value.startswith("=")
-                    ):
+                    if cell.data_type == "f":
                         formula_count += 1
         wb_formulas.close()
 
@@ -178,6 +176,7 @@ def main():
 
     result = recalc(filename, timeout)
     print(json.dumps(result, indent=2))
+    sys.exit(1 if "error" in result or result.get("total_errors", 0) else 0)
 
 
 if __name__ == "__main__":

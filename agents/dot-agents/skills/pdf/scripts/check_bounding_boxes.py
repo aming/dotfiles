@@ -20,6 +20,19 @@ def get_bounding_box_messages(fields_json_stream) -> list[str]:
         disjoint_vertical = r1[1] >= r2[3] or r1[3] <= r2[1]
         return not (disjoint_horizontal or disjoint_vertical)
 
+    # Normalize top-left coordinates to PDF points before font-size comparisons.
+    pages = {page["page_number"]: page for page in fields.get("pages", [])}
+    for field in fields["form_fields"]:
+        page = pages.get(field["page_number"], {})
+        if "image_width" in page:
+            if not all(key in page for key in ("pdf_width", "pdf_height", "image_height")):
+                return messages + ["FAILURE: Image coordinates require pdf_width/pdf_height in points and image_width/image_height in pixels"]
+            x_scale = page["pdf_width"] / page["image_width"]
+            y_scale = page["pdf_height"] / page["image_height"]
+            for key in ("label_bounding_box", "entry_bounding_box"):
+                box = field[key]
+                field[key] = [box[0] * x_scale, box[1] * y_scale, box[2] * x_scale, box[3] * y_scale]
+
     rects_and_fields = []
     for f in fields["form_fields"]:
         rects_and_fields.append(RectAndField(f["label_bounding_box"], "label", f))
@@ -74,3 +87,5 @@ if __name__ == "__main__":
         messages = get_bounding_box_messages(f)
     for msg in messages:
         print(msg)
+
+    sys.exit(1 if any(message.startswith("FAILURE:") for message in messages) else 0)

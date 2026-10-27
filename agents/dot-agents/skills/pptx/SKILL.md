@@ -1,6 +1,7 @@
 ---
 name: pptx
-description: "Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions \"deck,\" \"slides,\" \"presentation,\" or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill."
+description: >-
+  Use this skill any time a .pptx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates, layouts, speaker notes, or comments. Trigger whenever the user mentions "deck," "slides," "presentation," or references a .pptx filename, regardless of what they plan to do with the content afterward. If a .pptx file needs to be opened, created, or touched, use this skill.
 license: Proprietary. LICENSE.txt has complete terms
 ---
 
@@ -10,7 +11,7 @@ license: Proprietary. LICENSE.txt has complete terms
 
 | Task | Guide |
 |------|-------|
-| Read/analyze content | `python -m markitdown presentation.pptx` |
+| Read/analyze content | `"$SKILL_PYTHON" -m markitdown presentation.pptx` |
 | Edit or create from template | Read [editing.md](editing.md) |
 | Create from scratch | Read [pptxgenjs.md](pptxgenjs.md) |
 
@@ -20,13 +21,13 @@ license: Proprietary. LICENSE.txt has complete terms
 
 ```bash
 # Text extraction
-python -m markitdown presentation.pptx
+"$SKILL_PYTHON" -m markitdown presentation.pptx
 
 # Visual overview
-python scripts/thumbnail.py presentation.pptx
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/thumbnail.py" presentation.pptx
 
 # Raw XML
-python scripts/office/unpack.py presentation.pptx unpacked/
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/unpack.py" presentation.pptx unpacked/
 ```
 
 ---
@@ -140,14 +141,14 @@ Choose colors that match your topic — don't default to generic blue. Use these
 
 ## QA (Required)
 
-**Assume there are problems. Your job is to find them.**
+Inspect every slide for content, layout, and readability problems.
 
-Your first render is almost never correct. Approach QA as a bug hunt, not a confirmation step. If you found zero issues on first inspection, you weren't looking hard enough.
+Record the content and visual checks performed. An evidence-backed clean first inspection can pass; make changes when an actual issue is found.
 
 ### Content QA
 
 ```bash
-python -m markitdown output.pptx
+"$SKILL_PYTHON" -m markitdown output.pptx
 ```
 
 Check for missing content, typos, wrong order.
@@ -155,14 +156,14 @@ Check for missing content, typos, wrong order.
 **When using templates, check for leftover placeholder text:**
 
 ```bash
-python -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|this.*(page|slide).*layout"
+"$SKILL_PYTHON" -m markitdown output.pptx | grep -iE "xxxx|lorem|ipsum|this.*(page|slide).*layout"
 ```
 
 If grep returns results, fix them before declaring success.
 
 ### Visual QA
 
-**⚠️ USE SUBAGENTS** — even for 2-3 slides. You've been staring at the code and will see what you expect, not what's there. Subagents have fresh eyes.
+If agents are available and delegation is authorized, an independent visual review can help. Otherwise inspect the rendered slides directly.
 
 Convert slides to images (see [Converting to Images](#converting-to-images)), then use this prompt:
 
@@ -195,12 +196,12 @@ Report ALL issues found, including minor ones.
 ### Verification Loop
 
 1. Generate slides → Convert to images → Inspect
-2. **List issues found** (if none found, look again more critically)
-3. Fix issues
+2. List actual issues found, or record evidence of a clean content and visual pass
+3. Fix identified issues when present
 4. **Re-verify affected slides** — one fix often creates another problem
 5. Repeat until a full pass reveals no new issues
 
-**Do not declare success until you've completed at least one fix-and-verify cycle.**
+A clean first pass is sufficient when the complete inspection is documented. After any fix, re-render and inspect affected slides before declaring success.
 
 ---
 
@@ -209,7 +210,7 @@ Report ALL issues found, including minor ones.
 Convert presentations to individual slide images for visual inspection:
 
 ```bash
-python scripts/office/soffice.py --headless --convert-to pdf output.pptx
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/soffice.py" --headless --convert-to pdf output.pptx
 pdftoppm -jpeg -r 150 output.pdf slide
 ```
 
@@ -225,8 +226,15 @@ pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed
 
 ## Dependencies
 
-- `pip install "markitdown[pptx]"` - text extraction
-- `pip install Pillow` - thumbnail grids
-- `npm install -g pptxgenjs` - creating from scratch
-- LibreOffice (`soffice`) - PDF conversion (auto-configured for sandboxed environments via `scripts/office/soffice.py`)
-- Poppler (`pdftoppm`) - PDF to images
+Run from the task directory, keeping generated slides there. Set `SKILL_DIR` to the installed pptx skill directory:
+
+```bash
+SKILL_DIR="/absolute/path/to/installed/pptx"
+TASK_DIR="$PWD"
+python3 -m venv "$TASK_DIR/.venv"
+SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
+"$SKILL_PYTHON" -m pip install 'markitdown[pptx]==0.1.3' 'Pillow==11.3.0' 'defusedxml==0.7.1' 'lxml==6.0.2'
+npm install --save-exact pptxgenjs@4.0.1
+```
+
+Write CommonJS examples as `.cjs` files in the task directory so `require()` resolves local dependencies. Optional icon examples additionally need local `react-icons`, `react`, `react-dom` and `sharp` (see pptxgenjs.md). Native LibreOffice (`soffice`) is required for PDF conversion and Poppler (`pdftoppm`) for image rendering; check their versions and provision them through the host’s supported package manager. The soffice helper configures the runtime environment, it does not install these applications.

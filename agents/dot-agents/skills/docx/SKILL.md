@@ -23,7 +23,7 @@ A .docx file is a ZIP archive containing XML files.
 Legacy `.doc` files must be converted before editing:
 
 ```bash
-python scripts/office/soffice.py --headless --convert-to docx document.doc
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/soffice.py" --headless --convert-to docx document.doc
 ```
 
 ### Reading Content
@@ -33,13 +33,13 @@ python scripts/office/soffice.py --headless --convert-to docx document.doc
 pandoc --track-changes=all document.docx -o output.md
 
 # Raw XML access
-python scripts/office/unpack.py document.docx unpacked/
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/unpack.py" document.docx unpacked/
 ```
 
 ### Converting to Images
 
 ```bash
-python scripts/office/soffice.py --headless --convert-to pdf document.docx
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/soffice.py" --headless --convert-to pdf document.docx
 pdftoppm -jpeg -r 150 document.pdf page
 ```
 
@@ -48,17 +48,18 @@ pdftoppm -jpeg -r 150 document.pdf page
 To produce a clean document with all tracked changes accepted (requires LibreOffice):
 
 ```bash
-python scripts/accept_changes.py input.docx output.docx
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/accept_changes.py" input.docx output.docx
 ```
 
 ---
 
 ## Creating New Documents
 
-Generate .docx files with JavaScript, then validate. Install: `npm install -g docx`
+Generate .docx files with JavaScript, then validate. First follow the project-local setup in Dependencies below; write the script as `.cjs` in the task directory so `require()` resolves its local `node_modules`.
 
 ### Setup
 ```javascript
+const fs = require('node:fs');
 const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, ImageRun,
         Header, Footer, AlignmentType, PageOrientation, LevelFormat, ExternalHyperlink,
         InternalHyperlink, Bookmark, FootnoteReferenceRun, PositionalTab,
@@ -74,7 +75,7 @@ Packer.toBuffer(doc).then(buffer => fs.writeFileSync("doc.docx", buffer));
 ### Validation
 After creating the file, validate it. If validation fails, unpack, fix the XML, and repack.
 ```bash
-python scripts/office/validate.py doc.docx
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/validate.py" doc.docx
 ```
 
 ### Page Size
@@ -401,7 +402,7 @@ sections: [{
 
 ### Step 1: Unpack
 ```bash
-python scripts/office/unpack.py document.docx unpacked/
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/unpack.py" document.docx unpacked/
 ```
 Extracts XML, pretty-prints, merges adjacent runs, and converts smart quotes to XML entities (`&#x201C;` etc.) so they survive editing. Use `--merge-runs false` to skip run merging.
 
@@ -409,9 +410,9 @@ Extracts XML, pretty-prints, merges adjacent runs, and converts smart quotes to 
 
 Edit files in `unpacked/word/`. See XML Reference below for patterns.
 
-**Use "Claude" as the author** for tracked changes and comments, unless the user explicitly requests use of a different name.
+Use the user-provided author for tracked changes and comments; otherwise use a configurable neutral author such as "Editor". Pass the same author to comment and validation helpers.
 
-**Use the Edit tool directly for string replacement. Do not write Python scripts.** Scripts introduce unnecessary complexity. The Edit tool shows exactly what is being replaced.
+Make targeted replacements with the host’s available editor or patch tool. Read the relevant XML first and review the diff to ensure only intended content changed.
 
 **CRITICAL: Use smart quotes for new content.** When adding text with apostrophes or quotes, use XML entities to produce smart quotes:
 ```xml
@@ -427,15 +428,15 @@ Edit files in `unpacked/word/`. See XML Reference below for patterns.
 
 **Adding comments:** Use `comment.py` to handle boilerplate across multiple XML files (text must be pre-escaped XML):
 ```bash
-python scripts/comment.py unpacked/ 0 "Comment text with &amp; and &#x2019;"
-python scripts/comment.py unpacked/ 1 "Reply text" --parent 0  # reply to comment 0
-python scripts/comment.py unpacked/ 0 "Text" --author "Custom Author"  # custom author name
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/comment.py" unpacked/ 0 "Comment text with &amp; and &#x2019;"
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/comment.py" unpacked/ 1 "Reply text" --parent 0  # reply to comment 0
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/comment.py" unpacked/ 0 "Text" --author "Custom Author"  # custom author name
 ```
 Then add markers to document.xml (see Comments in XML Reference).
 
 ### Step 3: Pack
 ```bash
-python scripts/office/pack.py unpacked/ output.docx --original document.docx
+"$SKILL_PYTHON" "$SKILL_DIR/scripts/office/pack.py" unpacked/ output.docx --original document.docx
 ```
 Validates with auto-repair, condenses XML, and creates DOCX. Use `--validate false` to skip.
 
@@ -465,14 +466,14 @@ Validates with auto-repair, condenses XML, and creates DOCX. Use `--validate fal
 
 **Insertion:**
 ```xml
-<w:ins w:id="1" w:author="Claude" w:date="2025-01-01T00:00:00Z">
+<w:ins w:id="1" w:author="Editor" w:date="2025-01-01T00:00:00Z">
   <w:r><w:t>inserted text</w:t></w:r>
 </w:ins>
 ```
 
 **Deletion:**
 ```xml
-<w:del w:id="2" w:author="Claude" w:date="2025-01-01T00:00:00Z">
+<w:del w:id="2" w:author="Editor" w:date="2025-01-01T00:00:00Z">
   <w:r><w:delText>deleted text</w:delText></w:r>
 </w:del>
 ```
@@ -483,10 +484,10 @@ Validates with auto-repair, condenses XML, and creates DOCX. Use `--validate fal
 ```xml
 <!-- Change "30 days" to "60 days" -->
 <w:r><w:t>The term is </w:t></w:r>
-<w:del w:id="1" w:author="Claude" w:date="...">
+<w:del w:id="1" w:author="Editor" w:date="...">
   <w:r><w:delText>30</w:delText></w:r>
 </w:del>
-<w:ins w:id="2" w:author="Claude" w:date="...">
+<w:ins w:id="2" w:author="Editor" w:date="...">
   <w:r><w:t>60</w:t></w:r>
 </w:ins>
 <w:r><w:t> days.</w:t></w:r>
@@ -498,10 +499,10 @@ Validates with auto-repair, condenses XML, and creates DOCX. Use `--validate fal
   <w:pPr>
     <w:numPr>...</w:numPr>  <!-- list numbering if present -->
     <w:rPr>
-      <w:del w:id="1" w:author="Claude" w:date="2025-01-01T00:00:00Z"/>
+      <w:del w:id="1" w:author="Editor" w:date="2025-01-01T00:00:00Z"/>
     </w:rPr>
   </w:pPr>
-  <w:del w:id="2" w:author="Claude" w:date="2025-01-01T00:00:00Z">
+  <w:del w:id="2" w:author="Editor" w:date="2025-01-01T00:00:00Z">
     <w:r><w:delText>Entire paragraph content being deleted...</w:delText></w:r>
   </w:del>
 </w:p>
@@ -511,7 +512,7 @@ Without the `<w:del/>` in `<w:pPr><w:rPr>`, accepting changes leaves an empty pa
 **Rejecting another author's insertion** - nest deletion inside their insertion:
 ```xml
 <w:ins w:author="Jane" w:id="5">
-  <w:del w:author="Claude" w:id="10">
+  <w:del w:author="Editor" w:id="10">
     <w:r><w:delText>their inserted text</w:delText></w:r>
   </w:del>
 </w:ins>
@@ -522,7 +523,7 @@ Without the `<w:del/>` in `<w:pPr><w:rPr>`, accepting changes leaves an empty pa
 <w:del w:author="Jane" w:id="5">
   <w:r><w:delText>deleted text</w:delText></w:r>
 </w:del>
-<w:ins w:author="Claude" w:id="10">
+<w:ins w:author="Editor" w:id="10">
   <w:r><w:t>deleted text</w:t></w:r>
 </w:ins>
 ```
@@ -536,7 +537,7 @@ After running `comment.py` (see Step 2), add markers to document.xml. For replie
 ```xml
 <!-- Comment markers are direct children of w:p, never inside w:r -->
 <w:commentRangeStart w:id="0"/>
-<w:del w:id="1" w:author="Claude" w:date="2025-01-01T00:00:00Z">
+<w:del w:id="1" w:author="Editor" w:date="2025-01-01T00:00:00Z">
   <w:r><w:delText>deleted</w:delText></w:r>
 </w:del>
 <w:r><w:t> more text</w:t></w:r>
@@ -555,36 +556,35 @@ After running `comment.py` (see Step 2), add markers to document.xml. For replie
 
 ### Images
 
-1. Add image file to `word/media/`
-2. Add relationship to `word/_rels/document.xml.rels`:
-```xml
-<Relationship Id="rId5" Type=".../image" Target="media/image1.png"/>
+Generate the complete drawing structure with `docx`'s `ImageRun` instead of hand-assembling incomplete DrawingML. The library supplies namespaces, relationship IDs, content types, and required inline/picture children:
+
+```javascript
+const fs = require('node:fs');
+const { Document, Packer, Paragraph, ImageRun } = require('docx');
+const doc = new Document({ sections: [{ children: [
+  new Paragraph({ children: [new ImageRun({
+    type: 'png', data: fs.readFileSync('image.png'),
+    transformation: { width: 96, height: 96 },
+  })] }),
+] }] });
+Packer.toBuffer(doc).then(buffer => fs.writeFileSync('with-image.docx', buffer));
 ```
-3. Add content type to `[Content_Types].xml`:
-```xml
-<Default Extension="png" ContentType="image/png"/>
-```
-4. Reference in document.xml:
-```xml
-<w:drawing>
-  <wp:inline>
-    <wp:extent cx="914400" cy="914400"/>  <!-- EMUs: 914400 = 1 inch -->
-    <a:graphic>
-      <a:graphicData uri=".../picture">
-        <pic:pic>
-          <pic:blipFill><a:blip r:embed="rId5"/></pic:blipFill>
-        </pic:pic>
-      </a:graphicData>
-    </a:graphic>
-  </wp:inline>
-</w:drawing>
-```
+
+When editing an existing package, generate a small reference DOCX with the library, unpack it, and copy the complete drawing with its image relationship/media and content type; allocate unique drawing and relationship IDs in the destination. Preserve all required children and namespaces, then validate the destination. Do not copy a partial XML sketch into a document.
 
 ---
 
 ## Dependencies
 
-- **pandoc**: Text extraction
-- **docx**: `npm install -g docx` (new documents)
-- **LibreOffice**: PDF conversion (auto-configured for sandboxed environments via `scripts/office/soffice.py`)
-- **Poppler**: `pdftoppm` for images
+Run commands from the task directory so generated documents stay with the task. Set `SKILL_DIR` to this installed skill's absolute directory (the directory containing this SKILL.md):
+
+```bash
+SKILL_DIR="/absolute/path/to/installed/docx"
+TASK_DIR="$PWD"
+python3 -m venv "$TASK_DIR/.venv"
+SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
+"$SKILL_PYTHON" -m pip install 'defusedxml==0.7.1' 'lxml==6.0.2'
+npm install --save-exact docx@9.5.1
+```
+
+Use `.cjs` scripts in `TASK_DIR` for the CommonJS examples. Native tools are workflow-specific: pandoc for text extraction; LibreOffice (`soffice`) for conversion and tracked-change acceptance; Poppler (`pdftoppm`) for previews. Provision those through the host's supported package manager and check `soffice --version`/`pdftoppm -v`; the bundled soffice helper configures runtime environment, it does not install LibreOffice.
