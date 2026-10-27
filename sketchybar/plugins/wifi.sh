@@ -1,36 +1,23 @@
-#!/bin/sh
+#!/usr/bin/env bash
+# WiFi indicator. Click opens Wi-Fi settings.
+source "$CONFIG_DIR/colors.sh"
 
-# The wifi_change event supplies a $INFO variable in which the current SSID
-# is passed to the script.
+# Find the Wi-Fi interface name dynamically (usually en0)
+DEV=$(networksetup -listallhardwareports 2>/dev/null \
+  | awk '/Hardware Port: Wi-Fi/ {getline; print $2; exit}')
+DEV=${DEV:-en0}
 
+POWER=$(networksetup -getairportpower "$DEV" 2>/dev/null | awk '{print $NF}')
 
-WIFI_CONNECTED=􀙇
-WIFI_DISCONNECTED=􀙈
+if [ "$POWER" = "On" ]; then
+  ICON="󰖩"
+  COLOR="$CYAN"
+else
+  ICON="󰖪"
+  COLOR="$COMMENT"
+fi
 
-update() {
-  echo "[Wifi] Update with $INFO"
-  LABEL="$INFO ($(ipconfig getifaddr en0))"
-  ICON="$([ -n "$INFO" ] && echo "$WIFI_CONNECTED" || echo "$WIFI_DISCONNECTED")"
-  sketchybar --set $NAME icon="$ICON" label="$LABEL"
-}
-
-
-click() {
-  echo "[Wifi] Click with $INFO"
-  CURRENT_WIDTH="$(sketchybar --query $NAME | jq -r .label.width)"
-
-  WIDTH=0
-  if [ "$CURRENT_WIDTH" -eq "0" ]; then
-    WIDTH=dynamic
-  fi
-
-  sketchybar --animate sin 20 --set $NAME label.width="$WIDTH"
-}
-
-
-case "$SENDER" in
-  "wifi_change") update
-    ;;
-  "mouse.clicked") click
-    ;;
-esac
+sketchybar --set "$NAME" \
+  icon="$ICON" \
+  icon.color="$COLOR" \
+  label.drawing=off

@@ -1,33 +1,35 @@
-#!/bin/sh
+#!/usr/bin/env bash
+source "$CONFIG_DIR/colors.sh"
 
-echo "[$NAME] Call by $SENDER with $INFO"
-
-VOLUME=$INFO
-
-if [[ $VOLUME == "" ]]; then
-  echo "[$NAME] \$VOLUME is empty."
-  exit 0
+# Volume comes from event $INFO on volume_change, otherwise query system
+if [ "$SENDER" = "volume_change" ]; then
+  VOLUME="$INFO"
+else
+  VOLUME="$(osascript -e 'output volume of (get volume settings)' 2>/dev/null)"
 fi
 
-VOLUME_100=􀊩
-VOLUME_66=􀊧
-VOLUME_33=􀊥
-VOLUME_10=􀊡
-VOLUME_0=􀊣
+[ -z "$VOLUME" ] && exit 0
 
-case $VOLUME in
-  [6-9][0-9]|100) ICON=$VOLUME_100
+# Current default output device. Treat anything that isn't built-in speakers /
+# a display / TV as headphones. This catches Bluetooth headphones whose names
+# don't contain the word "headphone" (e.g. "soundcore Life Q30", "AirPods").
+DEVICE="$(SwitchAudioSource -c 2>/dev/null)"
+
+case "$DEVICE" in
+  ""|*[Ss]peaker*|*MacBook*|*[Bb]uilt-in*|*Display*|*Monitor*|*TV*|*HDMI*|*HomePod*)
+    case "$VOLUME" in
+      100|[6-9][0-9])   ICON="󰕾" ;;
+      [3-5][0-9])       ICON="󰖀" ;;
+      [1-9]|[1-2][0-9]) ICON="󰕿" ;;
+      *)                ICON="󰝟" ;;
+    esac
     ;;
-  [3-5][0-9]) ICON=$VOLUME_66
+  *)
+    ICON=""   # headphones
     ;;
-  [1-2][0-9]) ICON=$VOLUME_33
-    ;;
-  [1-9]) ICON=$VOLUME_10
-    ;;
-  0) ICON=$VOLUME_0
-    ;;
-  *) ICON=$VOLUME_100
 esac
 
-sketchybar --set $NAME icon="$ICON" label="${VOLUME}%"
-
+sketchybar --set "$NAME" \
+  icon="$ICON" \
+  icon.color="$CYAN" \
+  label="${VOLUME}%"

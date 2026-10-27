@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
+# Highlight the focused AeroSpace workspace.
+# Workspace id is derived from $NAME (e.g. "space.3" → "3").
+# $FOCUSED_WORKSPACE is set by the aerospace_workspace_change trigger.
 
-# make sure it's executable with:
-# chmod +x ~/.config/sketchybar/plugins/aerospace.sh
+source "$CONFIG_DIR/colors.sh"
 
-if [ "$1" = "$FOCUSED_WORKSPACE" ]; then
-    sketchybar --set $NAME background.drawing=on
+SID="${NAME#space.}"
+FOCUSED="${FOCUSED_WORKSPACE:-$(/opt/homebrew/bin/aerospace list-workspaces --focused 2>/dev/null)}"
+
+if [ "$SID" = "$FOCUSED" ]; then
+  sketchybar --set "$NAME" \
+    background.drawing=on \
+    background.color="$BLUE" \
+    icon.color="$BG"
 else
-    sketchybar --set $NAME background.drawing=off
+  sketchybar --set "$NAME" \
+    background.drawing=off \
+    icon.color="$FG"
 fi
-

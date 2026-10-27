@@ -1,10 +1,33 @@
-#!/bin/sh
+#!/usr/bin/env bash
+source "$CONFIG_DIR/colors.sh"
 
-# The $NAME variable is passed from sketchybar and holds the name of
-# the item invoking this script:
-# https://felixkratz.github.io/SketchyBar/config/events#events-and-scripting
+LABEL="$(date '+%a  %-I:%M %p')"
+ICON="󰥔"
+THEME="$(cat "$HOME/.config/theme-switcher/current" 2>/dev/null || echo "?")"
 
-echo "[$NAME] Call by $SENDER with $INFO"
+source "$CONFIG_DIR/plugins/displays.sh"
 
-sketchybar --set $NAME label="$(date '+%d/%m %H:%M')"
+# A failed display lookup (it happens under heavy load) must not hide the clock:
+# keep where it is drawn and only refresh the time.
+if [ "$DISPLAYS_OK" = 0 ]; then
+  sketchybar --set clock label="$LABEL" --set clock_right label="$LABEL"
+  exit 0
+fi
 
+if [ "$BUILTIN" != "-" ]; then
+  sketchybar --set clock_right drawing=on associated_display="$BUILTIN" \
+                   icon="$ICON" icon.color="$MAGENTA" label="$LABEL" label.color="$FG" \
+             --set theme_name_right drawing=on associated_display="$BUILTIN" \
+                   label="$THEME" label.color="$FG"
+else
+  sketchybar --set clock_right drawing=off --set theme_name_right drawing=off
+fi
+
+if [ "$OTHERS" != "-" ]; then
+  sketchybar --set clock drawing=on associated_display="$OTHERS" \
+                   icon="$ICON" icon.color="$MAGENTA" label="$LABEL" label.color="$FG" \
+             --set theme_name drawing=on associated_display="$OTHERS" \
+                   label="$THEME" label.color="$FG"
+else
+  sketchybar --set clock drawing=off --set theme_name drawing=off
+fi

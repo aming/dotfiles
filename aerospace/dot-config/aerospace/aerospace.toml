@@ -1,213 +1,308 @@
-# Place a copy of this config to ~/.aerospace.toml
-# After that, you can edit ~/.aerospace.toml to your liking
+# AeroSpace config — Omarchy bindings for macOS (cmd = Super)
+# Reload with: aerospace reload-config
 
-# You can use it to add commands that run after login to macOS user session.
-# 'start-at-login' needs to be 'true' for 'after-login-command' to work
-# Available commands: https://nikitabobko.github.io/AeroSpace/commands
-after-login-command = []
-
-# You can use it to add commands that run after AeroSpace startup.
-# 'after-startup-command' is run after 'after-login-command'
-# Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = [
-  'exec-and-forget sketchybar',
-]
-
-# Start AeroSpace at login
+# Lifecycle (startup + relaunch-on-crash) is owned by the launchd watchdog:
+# ~/Library/LaunchAgents/com.omarchy-mac.aerospace-keepalive.plist
 start-at-login = false
 
-# Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
-# See: https://nikitabobko.github.io/AeroSpace/guide#layouts
-# The 'accordion-padding' specifies the size of accordion padding
-# You can set 0 to disable the padding feature
-accordion-padding = 30
-
-# Possible values: tiles|accordion
+# Tiles, like Omarchy 4's default (dwindle): new windows open side by side.
+# alt-a toggles a workspace to accordion (focused window full width, others
+# collapse to edge strips). Cycle windows with cmd-backtick.
 default-root-container-layout = 'tiles'
-
-# Possible values: horizontal|vertical|auto
-# 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
-#               tall monitor (anything higher than wide) gets vertical orientation
 default-root-container-orientation = 'auto'
 
-# Mouse follows focus when focused monitor changes
-# Drop it from your config, if you don't like this behavior
-# See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
-# See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
-# Fallback value (if you omit the key): on-focused-monitor-changed = []
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focused-monitor-changed = [
+  'move-mouse monitor-lazy-center',
+  'exec-and-forget /bin/bash -c "/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(/opt/homebrew/bin/aerospace list-workspaces --focused)"'
+]
+on-focus-changed = ['move-mouse window-lazy-center']
 
-# You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
-# Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
-# Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
-automatically-unhide-macos-hidden-apps = false
+# Notify SketchyBar when workspace focus changes
+exec-on-workspace-change = ['/bin/bash', '-c',
+  '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE']
 
-# Possible values: (qwerty|dvorak)
-# See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
-[key-mapping]
-    preset = 'qwerty'
+# ---------- Pin workspaces to specific monitors ----------
+# VA2446 (2) sits on the right; VA2446 (1) sits on the left; laptop sits under
+# the right external. If the laptop isn't connected, workspaces 4/5 fall back
+# to the left external.
+[workspace-to-monitor-force-assignment]
+# Each workspace prefers its primary monitor but falls back through the chain
+# so it always has somewhere to display, even when some monitors are unplugged.
+1 = ['\(1\)$', '\(2\)$', 'built-in']      # browser → left, else right, else laptop
+2 = ['\(2\)$', '\(1\)$', 'built-in']      # Claude + Ghostty → right, else left, else laptop
+3 = ['\(2\)$', '\(1\)$', 'built-in']      # spare   → right, else left, else laptop
+4 = ['built-in', '\(2\)$', '\(1\)$']      # comms   → laptop, else right, else left
+5 = ['built-in', '\(2\)$', '\(1\)$']      # music   → laptop, else right, else left
 
-# Gaps between windows (inner-*) and between monitor edges (outer-*).
-# Possible values:
-# - Constant:     gaps.outer.top = 8
-# - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
-#                 In this example, 24 is a default value when there is no match.
-#                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
-#                 See:
-#                 https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-    inner.horizontal = 0
-    inner.vertical =   0
-    outer.left =       0
-    outer.bottom =     0
-    outer.top =        0
-    outer.right =      0
+inner.horizontal = 8
+inner.vertical = 8
+outer.left = 8
+outer.bottom = 8
+outer.top = 40   # 32 (SketchyBar height) + 8 (visual gap)
+outer.right = 8
 
-# 'main' binding mode declaration
-# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
-# 'main' binding mode must be always presented
-# Fallback value (if you omit the key): mode.main.binding = {}
 [mode.main.binding]
 
-    # All possible keys:
-    # - Letters.        a, b, c, ..., z
-    # - Numbers.        0, 1, 2, ..., 9
-    # - Keypad numbers. keypad0, keypad1, keypad2, ..., keypad9
-    # - F-keys.         f1, f2, ..., f20
-    # - Special keys.   minus, equal, period, comma, slash, backslash, quote, semicolon,
-    #                   backtick, leftSquareBracket, rightSquareBracket, space, enter, esc,
-    #                   backspace, tab
-    # - Keypad special. keypadClear, keypadDecimalMark, keypadDivide, keypadEnter, keypadEqual,
-    #                   keypadMinus, keypadMultiply, keypadPlus
-    # - Arrows.         left, down, up, right
+# ---------- Navigating ----------
+# Using Vicinae now
+# cmd-space = 'exec-and-forget open -a Raycast'
+# cmd-alt-space → handled by Hammerspoon (Omarchy control menu)
+# theme switcher still available on cmd-ctrl-shift-space below
+cmd-ctrl-l = '''exec-and-forget osascript -e 'tell application "System Events" to keystroke "q" using {control down, command down}' '''
 
-    # All possible modifiers: cmd, alt, ctrl, shift
+alt-w = '''exec-and-forget osascript -e 'tell application "System Events" to keystroke "q" using {command down}' '''
+ctrl-alt-backspace = 'close-all-windows-but-current'
 
-    # All possible commands: https://nikitabobko.github.io/AeroSpace/commands
+alt-s = 'layout floating tiling'
+# Shuffle theme within the current light/dark mode. Was a Raycast script
+# command on one machine only, so adopters never got the key (2026-09-03).
+alt-t = 'exec-and-forget $HOME/.local/bin/theme random'
+alt-j = 'layout tiles horizontal vertical'
+# Accordion: every window full width, inactive ones collapse to edge strips.
+# Toggle it per workspace; cycle windows with the normal focus keys.
+alt-a = 'layout accordion tiles'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
-    # You can uncomment the following lines to open up terminal with alt + enter shortcut
-    # (like in i3)
-    # alt-enter = '''exec-and-forget osascript -e '
-    # tell application "Terminal"
-    #     do script
-    #     activate
-    # end tell'
-    # '''
+# Fullscreen never covers SketchyBar: AeroSpace fullscreen keeps outer.top.
+# Ctrl+Cmd+F (the macOS fullscreen key) does the same as Alt+F; only the green
+# window button still gives native fullscreen (thanks @tylerkessler, #6).
+alt-f = 'fullscreen'
+cmd-alt-f = 'fullscreen'
+cmd-ctrl-f = 'fullscreen'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-    alt-slash = 'layout tiles horizontal vertical'
-    alt-comma = 'layout accordion horizontal vertical'
+# ---------- Workspaces ----------
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#focus
-    alt-h = 'focus left'
-    alt-j = 'focus down'
-    alt-k = 'focus up'
-    alt-l = 'focus right'
+alt-tab = 'workspace-back-and-forth'
+cmd-ctrl-tab = 'workspace-back-and-forth'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#move
-    alt-shift-h = 'move left'
-    alt-shift-j = 'move down'
-    alt-shift-k = 'move up'
-    alt-shift-l = 'move right'
+cmd-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+cmd-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+cmd-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+cmd-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+cmd-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#resize
-    alt-minus = 'resize smart -50'
-    alt-equal = 'resize smart +50'
+cmd-shift-alt-1 = 'move-node-to-workspace 1'
+cmd-shift-alt-2 = 'move-node-to-workspace 2'
+cmd-shift-alt-3 = 'move-node-to-workspace 3'
+cmd-shift-alt-4 = 'move-node-to-workspace 4'
+cmd-shift-alt-5 = 'move-node-to-workspace 5'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-1 = 'workspace 1'
-    alt-2 = 'workspace 2'
-    alt-3 = 'workspace 3'
-    alt-4 = 'workspace 4'
-    alt-5 = 'workspace 5'
-    alt-6 = 'workspace 6'
-    alt-7 = 'workspace 7'
-    alt-8 = 'workspace 8'
-    alt-9 = 'workspace 9'
-    alt-a = 'workspace A' # In your config, you can drop workspace bindings that you don't need
-    alt-b = 'workspace B'
-    alt-c = 'workspace C'
-    alt-d = 'workspace D'
-    alt-e = 'workspace E'
-    alt-f = 'workspace F'
-    alt-g = 'workspace G'
-    alt-i = 'workspace I'
-    alt-m = 'workspace M'
-    alt-n = 'workspace N'
-    alt-o = 'workspace O'
-    alt-p = 'workspace P'
-    alt-q = 'workspace Q'
-    alt-r = 'workspace R'
-    alt-s = 'workspace S'
-    alt-t = 'workspace T'
-    alt-u = 'workspace U'
-    alt-v = 'workspace V'
-    alt-w = 'workspace W'
-    alt-x = 'workspace X'
-    alt-y = 'workspace Y'
-    alt-z = 'workspace Z'
+# ---------- Focus ----------
+cmd-left = 'focus left'
+cmd-down = 'focus down'
+cmd-up = 'focus up'
+cmd-right = 'focus right'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-    alt-shift-1 = 'move-node-to-workspace 1'
-    alt-shift-2 = 'move-node-to-workspace 2'
-    alt-shift-3 = 'move-node-to-workspace 3'
-    alt-shift-4 = 'move-node-to-workspace 4'
-    alt-shift-5 = 'move-node-to-workspace 5'
-    alt-shift-6 = 'move-node-to-workspace 6'
-    alt-shift-7 = 'move-node-to-workspace 7'
-    alt-shift-8 = 'move-node-to-workspace 8'
-    alt-shift-9 = 'move-node-to-workspace 9'
-    alt-shift-a = 'move-node-to-workspace A'
-    alt-shift-b = 'move-node-to-workspace B'
-    alt-shift-c = 'move-node-to-workspace C'
-    alt-shift-d = 'move-node-to-workspace D'
-    alt-shift-e = 'move-node-to-workspace E'
-    alt-shift-f = 'move-node-to-workspace F'
-    alt-shift-g = 'move-node-to-workspace G'
-    alt-shift-i = 'move-node-to-workspace I'
-    alt-shift-m = 'move-node-to-workspace M'
-    alt-shift-n = 'move-node-to-workspace N'
-    alt-shift-o = 'move-node-to-workspace O'
-    alt-shift-p = 'move-node-to-workspace P'
-    alt-shift-q = 'move-node-to-workspace Q'
-    alt-shift-r = 'move-node-to-workspace R'
-    alt-shift-s = 'move-node-to-workspace S'
-    alt-shift-t = 'move-node-to-workspace T'
-    alt-shift-u = 'move-node-to-workspace U'
-    alt-shift-v = 'move-node-to-workspace V'
-    alt-shift-w = 'move-node-to-workspace W'
-    alt-shift-x = 'move-node-to-workspace X'
-    alt-shift-y = 'move-node-to-workspace Y'
-    alt-shift-z = 'move-node-to-workspace Z'
+# ---------- Swap ----------
+cmd-shift-left = 'move left'
+cmd-shift-down = 'move down'
+cmd-shift-up = 'move up'
+cmd-shift-right = 'move right'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
-    alt-tab = 'workspace-back-and-forth'
-    # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
-    alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+# ---------- Workspace to monitor ----------
+cmd-shift-alt-left = 'move-workspace-to-monitor --wrap-around prev'
+cmd-shift-alt-right = 'move-workspace-to-monitor --wrap-around next'
+cmd-shift-alt-up = 'move-workspace-to-monitor --wrap-around prev'
+cmd-shift-alt-down = 'move-workspace-to-monitor --wrap-around next'
 
-    # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-    alt-shift-semicolon = 'mode service'
+# ---------- Move just the focused window across monitors ----------
+# (swap within workspace = cmd-shift-arrow; whole workspace = cmd-shift-alt-arrow)
+cmd-ctrl-shift-left = 'move-node-to-monitor --wrap-around --focus-follows-window left'
+cmd-ctrl-shift-right = 'move-node-to-monitor --wrap-around --focus-follows-window right'
+cmd-ctrl-shift-up = 'move-node-to-monitor --wrap-around --focus-follows-window up'
+cmd-ctrl-shift-down = 'move-node-to-monitor --wrap-around --focus-follows-window down'
 
-# 'service' binding mode declaration.
-# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+# ---------- Resize ----------
+alt-equal = 'resize smart +50'
+alt-minus = 'resize smart -50'
+cmd-shift-equal = 'resize height +50'
+cmd-shift-minus = 'resize height -50'
+
+# ---------- Monitor cycling ----------
+ctrl-alt-tab = 'focus-monitor --wrap-around next'
+ctrl-alt-shift-tab = 'focus-monitor --wrap-around prev'
+
+# ---------- Cycle windows within workspace ----------
+cmd-backtick = 'focus --boundaries-action wrap-around-the-workspace dfs-next'
+cmd-shift-backtick = 'focus --boundaries-action wrap-around-the-workspace dfs-prev'
+
+# ---------- Launching apps ----------
+# Web apps open as Brave app windows (`--app=<url>`), the way Omarchy launches
+# them (bin/omarchy-launch-webapp): a window of their own that tiles, not a
+# tab. `-n` is required: a running Brave drops --args otherwise.
+alt-enter = 'exec-and-forget open -na Ghostty'
+cmd-alt-enter = 'exec-and-forget open -na Ghostty --args -e tmux'
+cmd-ctrl-enter = 'exec-and-forget open -na Ghostty --args -e herdr'
+cmd-shift-enter = 'exec-and-forget open -a "Brave Browser"'
+cmd-shift-alt-b = 'exec-and-forget open -na "Brave Browser" --args --incognito'
+cmd-alt-c = 'exec-and-forget open -a "Google Chrome"'
+
+cmd-shift-f = 'exec-and-forget open -a Finder'
+cmd-shift-alt-f = 'exec-and-forget open -a Finder'
+
+cmd-shift-m = 'exec-and-forget open -a Spotify'
+cmd-shift-slash = 'exec-and-forget open -a 1Password'
+cmd-shift-n = 'exec-and-forget open -na Ghostty --args -e nvim'
+
+cmd-shift-c = 'exec-and-forget open -na "Brave Browser" --args --app=https://app.hey.com/calendar'
+cmd-shift-e = 'exec-and-forget open -na "Brave Browser" --args --app=https://app.hey.com'
+
+cmd-shift-a = 'exec-and-forget open -a Claude'
+cmd-shift-alt-a = 'exec-and-forget open -na "Brave Browser" --args --app=https://grok.com'
+
+cmd-shift-g = 'exec-and-forget open -a Signal'
+cmd-shift-alt-g = 'exec-and-forget open -a WhatsApp'
+cmd-shift-ctrl-g = 'exec-and-forget open -na "Brave Browser" --args --app=https://chat.google.com'
+
+cmd-shift-p = 'exec-and-forget open -na "Brave Browser" --args --app=https://photos.google.com'
+cmd-shift-d = 'exec-and-forget open -na Ghostty --args -e lazydocker'
+cmd-shift-o = 'exec-and-forget open -a Obsidian'
+cmd-shift-w = 'exec-and-forget open -a Typora'
+
+cmd-shift-x = 'exec-and-forget open https://x.com'   # Finicky → X PWA window
+cmd-shift-alt-x = 'exec-and-forget open https://x.com/compose/post'   # Finicky → X PWA window
+cmd-shift-y = 'exec-and-forget open -na "Brave Browser" --args --app=https://youtube.com'
+
+# ---------- Style: theme switcher ----------
+# cmd-ctrl-shift-space → handled by Hammerspoon (shows theme chooser UI)
+
+# ---------- Capture (cmd+shift+5 picker) ----------
+cmd-ctrl-c = 'exec-and-forget /bin/sh -c "osascript -e \"tell application \\\"System Events\\\" to key code 23 using {command down, shift down}\""'
+
+# ---------- Toggles ----------
+cmd-ctrl-i = 'exec-and-forget /bin/sh -c "pgrep -x caffeinate >/dev/null && pkill -x caffeinate || caffeinate -dimsu &"'
+
+# ---------- Notifications: DND toggle ----------
+cmd-ctrl-comma = 'exec-and-forget shortcuts run "Toggle Do Not Disturb"'
+
+# ---------- System control (Omarchy Super+Ctrl family) ----------
+# Note: ALT+K is handled by Hammerspoon (~/.hammerspoon/init.lua) to show
+# the keybindings overlay. Left unbound here so it propagates.
+cmd-ctrl-a = 'exec-and-forget open "x-apple.systempreferences:com.apple.Sound-Settings.extension"'
+cmd-ctrl-b = 'exec-and-forget open "x-apple.systempreferences:com.apple.BluetoothSettings"'
+cmd-ctrl-w = 'exec-and-forget open "x-apple.systempreferences:com.apple.wifi-settings-extension"'
+cmd-ctrl-s = 'exec-and-forget open -a LocalSend'   # v4: share menu (LocalSend); Sharing settings live in the menu under Setup
+cmd-ctrl-t = 'exec-and-forget open -na Ghostty --args -e btop'
+alt-shift-t = 'exec-and-forget open -na Ghostty --args -e btop'
+cmd-ctrl-h = 'exec-and-forget open -a "System Information"'
+cmd-ctrl-period = 'exec-and-forget open -a HandBrake'
+
+# ---------- Omarchy v4 utilities ----------
+cmd-ctrl-e = 'exec-and-forget open "raycast://extensions/raycast/emoji-symbols/search-emoji-symbols"'   # emoji picker
+cmd-ctrl-q = 'exec-and-forget open -a Calculator'                                                       # v4: Omacalc
+# Coding agent in a fresh terminal (v4: Super+Shift+Ctrl+A), see bin/omarchy-agent.
+cmd-shift-ctrl-a = 'exec-and-forget open -na Ghostty --args -e $HOME/.local/bin/omarchy-agent'
+# Zoom (v4: Super+Ctrl+Z): fires macOS accessibility zoom (⌥⌘8). Needs
+# System Settings › Accessibility › Zoom › "Use keyboard shortcuts to zoom".
+cmd-ctrl-z = '''exec-and-forget osascript -e 'tell application "System Events" to key code 28 using {option down, command down}' '''
+# cmd-ctrl-r (reminder) handled by Hammerspoon.
+
+# ---------- Omarchy extras ----------
+# System section of the Omarchy menu (v4: Super+Escape = System).
+cmd-esc = 'exec-and-forget /opt/homebrew/bin/hs -c "omarchyMenu(\"System\")"'
+cmd-ctrl-v = 'exec-and-forget open "raycast://extensions/raycast/clipboard-history/clipboard-history"'
+# cmd-ctrl-p, cmd-ctrl-alt-{t,w,b} handled by Hammerspoon (~/.hammerspoon/init.lua)
+# so the notifications fire through hs.notify (osascript notifs are silently
+# blocked without permissions we can't grant from CLI).
+
+# ---------- Service mode ----------
+cmd-shift-semicolon = 'mode service'
+
 [mode.service.binding]
-    esc = ['reload-config', 'mode main']
-    r = ['flatten-workspace-tree', 'mode main'] # reset layout
-    f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
-    backspace = ['close-all-windows-but-current', 'mode main']
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']
+f = ['layout floating tiling', 'mode main']
+backspace = ['close-all-windows-but-current', 'mode main']
+cmd-shift-left = ['join-with left', 'mode main']
+cmd-shift-down = ['join-with down', 'mode main']
+cmd-shift-up = ['join-with up', 'mode main']
+cmd-shift-right = ['join-with right', 'mode main']
 
-    # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
-    #s = ['layout sticky tiling', 'mode main']
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
 
-    alt-shift-h = ['join-with left', 'mode main']
-    alt-shift-j = ['join-with down', 'mode main']
-    alt-shift-k = ['join-with up', 'mode main']
-    alt-shift-l = ['join-with right', 'mode main']
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+run = 'layout floating'
 
-    down = 'volume down'
-    up = 'volume up'
-    shift-down = ['volume set 0', 'mode main']
+[[on-window-detected]]
+if.app-id = 'com.1password.1password'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.raycast.macos'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
+run = 'layout floating'
+
+# ---------- Floats ported from Omarchy ----------
+# Omarchy floats these in default/hypr/apps/{system,steam,localsend,pip}.conf.
+# It also centers them and sizes them 875x600; AeroSpace can't do either for a
+# floating window, so a float dragged to the top of the screen can still end up
+# behind SketchyBar. Low risk in practice (nobody maximizes Calculator), and
+# alt-s tiles the focused window if one ever does get stranded.
+
+# Omarchy: `float on, match:class org.gnome.Calculator`
+[[on-window-detected]]
+if.app-id = 'com.apple.calculator'
+run = 'layout floating'
+
+# Omarchy floats its document/media viewers (org.gnome.Evince, imv, mpv);
+# Preview and VLC are the local equivalents.
+[[on-window-detected]]
+if.app-id = 'com.apple.Preview'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'org.videolan.vlc'
+run = 'layout floating'
+
+# Omarchy: `float on, match:class steam`
+[[on-window-detected]]
+if.app-id = 'com.valvesoftware.steam'
+run = 'layout floating'
+
+# Omarchy: `float on, match:class (Share|localsend)`
+[[on-window-detected]]
+if.app-id = 'org.localsend.localsendApp'
+run = 'layout floating'
+
+# Omarchy: `float on, match:tag pip` (title-matched, since PiP is a browser
+# window rather than an app of its own).
+[[on-window-detected]]
+if.window-title-regex-substring = 'Picture.in.Picture'
+run = 'layout floating'
+
+# ---------- No workspace auto-assignment (Omarchy 4 / Quattro) ----------
+# Omarchy sends no app to a fixed workspace: a window opens on the workspace
+# you are on. The only exceptions are the rules above (floats) and the ones
+# below (browsers stay tiled, the screensaver floats).
+
+# Browsers are pinned to tiling, mirroring Omarchy's own rule
+# (default/hypr/apps/browser.lua: `o.window({ tag = "chromium-based-browser" },
+# { tile = true })`). Gaps only apply to tiled windows, and the macOS menu bar
+# is auto-hidden, so a floating browser is free to sit at y=0 with its tab
+# strip and window controls stranded behind SketchyBar.
+[[on-window-detected]]
+if.app-id = 'com.brave.Browser'
+run = 'layout tiling'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'layout tiling'
+
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+if.window-title-regex-substring = 'org.omarchy.screensaver'
+run = 'layout floating'
