@@ -62,6 +62,9 @@ web_search_advanced_exa {
   "highlightsQuery": "What are the main cybersecurity risks?"
 }
 ```
+If the discovered schema exposes highlights only through a nested object, send
+`contents: {highlights: {query: "What are the main cybersecurity risks?"}}` instead and
+adapt the remaining fields to the schema (see `api-compatibility.md`).
 
 ## Output Format
 

@@ -308,7 +308,7 @@ obsidian command id="dataview:dataview-force-refresh-views"
 | Multi-vault targeting fails | Vault name matching issue | Prefer `vault=<name>`; otherwise omit vault name and target the active vault |
 | `property:set` list value is a string | Missing type or local version behavior | Use `type=list`; verify exact content and property reads |
 | Colon+params exit 127 (missing `.com`) | Outdated installer — `Obsidian.com` absent | Reinstall from [obsidian.md/download](https://obsidian.md/download) |
-| `obsidian` exits `-1` with no output | `obsidian` resolved to GUI executable instead of CLI | Do not use `obsidian`; use `obsidian` only |
+| `obsidian` exits `-1` with no output | `obsidian` resolved to GUI executable instead of CLI | Use the CLI executable (on Windows `Obsidian.com`, not the GUI `Obsidian.exe`); verify with `obsidian version` |
 | Colon+params exit 127 (Git Bash / MSYS2) | Shell wrapper invokes `.exe` instead of `.com` | Create a wrapper named `obsidian` that calls `/c/path/to/Obsidian.com "$@"` |
 
 ## Evaluation Fixtures

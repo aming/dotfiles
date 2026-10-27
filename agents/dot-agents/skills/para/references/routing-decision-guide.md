@@ -4,7 +4,7 @@ Use this guide for large audits, migrations, or ambiguous routing decisions.
 
 ## Activation Precedence
 
-For an ACE vault (local rules identify ACE, or the established `+`, `Atlas`, `Calendar`, `Efforts` layout does), use the **ACE skill** for PKM routing and organization. PARA covers non-ACE PKM and ordinary PARA workspaces; do not impose Projects/Areas/Resources/Archives on an ACE vault. Meeting-note routing also defers to the ACE skill inside ACE vaults, including its Calendar/Meetings conventions and links to relevant Efforts. If the user explicitly requests a migration from ACE to PARA, treat that as a migration task and establish the target mapping first.
+See **Activation Precedence** in `SKILL.md`: ACE vaults defer PKM routing and meeting-note placement to the ACE skill; PARA covers non-ACE PKM and ordinary PARA workspaces, and a requested ACE-to-PARA conversion is a migration that establishes the target mapping first.
 
 
 ## Decision Tree

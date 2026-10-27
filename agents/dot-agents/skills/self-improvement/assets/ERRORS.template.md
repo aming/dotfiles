@@ -11,7 +11,7 @@ Unexpected command, tool, and API failures worth remembering.
 
 ## Entry Format
 
-```markdown
+````markdown
 ## [ERR-YYYYMMDD-XXX] skill_or_command_name
 
 **Logged**: ISO-8601 timestamp
@@ -39,7 +39,7 @@ If identifiable, what might resolve this
 - Reproducible: yes | no | unknown
 - Related Files: path/to/file.ext
 - See Also: ERR-20250110-001 (if recurring)
-```
+````
 
 ## Recommended Project Layout
 

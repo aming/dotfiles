@@ -50,7 +50,7 @@ If the PDF has fillable form fields:
   }
 ]
 ```
-- Convert the PDF to PNGs (one image for each page) with this script (run from this file's directory):
+- Convert the PDF to PNGs (one image for each page) with this script (run from the task directory):
 `"$SKILL_PYTHON" "$SKILL_DIR/scripts/convert_pdf_to_images.py" <file.pdf> <output_directory>`
 Then analyze the images to determine the purpose of each form field (make sure to convert the bounding box PDF coordinates to image coordinates).
 - Create a `field_values.json` file in this format with the values to be entered for each field:
@@ -71,7 +71,7 @@ Then analyze the images to determine the purpose of each form field (make sure t
   // more fields
 ]
 ```
-- Run the `fill_fillable_fields.py` script from this file's directory to create a filled-in PDF:
+- Run the `fill_fillable_fields.py` script from the task directory to create a filled-in PDF:
 `"$SKILL_PYTHON" "$SKILL_DIR/scripts/fill_fillable_fields.py" <input pdf> <field_values.json> <output pdf>`
 This script will verify that the field IDs and values you provide are valid; if it prints error messages, correct the appropriate fields and try again.
 

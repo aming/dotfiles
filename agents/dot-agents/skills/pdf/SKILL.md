@@ -238,7 +238,7 @@ pdftk input.pdf rotate 1east output rotated.pdf
 
 ### Extract Text from Scanned PDFs
 ```python
-# Requires: # Use the shared environment in Reproducible setup; native Tesseract and Poppler are required.
+# Requires: the project-local environment from Reproducible setup; native Tesseract and Poppler are also required.
 # Also requires Poppler (`pdftoppm`/`pdftocairo`) to be installed.
 import pytesseract
 from pdf2image import convert_from_path

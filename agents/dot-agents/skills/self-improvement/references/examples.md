@@ -141,7 +141,7 @@ Add to agent workflow: after any API changes, run `pnpm run generate:api`.
 
 ## Error Entry
 
-```markdown
+````markdown
 ## [ERR-20250115-A3F] docker_build
 
 **Logged**: 2025-01-15T09:15:00Z
@@ -171,11 +171,11 @@ Or update Dockerfile: `FROM --platform=linux/amd64 python:3.11-slim`
 - Related Files: Dockerfile
 
 ---
-```
+````
 
 ## Error Entry: Recurring Issue
 
-```markdown
+````markdown
 ## [ERR-20250120-B2C] api_timeout
 
 **Logged**: 2025-01-20T11:30:00Z
@@ -205,7 +205,7 @@ Implement retry with exponential backoff. Consider circuit breaker pattern.
 - See Also: ERR-20250115-X1Y, ERR-20250118-Z3W
 
 ---
-```
+````
 
 ## Feature Request
 

@@ -153,7 +153,7 @@ Remaining:
 - Do not make every interesting topic into an Area; Areas carry maintenance responsibility.
 - Do not put active maintenance procedures into Resources when they govern an ongoing responsibility.
 - Do not delete instead of archiving unless the user explicitly asks for deletion.
-- Do not perform bulk moves without a clear mapping, link-aware method, and verification step.
+- Do not perform bulk moves without a clear mapping, link-aware method, and verification step; prior approval of an exact mapping satisfies the plan requirement.
 - Do not create a second PARA root when the workspace already has one.
 - Do not treat daily notes as canonical storage. They are chronological pointers.
 - Do not ignore local workspace conventions. A local `AGENTS.md` or deeper rule can override generic PARA folder names.
