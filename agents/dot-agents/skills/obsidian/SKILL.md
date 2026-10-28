@@ -20,9 +20,27 @@ metadata:
 
 The official Obsidian CLI (released in v1.12, February 2026) lets you control every aspect of Obsidian from the terminal. It communicates with a running Obsidian desktop instance via IPC.
 
-> Read `references/command-reference.md` when you need specific flags, output formats, or
-> subcommands for any command group. It covers all 130+ commands with full parameter tables
-> and has a table of contents at the top.
+> If you need specific flags, output formats, or subcommands for any command group, read
+> `references/command-reference.md` first. It covers the documented commands with full
+> parameter tables and has a table of contents at the top.
+
+---
+
+## Table of Contents
+
+1. [Executable Selection](#executable-selection)
+2. [Prerequisites](#prerequisites)
+3. [Syntax](#syntax)
+4. [Command Overview](#command-overview)
+5. [Quick Reference — Most Common Commands](#quick-reference--most-common-commands)
+6. [No-Argument Invocation](#no-argument-invocation)
+7. [Common Agent Patterns](#common-agent-patterns)
+8. [Tips](#tips)
+9. [Gotchas](#gotchas)
+10. [Troubleshooting](#troubleshooting)
+11. [Evaluation Fixtures](#evaluation-fixtures)
+
+---
 
 ## Executable Selection
 

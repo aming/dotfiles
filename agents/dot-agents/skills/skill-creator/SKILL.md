@@ -27,6 +27,22 @@ Of course, you should always be flexible and if the user is like "I don't need t
 
 Then after the skill is done (but again, the order is flexible), you can also run the skill description improver, which we have a whole separate script for, to optimize the triggering of the skill.
 
+---
+
+## Table of Contents
+
+1. [Path map](#path-map)
+2. [Communicating with the user](#communicating-with-the-user)
+3. [Gotchas](#gotchas)
+4. [Creating a skill](#creating-a-skill)
+5. [Running and evaluating test cases](#running-and-evaluating-test-cases)
+6. [Improving the skill](#improving-the-skill)
+7. [Advanced: Blind comparison](#advanced-blind-comparison)
+8. [Description Optimization](#description-optimization)
+9. [Reference files](#reference-files)
+
+---
+
 ## Path map
 
 - To create a new skill, capture concrete examples, decide the reusable resources, run `scripts/init_skill.py`, then replace every TODO before validating.
@@ -203,7 +219,7 @@ Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Wi
 
 ### Step 1: Spawn all runs (with-skill AND baseline) in the same turn
 
-For each test case, spawn two subagents in the same turn — one with the skill, one without. In OpenAgent, default both runs to `Task` with `subagent_type: "general"` unless you have a concrete reason to use another built-in type. Do not invent custom subagent types for eval execution. This is important: don't spawn the with-skill runs first and then come back for baselines later. Launch everything at once so it all finishes around the same time.
+For each test case, spawn two subagents in the same turn — one with the skill, one without. In OpenCode, default both runs to `Task` with `subagent_type: "general"` unless you have a concrete reason to use another built-in type. Do not invent custom subagent types for eval execution. This is important: don't spawn the with-skill runs first and then come back for baselines later. Launch everything at once so it all finishes around the same time.
 
 **With-skill run:**
 
@@ -258,7 +274,7 @@ This is the only opportunity to capture this data — it comes through the task 
 
 Once all runs are done:
 
-1. **Grade each run** — do not invent a custom subagent type like `grader`. OpenAgent only supports built-in subagent types here. Spawn a new `Task` with `subagent_type: "general"` and tell it to read `agents/grader.md` before doing any grading work, or grade inline if subagents are unavailable. The grader must evaluate each expectation against the outputs and save results to `grading.json` in each run directory. The grading.json `expectations` array must use the fields `text`, `passed`, and `evidence` (not `assertion_results`, `name`/`met`/`details`, or other variants) — the viewer and benchmark scripts depend on these exact field names. For expectations that can be checked programmatically, write and run a script rather than eyeballing it — scripts are faster, more reliable, and can be reused across iterations.
+1. **Grade each run** — do not invent a custom subagent type like `grader`. OpenCode only supports built-in subagent types here. Spawn a new `Task` with `subagent_type: "general"` and tell it to read `agents/grader.md` before doing any grading work, or grade inline if subagents are unavailable. The grader must evaluate each expectation against the outputs and save results to `grading.json` in each run directory. The grading.json `expectations` array must use the fields `text`, `passed`, and `evidence` (not `assertion_results`, `name`/`met`/`details`, or other variants) — the viewer and benchmark scripts depend on these exact field names. For expectations that can be checked programmatically, write and run a script rather than eyeballing it — scripts are faster, more reliable, and can be reused across iterations.
 
 2. **Aggregate into benchmark** — run the aggregation script from the skill-creator directory:
    ```bash

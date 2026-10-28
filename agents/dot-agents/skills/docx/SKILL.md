@@ -6,9 +6,37 @@ license: Proprietary. LICENSE.txt has complete terms
 
 # DOCX creation, editing, and analysis
 
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Reproducible setup](#reproducible-setup)
+3. [Quick Reference](#quick-reference)
+4. [Creating New Documents](#creating-new-documents)
+5. [Editing Existing Documents](#editing-existing-documents)
+6. [Gotchas](#gotchas)
+7. [XML Reference](#xml-reference)
+8. [Dependencies](#dependencies)
+
+---
+
 ## Overview
 
 A .docx file is a ZIP archive containing XML files.
+
+## Reproducible setup
+
+Run commands from the task directory so generated documents stay with the task. Set `SKILL_DIR` to this installed skill's absolute directory (the directory containing this SKILL.md):
+
+```bash
+SKILL_DIR="/absolute/path/to/installed/docx"
+TASK_DIR="$PWD"
+python3 -m venv "$TASK_DIR/.venv"
+SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
+"$SKILL_PYTHON" -m pip install 'defusedxml==0.7.1' 'lxml==6.0.2'
+npm install --save-exact docx@9.5.1
+```
 
 ## Quick Reference
 
@@ -55,7 +83,7 @@ To produce a clean document with all tracked changes accepted (requires LibreOff
 
 ## Creating New Documents
 
-Generate .docx files with JavaScript, then validate. First follow the project-local setup in Dependencies below; write the script as `.cjs` in the task directory so `require()` resolves its local `node_modules`.
+Generate .docx files with JavaScript, then validate. First follow Reproducible setup above; write the script as `.cjs` in the task directory so `require()` resolves its local `node_modules`.
 
 ### Setup
 ```javascript
@@ -447,7 +475,12 @@ Validates with auto-repair, condenses XML, and creates DOCX. Use `--validate fal
 **Auto-repair won't fix:**
 - Malformed XML, invalid element nesting, missing relationships, schema violations
 
-### Common Pitfalls
+## Gotchas
+
+- **LibreOffice profiles and timeouts**: `accept_changes.py` uses a temporary `UserInstallation` profile; initialization has a 10-second timeout and acceptance has a 30-second timeout. Report failures and verify the output exists rather than treating a timeout as successful acceptance; do not modify the user's normal LibreOffice profile.
+- **Host editor availability**: Use the host's available editor or patch tool for XML changes; do not assume a tool named `Edit` exists.
+- **Schema validation coverage**: A validation pass covers only enabled checks. Read warnings about skipped XSD parts or unavailable schema dependencies; `--original` compares against existing errors and enables redlining checks. Validation does not verify rendered layout.
+- **Python environment**: Use `SKILL_PYTHON` from Reproducible setup for every bundled helper so `defusedxml` and `lxml` resolve from the task-local environment, not an unrelated system Python.
 
 - **Replace entire `<w:r>` elements**: When adding tracked changes, replace the whole `<w:r>...</w:r>` block with `<w:del>...<w:ins>...` as siblings. Don't inject tracked change tags inside a run.
 - **Preserve `<w:rPr>` formatting**: Copy the original run's `<w:rPr>` block into your tracked change runs to maintain bold, font size, etc.
@@ -575,16 +608,5 @@ When editing an existing package, generate a small reference DOCX with the libra
 ---
 
 ## Dependencies
-
-Run commands from the task directory so generated documents stay with the task. Set `SKILL_DIR` to this installed skill's absolute directory (the directory containing this SKILL.md):
-
-```bash
-SKILL_DIR="/absolute/path/to/installed/docx"
-TASK_DIR="$PWD"
-python3 -m venv "$TASK_DIR/.venv"
-SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
-"$SKILL_PYTHON" -m pip install 'defusedxml==0.7.1' 'lxml==6.0.2'
-npm install --save-exact docx@9.5.1
-```
 
 Use `.cjs` scripts in `TASK_DIR` for the CommonJS examples. Native tools are workflow-specific: pandoc for text extraction; LibreOffice (`soffice`) for conversion and tracked-change acceptance; Poppler (`pdftoppm`) for previews. Provision those through the host's supported package manager and check `soffice --version`/`pdftoppm -v`; the bundled soffice helper configures runtime environment, it does not install LibreOffice.

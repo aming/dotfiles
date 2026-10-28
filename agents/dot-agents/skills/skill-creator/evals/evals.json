@@ -3,8 +3,8 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "Resolve input paths relative to the skill-creator directory. Review the draft skill at evals/fixtures/outdated-skill and patch it for OpenAgent compatibility. Fix any eval-schema mismatches, remove assumptions about custom subagent types, and make the helper agent docs tell the caller to use Task with subagent_type \"general\" and read the relevant agents/*.md file first. Save the updated skill copy under the run-specific output directory supplied by the caller, in a subdirectory named outdated-skill. Also save a brief transcript.md in the run directory summarizing what you changed and why.",
-      "expected_output": "An updated copy of the draft skill with normalized expectations terminology and OpenAgent-compatible Task/general helper-role instructions.",
+      "prompt": "Resolve input paths relative to the skill-creator directory. Review the draft skill at evals/fixtures/outdated-skill and patch it for OpenCode compatibility. Fix any eval-schema mismatches, remove assumptions about custom subagent types, and make the helper agent docs tell the caller to use Task with subagent_type \"general\" and read the relevant agents/*.md file first. Save the updated skill copy under the run-specific output directory supplied by the caller, in a subdirectory named outdated-skill. Also save a brief transcript.md in the run directory summarizing what you changed and why.",
+      "expected_output": "An updated copy of the draft skill with normalized expectations terminology and OpenCode-compatible Task/general helper-role instructions.",
       "files": [
         "evals/fixtures/outdated-skill"
       ],

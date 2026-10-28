@@ -1,5 +1,25 @@
 # PptxGenJS Tutorial
 
+---
+
+## Table of Contents
+
+1. [Setup & Basic Structure](#setup--basic-structure)
+2. [Layout Dimensions](#layout-dimensions)
+3. [Text & Formatting](#text--formatting)
+4. [Lists & Bullets](#lists--bullets)
+5. [Shapes](#shapes)
+6. [Images](#images)
+7. [Icons](#icons)
+8. [Slide Backgrounds](#slide-backgrounds)
+9. [Tables](#tables)
+10. [Charts](#charts)
+11. [Slide Masters](#slide-masters)
+12. [Common Pitfalls](#common-pitfalls)
+13. [Quick Reference](#quick-reference)
+
+---
+
 ## Setup & Basic Structure
 
 First run the project-local Node/Python setup in SKILL.md. Save these CommonJS examples as `.cjs` files beside that task directory's `node_modules`; ordinary `require()` does not resolve global npm installations automatically.

@@ -14,6 +14,23 @@ Use these examples when writing entries under the repository-root `.agents/learn
     FEATURE_REQUESTS.md
 ```
 
+---
+
+## Table of Contents
+
+1. [Learning: Correction](#learning-correction)
+2. [Learning: Knowledge Gap (Resolved)](#learning-knowledge-gap-resolved)
+3. [Learning: Promoted to AGENTS.md](#learning-promoted-to-agentsmd)
+4. [Learning: Promoted to AGENTS.md](#learning-promoted-to-agentsmd-1)
+5. [Error Entry](#error-entry)
+6. [Error Entry: Recurring Issue](#error-entry-recurring-issue)
+7. [Feature Request](#feature-request)
+8. [Feature Request: Resolved](#feature-request-resolved)
+9. [Learning: Promoted to Skill](#learning-promoted-to-skill)
+10. [Extracted Skill Example](#extracted-skill-example)
+
+---
+
 ## Learning: Correction
 
 ```markdown
