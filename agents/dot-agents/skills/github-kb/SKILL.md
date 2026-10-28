@@ -25,10 +25,18 @@ You help users answer questions about GitHub projects. Only use this skill when 
 2) Gather evidence
 - Prefer primary sources: issues, pull requests, releases, README, docs in the repo.
 - Use targeted searches:
-  - Issues/PRs: gh search issues "<query> repo:owner/repo" --limit 10
+  - Issues/PRs: gh search issues "<query> repo:owner/repo" --include-prs --limit 10
   - PRs only: gh search prs "<query> repo:owner/repo" --limit 10
   - Releases: gh release list -R owner/repo
-  - README: gh repo view owner/repo --web or gh api repos/owner/repo/readme (if needed)
+  - README content in the terminal: gh repo view owner/repo
+- Search and list output locate sources; read their bodies before drawing conclusions or citing them:
+  - Issue body: gh issue view <number> -R owner/repo
+  - PR body: gh pr view <number> -R owner/repo
+  - Add --comments to either view command when discussion is relevant.
+  - Release notes: gh release view <tag> -R owner/repo
+  - Latest release notes: gh release view -R owner/repo
+- Read linked repository docs relevant to the claim as well. A browser launch is not retrieved evidence; verify the actual content and cite its source URL.
+- Keep discussion, merged changes, and released behavior distinct; absence in a limited search does not prove a feature is unsupported.
 
 3) Answer concisely with citations
 - Provide a short answer first.
@@ -40,7 +48,7 @@ You help users answer questions about GitHub projects. Only use this skill when 
 
 ## Short answer format
 
-ALWAYS use this template:
+Honor any output format explicitly requested by the user. Otherwise use this template for a short answer (the detailed report below replaces it when requested):
 
 Short answer: <1-4 sentences>
 Citations: <bullet list of URLs>
@@ -61,19 +69,38 @@ Use this when the user asks for details or a report.
 - If there is no good evidence, state that clearly and suggest what to check next.
 - If the user asks to search private repos, explain that you need access and how to provide it.
 
+## Gotchas
+
+- Use --include-prs for a combined issue/PR search; issues-only search omits PRs.
+- Search titles and snippets locate evidence; they do not replace reading source bodies.
+- For explicit GitHub questions, this workflow owns the final response format. If broader web research is also needed, use web-search-advanced for that portion and integrate its verified sources here.
+
 ## Examples
 
+These examples are schematic, not researched answers. All bracketed claims and
+OWNER/repo, number, and vX.Y.Z citation placeholders must be replaced with verified
+content and real URLs from sources read in the current task. Never emit these
+placeholder citations or illustrative claims as factual evidence.
+
 **Example 1:**
-Input: "Does issuespl support webhooks?"
-Output:
-Short answer: It appears issuespl does not document webhook support yet; I only found open discussion and no merged implementation. If you want, I can dig into recent PRs for activity. 
+Input: "Does the issuespl project on GitHub support webhooks?"
+Output (schematic):
+Short answer: [Conclusion supported by the README and issue/PR bodies actually read, with any uncertainty.]
+
 Citations:
-- https://github.com/OWNER/issuespl/issues/123
-- https://github.com/OWNER/issuespl/pull/456
+- [Relevant issue](https://github.com/OWNER/issuespl/issues/123)
+- [Relevant PR](https://github.com/OWNER/issuespl/pull/456)
 
 **Example 2:**
-Input: "Give me details on the latest release of vercel/next.js"
-Output:
-Short answer: The latest release includes fixes for X and Y and a new feature Z; details are in the release notes. 
-Citations:
-- https://github.com/vercel/next.js/releases/tag/vX.Y.Z
+Input: "Give me a detailed report on the latest GitHub release of vercel/next.js."
+Output (schematic):
+
+# Latest GitHub release of vercel/next.js
+## Summary
+[Verified tag, release date, and principal changes from the release body.]
+## Evidence (with links)
+- [Release notes](https://github.com/vercel/next.js/releases/tag/vX.Y.Z): [Verified changes and caveats.]
+## Steps to reproduce or validate (if applicable)
+[Documented validation steps for the verified version, or explain why not applicable.]
+## Recommendations / Next steps
+[Actions justified by the release notes and the user's situation.]

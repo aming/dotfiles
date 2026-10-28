@@ -655,21 +655,16 @@
 
     // ---- Init ----
     async function init() {
-      // Load saved feedback from server — but only if this isn't a fresh
-      // iteration (indicated by previous_feedback being present). When
-      // previous feedback exists, the feedback.json on disk is stale from
-      // the prior iteration and should not pre-fill the textareas.
-      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
-        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
-      if (!hasPrevious) {
-        try {
-          const resp = await fetch("/api/feedback");
-          const data = await resp.json();
-          if (data.reviews) {
-            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
-          }
-        } catch { /* first run, no feedback yet */ }
-      }
+      // This endpoint belongs to the current workspace. Previous iteration
+      // context is embedded separately and must not suppress current saves.
+      try {
+        const resp = await fetch("/api/feedback");
+        if (!resp.ok) throw new Error(`Feedback load failed: ${resp.status}`);
+        const data = await resp.json();
+        if (data.reviews) {
+          for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+        }
+      } catch { /* static mode or no saved feedback yet */ }
 
       document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
       showRun(0);
@@ -1013,7 +1008,8 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reviews, status: "in_progress" }),
-      }).then(() => {
+      }).then((response) => {
+        if (!response.ok) throw new Error(`Feedback save failed: ${response.status}`);
         document.getElementById("feedback-status").textContent = "Saved";
       }).catch(() => {
         // Static mode or server unavailable — no-op on auto-save,
@@ -1045,7 +1041,8 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: payload,
-      }).then(() => {
+      }).then((response) => {
+        if (!response.ok) throw new Error(`Feedback save failed: ${response.status}`);
         document.getElementById("done-overlay").classList.add("visible");
       }).catch(() => {
         // Server not available (static mode) — download as file
@@ -1061,8 +1058,7 @@
     }
 
     function closeDoneDialog() {
-      // Reset status back to in_progress
-      saveCurrentFeedback();
+      // Acknowledge completion without writing a new in-progress save.
       document.getElementById("done-overlay").classList.remove("visible");
     }
 
@@ -1138,7 +1134,7 @@
       html += '<table class="benchmark-table">';
 
       function fmtStat(stat, pct) {
-        if (!stat) return "—";
+        if (!stat || stat.mean == null || stat.stddev == null) return "—";
         const suffix = pct ? "%" : "";
         const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
         const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
@@ -1154,7 +1150,8 @@
       }
 
       // Discover config names dynamically (everything except "delta")
-      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configs = Object.keys(summary).filter(k => k !== "delta").sort((a, b) =>
+        Number(!["with_skill", "new_skill"].includes(a)) - Number(!["with_skill", "new_skill"].includes(b)) || a.localeCompare(b));
       const configA = configs[0] || "config_a";
       const configB = configs[1] || "config_b";
       const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());

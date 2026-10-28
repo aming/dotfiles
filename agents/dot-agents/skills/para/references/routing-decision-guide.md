@@ -2,6 +2,11 @@
 
 Use this guide for large audits, migrations, or ambiguous routing decisions.
 
+## Activation Precedence
+
+See **Activation Precedence** in `SKILL.md`: ACE vaults defer PKM routing and meeting-note placement to the ACE skill; PARA covers non-ACE PKM and ordinary PARA workspaces, and a requested ACE-to-PARA conversion is a migration that establishes the target mapping first.
+
+
 ## Decision Tree
 
 1. Is the item active right now?
@@ -41,7 +46,7 @@ Before moving many notes or files:
 1. Inventory current paths.
 2. Build a proposed mapping table.
 3. Mark low-confidence items for confirmation.
-4. Choose the safest move tool for the surface.
+4. Choose the safest move tool for the surface. In Obsidian, automatic internal-link updates require **Automatically update internal links** to be enabled; otherwise plan explicit updates and verify affected links.
 5. Preserve metadata, frontmatter, aliases, backlinks, and source context.
 6. Update indexes, overviews, dashboards, and daily-note pointers if the workspace uses them.
 7. Verify a sample first for large migrations.

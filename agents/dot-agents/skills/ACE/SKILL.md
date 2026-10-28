@@ -95,11 +95,15 @@ For the full decision table, detailed folder meanings, or lint interpretation, r
 
 ## Obsidian-Safe Operations
 
-ACE work happens inside an Obsidian vault, so use the `obsidian` CLI for vault operations instead of raw filesystem edits. Obsidian-aware commands preserve links, metadata, and app state better than moving files with filesystem tools.
+ACE work happens inside an Obsidian vault, so use the CLI for vault operations instead of raw filesystem edits.
+
+Use `obsidian` by default: the official CLI registers that command on macOS and Linux. Check `obsidian version` and `obsidian help` before vault operations. If a deployment actually provides `obsidian-cli` (for example, a local wrapper or bundled variant), verify it with `version` and `help`, then substitute that executable consistently in the examples. Absence of `obsidian-cli` alone is not a registration failure. If neither verified command works, report the exact failure; do not repair PATH or create symlinks during a note task.
+
+Automatic internal-link updates require the vault setting **Automatically update internal links** to be enabled. Check that setting before moving or renaming notes, including per-note moves during folder renames; if disabled, plan explicit link updates and verification rather than promising automatic preservation. Verify the destination and affected links after each operation.
 
 - For reading a note, use `obsidian read path="vault-relative/path.md"`.
 - For note creation or edits, prefer `obsidian create`, `obsidian append`, `obsidian prepend`, `obsidian property:set`, or `obsidian eval` when needed.
-- For every rename or folder move, prefer `obsidian move path="old/path.md" to="new/path.md"` with vault-relative paths.
+- With the automatic-link-update setting checked as above, for every rename or folder move, prefer `obsidian move path="old/path.md" to="new/path.md"` with vault-relative paths.
 - For folder renames, prefer creating the new folder, moving each note into it with `obsidian move`, then removing the empty old folder.
 - Do not emulate a move by creating a new file and deleting the old one.
 - Do not use raw `mv`, `cp`, `rm`, or `apply_patch` add/delete pairs for Obsidian note moves.
@@ -131,3 +135,7 @@ Default to checking structure first when the user asks broad ACE questions and t
 3. If the request is a vault question, load `references/vault-questions.md` and answer from what is actually in the vault.
 4. If the request is note processing, load `references/note-processing.md` and do the smallest correct edit or move.
 5. Preserve the user's intent and existing vault style unless the user asks for a broader reorganization.
+
+## Evaluation Fixtures
+
+For repeatable evaluations without a personal vault, read `evals/SETUP.md` and initialize a fresh disposable vault with `python3 evals/init_vault.py --destination /tmp/ace-eval-vault`. The initializer refuses an existing destination; CLI evaluations require opening this disposable vault in Obsidian first.

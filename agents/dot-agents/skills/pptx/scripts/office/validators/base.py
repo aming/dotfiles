@@ -665,12 +665,15 @@ class BaseSchemaValidator:
         if self.verbose:
             print(f"Validated {len(self.xml_files)} files:")
             print(f"  - Valid: {valid_count}")
-            print(f"  - Skipped (no schema): {skipped_count}")
+            print(f"  - Skipped (no schema or unavailable schema dependency): {skipped_count}")
             if original_error_count:
                 print(f"  - With original errors (ignored): {original_error_count}")
             print(
                 f"  - With NEW errors: {len(new_errors) > 0 and len([e for e in new_errors if not e.startswith('    ')]) or 0}"
             )
+
+        if skipped_count:
+            print(f"WARNING: {skipped_count} part(s) skipped XSD validation; coverage is incomplete")
 
         if new_errors:
             print("\nFAILED - Found NEW validation errors:")
@@ -682,7 +685,27 @@ class BaseSchemaValidator:
                 print("\nPASSED - No new XSD validation errors introduced")
             return True
 
-    def _get_schema_path(self, xml_file):
+    def _get_schema_path(self, xml_file, base_path=None):
+        # OPC part names are arbitrary; map presentation parts by content type.
+        package_root = Path(base_path) if base_path is not None else self.unpacked_dir
+        content_types = package_root / "[Content_Types].xml"
+        if content_types.exists():
+            part_name = "/" + xml_file.relative_to(package_root).as_posix() if xml_file.is_relative_to(package_root) else None
+            if part_name:
+                for part in lxml.etree.parse(str(content_types)).getroot():
+                    content_type = part.get("ContentType", "")
+                    if part.get("PartName") == part_name and content_type.startswith("application/vnd.openxmlformats-officedocument.presentationml."):
+                        return self.schemas_dir / self.SCHEMA_MAPPINGS["ppt"]
+        # Nested package parts (for example Word glossary documents) use their
+        # root namespace rather than the immediate filesystem parent.
+        namespace = lxml.etree.QName(lxml.etree.parse(str(xml_file)).getroot()).namespace
+        namespace_schemas = {
+            "http://schemas.openxmlformats.org/wordprocessingml/2006/main": "word",
+            "http://schemas.openxmlformats.org/presentationml/2006/main": "ppt",
+            "http://schemas.openxmlformats.org/spreadsheetml/2006/main": "xl",
+        }
+        if namespace in namespace_schemas:
+            return self.schemas_dir / self.SCHEMA_MAPPINGS[namespace_schemas[namespace]]
         if xml_file.name in self.SCHEMA_MAPPINGS:
             return self.schemas_dir / self.SCHEMA_MAPPINGS[xml_file.name]
 
@@ -748,11 +771,10 @@ class BaseSchemaValidator:
         return xml_doc
 
     def _validate_single_file_xsd(self, xml_file, base_path):
-        schema_path = self._get_schema_path(xml_file)
-        if not schema_path:
-            return None, None  
-
         try:
+            schema_path = self._get_schema_path(xml_file, base_path)
+            if not schema_path:
+                return None, None
             with open(schema_path, "rb") as xsd_file:
                 parser = lxml.etree.XMLParser()
                 xsd_doc = lxml.etree.parse(
@@ -781,6 +803,9 @@ class BaseSchemaValidator:
                     errors.add(error.message)
                 return False, errors
 
+        except lxml.etree.XMLSchemaParseError as e:
+            print(f"WARNING: XSD validation skipped for {xml_file}: schema dependency unavailable or invalid: {e}")
+            return None, None
         except Exception as e:
             return False, {str(e)}
 

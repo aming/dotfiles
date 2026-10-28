@@ -1,6 +1,5 @@
 ---
 name: obsidian
-version: "1.3.1"
 description: >
   Use this skill when the user wants direct operations on an Obsidian vault: read
   or edit notes and daily notes, search vault contents, count or list notes,
@@ -12,30 +11,9 @@ description: >
   questions such as settings navigation, theme/plugin installation, sync
   troubleshooting, Dataview syntax, keyboard shortcuts, or parsing vault files
   with unrelated external scripts.
-triggers:
-  - "obsidian"
-  - "vault"
-  - "daily note"
-  - "obsidian cli"
-  - "note"
-  - "append to"
-  - "prepend to"
-  - "search my vault"
-  - "create a note"
-  - "read note"
-  - "move note"
-  - "rename note"
-  - "delete note"
-  - "tasks in obsidian"
-  - "open tasks"
-  - "backlinks"
-  - "orphaned notes"
-  - "broken links"
-  - "frontmatter"
-  - "properties"
-  - "sync history"
-  - "obsidian bases"
-  - "file history"
+metadata:
+  version: "1.3.1"
+  triggers: ["obsidian", "vault", "daily note", "obsidian cli", "note", "append to", "prepend to", "search my vault", "create a note", "read note", "move note", "rename note", "delete note", "tasks in obsidian", "open tasks", "backlinks", "orphaned notes", "broken links", "frontmatter", "properties", "sync history", "obsidian bases", "file history"]
 ---
 
 # Obsidian CLI
@@ -48,11 +26,9 @@ The official Obsidian CLI (released in v1.12, February 2026) lets you control ev
 
 ## Executable Selection
 
-Always run the CLI as `obsidian-cli`.
+Use `obsidian` by default: the official CLI registers that command on macOS and Linux. Check `obsidian version` and `obsidian help` before vault operations. If a deployment actually provides `obsidian-cli` (for example, a local wrapper or bundled variant), verify it with `version` and `help`, then substitute that executable consistently in the examples. Absence of `obsidian-cli` alone is not a registration failure. If neither verified command works, report the exact failure; do not repair PATH or create symlinks during a note task.
 
-Do not call `obsidian`, and do not fall back to `obsidian`. On macOS, `obsidian` can resolve to the GUI executable inside `/Applications/Obsidian.app/Contents/MacOS/`, especially on case-insensitive filesystems, and may exit with `-1` and no useful output. The real terminal CLI in the app bundle is `obsidian-cli`.
-
-If the `obsidian-cli` executable is missing, report that the Obsidian CLI is not correctly registered and use the safest direct file operation only if the task can tolerate bypassing Obsidian-aware behavior. Do not repair PATH or create symlinks as part of a note task. Follow the workspace's instructions for starting the desktop app when needed.
+Verified against the [official CLI command reference](https://help.obsidian.md/cli) on 2026-10-27 (Obsidian 1.12+). Recheck local `help <command>` when behavior differs.
 
 ## Prerequisites
 
@@ -64,10 +40,10 @@ If the `obsidian-cli` executable is missing, report that the Obsidian CLI is not
 
 ### Platform Notes
 
-- **macOS / Linux**: Use `obsidian-cli`. If PATH registration is missing, the macOS app-bundled binary is usually `/Applications/Obsidian.app/Contents/MacOS/obsidian-cli`.
+- **macOS / Linux**: Register `obsidian` through Settings → General → Command line interface; follow the executable checks above. A verified local wrapper may have a different name.
 - **Windows**: Requires an `Obsidian.com` redirector file placed alongside `Obsidian.exe`. **Must run with normal user privileges** — admin terminals produce silent failures.
   - If colon subcommands (`property:set`, `daily:append`, etc.) with parameters return exit 127, check that `Obsidian.com` exists alongside `Obsidian.exe`. If missing, you have an outdated installer — download the latest from [obsidian.md/download](https://obsidian.md/download) and reinstall.
-  - **Git Bash / MSYS2 users**: use a wrapper named `obsidian-cli` that invokes `Obsidian.com`; do not use `obsidian`, because Bash can resolve it to `Obsidian.exe` (GUI).
+  - **Git Bash / MSYS2 users**: verify which executable resolves; a local wrapper invoking `Obsidian.com` can avoid resolving to the GUI `Obsidian.exe`.
 - **Headless Linux**: Use the `.deb` package (not snap). Run under `xvfb`. Prefix commands with `DISPLAY=:5` (or your xvfb display number). Ensure `PrivateTmp=false` if running as a service.
 
 ## Syntax
@@ -75,16 +51,20 @@ If the `obsidian-cli` executable is missing, report that the Obsidian CLI is not
 All parameters use **`key=value`** syntax. Quote values containing spaces.
 
 ```bash
-obsidian-cli <command> [subcommand] [key=value ...] [flags]
+obsidian <command> [subcommand] [key=value ...] [flags]
 ```
+
+### File Targets
+
+`file=<name>` uses Obsidian wikilink-style name resolution; it can omit the folder and extension and may be ambiguous when names repeat. `path=<path>` requires the exact vault-relative path, including the extension for existing notes. Use `path=` for precise edits and verification; the two forms are equivalent only when name resolution selects the same file.
 
 ### Multi-Vault
 
 Target a specific vault with `vault=<name>`:
 
 ```bash
-obsidian-cli vault="My Vault" daily:read
-obsidian-cli vault="Work Notes" search query="meeting"
+obsidian vault="My Vault" daily:read
+obsidian vault="Work Notes" search query="meeting"
 ```
 
 If omitted, the CLI targets the most recently active vault.
@@ -122,28 +102,32 @@ The CLI provides **130+ commands** across these groups:
 
 ### Reading & Writing Notes
 
+Before moves or renames, check **Automatically update internal links** in vault settings; automatic link preservation depends on it. If disabled, explicitly update and verify affected links.
+
 ```bash
-obsidian-cli read path="folder/note.md"
-obsidian-cli create path="folder/note" content="# New Note"
-obsidian-cli create path="folder/note" template="meeting-notes"
-obsidian-cli append path="folder/note.md" content="New paragraph"
-obsidian-cli prepend path="folder/note.md" content="Top content"
-obsidian-cli move path="old/note.md" to="new/note.md"
-obsidian-cli rename path="folder/old-name.md" name="new-name"
-obsidian-cli delete path="folder/note.md"
-obsidian-cli delete path="folder/note.md" permanent
+obsidian read path="folder/note.md"
+obsidian create path="folder/note" content="# New Note"
+obsidian create path="folder/note" template="meeting-notes"
+obsidian append path="folder/note.md" content="New paragraph"
+obsidian prepend path="folder/note.md" content="Top content"
+obsidian move path="old/note.md" to="new/note.md"
+obsidian rename path="folder/old-name.md" name="new-name"
+obsidian delete path="folder/note.md"
+obsidian delete path="folder/note.md" permanent
 ```
 
 ### Moving & Renaming Notes
 
-Prefer first-class file subcommands over low-level API calls because they are easier to audit, align with documented CLI behavior, and preserve Obsidian's link-aware handling.
+Prefer first-class file subcommands over low-level API calls because they are easier to audit and align with documented CLI behavior.
+
+Automatic internal-link updates require the vault setting **Automatically update internal links** to be enabled. Check that setting before moving or renaming notes, including per-note moves during folder renames; if disabled, plan explicit link updates and verification rather than promising automatic preservation. Verify the destination and affected links after each operation.
 
 ```bash
 # Move and/or rename in one operation; target includes .md
-obsidian-cli move path="old/folder/Old Name.md" to="new/folder/New Name.md"
+obsidian move path="old/folder/Old Name.md" to="new/folder/New Name.md"
 
 # Rename within the same folder; name omits .md
-obsidian-cli rename path="folder/Old Name.md" name="New Name"
+obsidian rename path="folder/Old Name.md" name="New Name"
 ```
 
 Use `eval` for file moves or renames only when no suitable documented subcommand exists.
@@ -151,85 +135,76 @@ Use `eval` for file moves or renames only when no suitable documented subcommand
 There is no reliable Obsidian CLI folder-rename workflow to depend on. For folder renames, default to this safer workflow instead:
 
 1. Create the destination folder.
-2. Move each note from the old folder into the new folder with `obsidian-cli move`.
+2. Move each note from the old folder into the new folder with `obsidian move`.
 3. Remove the old folder only after it is empty.
 
-This keeps note moves link-aware without depending on unsupported folder-level rename behavior.
+For this workflow, automatic link updates require the vault setting above; verify affected links after the moves.
 
 ### Daily Notes
 
 ```bash
-obsidian-cli daily                          # Open today's daily note
-obsidian-cli daily:read                     # Print content of today's note
-obsidian-cli daily:append content="- [ ] New task"
-obsidian-cli daily:prepend content="## Morning Notes"
+obsidian daily                          # Open today's daily note
+obsidian daily:read                     # Print content of today's note
+obsidian daily:append content="- [ ] New task"
+obsidian daily:prepend content="## Morning Notes"
 ```
 
 ### Search
 
 ```bash
-obsidian-cli search query="project alpha"
-obsidian-cli search query="TODO" path="projects" limit=10
-obsidian-cli search query="meeting" format=json   # Returns JSON array of file paths
-obsidian-cli search query="urgent" case
+obsidian search query="project alpha"
+obsidian search query="TODO" path="projects" limit=10
+obsidian search query="meeting" format=json   # Returns JSON array of file paths
+obsidian search query="urgent" case
 ```
 
 ### Properties & Tags
 
 ```bash
-obsidian-cli properties path="note.md"
-obsidian-cli property:set path="note.md" name="status" value="active"
-obsidian-cli property:read path="note.md" name="status"
-obsidian-cli property:remove path="note.md" name="draft"
-obsidian-cli tags counts sort=count
-obsidian-cli tag name="project/alpha"
+obsidian properties path="note.md"
+obsidian property:set path="note.md" name="status" value="active"
+obsidian property:read path="note.md" name="status"
+obsidian property:remove path="note.md" name="draft"
+obsidian tags counts sort=count
+obsidian tag name="project/alpha"
 ```
 
-Use `property:set` for scalar properties such as `status`, `summary`, and `created`. It serializes `value=` as a scalar string/date and can turn wikilink/list properties into strings, for example `in: "[[Maps]]"`. For array/list properties such as `up`, `related`, `in`, `tags`, and `aliases`, preserve the vault's existing YAML list shape unless the user explicitly wants scalar values:
-
-```yaml
-up:
-  - "[[Sources]]"
-created: 2020-06-01
-in:
-  - "[[Maps]]"
-```
-
-After every property write, verify by reading the exact note. If `property:set` prints only the outdated-installer warning or exits successfully without changing the file, report that limitation before using another approach. If `property:set` damages list-valued properties, repair them to the vault's established list format.
-
-When the task is specifically about Obsidian properties, do a second verification pass with `obsidian-cli property:read` for each property you changed. Prefer the explicit file form the user asked for when it works in the environment:
+Use typed `property:set` writes: `type=text|list|number|checkbox|date|datetime`. For list properties, specify `type=list` and preserve the existing YAML list shape. For example:
 
 ```bash
-obsidian-cli property:read file="note.md" name="status"
-obsidian-cli property:read file="note.md" name="tags"
+obsidian property:set path="note.md" name="status" value="active" type=text
+obsidian property:set path="note.md" name="created" value="2026-05-01" type=date
+obsidian property:set path="note.md" name="tags" value="project/atlas,draft" type=list
+obsidian property:set path="note.md" name="in" value="[[Maps]]" type=list
+obsidian property:read path="note.md" name="tags"
 ```
 
-If the environment or docs use `path=` instead of `file=`, treat them as equivalent command shapes and use the one that actually works, but still verify the property values through `property:read` rather than only inspecting raw YAML.
+Verify both the exact note and every changed property using `property:read path=... name=...`. Confirm list items, unrelated frontmatter, and body content remain correct. If a local version ignores typed writes, report the observed limitation and use the Obsidian API only when needed, then verify again.
 
 ### Tasks
 
 ```bash
-obsidian-cli tasks                          # All tasks (done + todo) — same as tasks all in v1.12
-obsidian-cli tasks all                      # All tasks (done + todo)
-obsidian-cli tasks done                     # Completed only
-obsidian-cli tasks daily                    # Tasks in today's daily note
-obsidian-cli task path="note.md" line=12 toggle
-obsidian-cli tasks | grep "\[ \]"           # Workaround: filter to incomplete only
+obsidian tasks                          # All tasks (done + todo)
+obsidian tasks todo                     # Incomplete tasks only
+obsidian tasks done                     # Completed only
+obsidian tasks daily                    # Tasks in today's daily note
+obsidian task path="note.md" line=12 toggle
+obsidian tasks todo                     # Incomplete tasks only
 ```
 
 ### Developer & Automation
 
 ```bash
-obsidian-cli eval code="app.vault.getFiles().length"
-obsidian-cli dev:screenshot path="folder/screenshot.png"  # Path must be vault-relative
-obsidian-cli dev:debug on                                 # Required before dev:console
-obsidian-cli dev:console limit=20
-obsidian-cli dev:errors
+obsidian eval code="app.vault.getFiles().length"
+obsidian dev:screenshot path="folder/screenshot.png"  # Path must be vault-relative
+obsidian dev:debug on                                 # Required before dev:console
+obsidian dev:console limit=20
+obsidian dev:errors
 ```
 
 ## No-Argument Invocation
 
-Do not run `obsidian-cli` with no command. Always provide an explicit command such as `vault`, `read`, `search`, or `daily:read`. If you need an interactive Obsidian UI action, ask the user instead of trying to launch the GUI from this skill.
+Do not run `obsidian` with no command. Always provide an explicit command such as `vault`, `read`, `search`, or `daily:read`. If you need an interactive Obsidian UI action, ask the user instead of trying to launch the GUI from this skill.
 
 ## Common Agent Patterns
 
@@ -237,7 +212,7 @@ Do not run `obsidian-cli` with no command. Always provide an explicit command su
 
 ```bash
 # Append a timestamped entry
-obsidian-cli daily:append content="## $(date '+%H:%M') — Status Update
+obsidian daily:append content="## $(date '+%H:%M') — Status Update
 - Completed: feature branch merge
 - Next: code review for PR #42
 - Blocked: waiting on API credentials"
@@ -246,80 +221,77 @@ obsidian-cli daily:append content="## $(date '+%H:%M') — Status Update
 ### Create Note from Template with Metadata
 
 ```bash
-obsidian-cli create path="projects/new-feature" template="project-template"
-obsidian-cli property:set path="projects/new-feature.md" name="status" value="planning"
-obsidian-cli property:set path="projects/new-feature.md" name="created" value="$(date -I)"
-obsidian-cli daily:append content="- Started [[projects/new-feature|New Feature]]"
+obsidian create path="projects/new-feature" template="project-template"
+obsidian property:set path="projects/new-feature.md" name="status" value="planning"
+obsidian property:set path="projects/new-feature.md" name="created" value="$(date -I)"
+obsidian daily:append content="- Started [[projects/new-feature|New Feature]]"
 ```
 
 ### Vault Analytics Script
 
 ```bash
-obsidian-cli files total                    # Total file count
-obsidian-cli tags counts sort=count         # Most used tags
-obsidian-cli tasks | grep "\[ \]"          # Incomplete tasks across vault
-obsidian-cli orphans                        # Notes needing integration
-obsidian-cli unresolved                     # Broken links to fix
+obsidian files total                    # Total file count
+obsidian tags counts sort=count         # Most used tags
+obsidian tasks todo                     # Incomplete tasks across vault
+obsidian orphans                        # Notes needing integration
+obsidian unresolved                     # Broken links to fix
 ```
 
 ### Search and Extract for AI Processing
 
 ```bash
-obsidian-cli search query="meeting notes" format=json | jq '.[]'
-obsidian-cli read path="meetings/standup.md" | grep "Action item"
+obsidian search query="meeting notes" format=json | jq '.[]'
+obsidian read path="meetings/standup.md" | grep "Action item"
 ```
 
 ### Sync Management
 
 ```bash
-obsidian-cli sync:status                    # Check sync health
-obsidian-cli sync:history path="important.md"  # Version history
-obsidian-cli sync:restore path="important.md" version=3  # Rollback
+obsidian sync:status                    # Check sync health
+obsidian sync:history path="important.md"  # Version history
+obsidian sync:restore path="important.md" version=3  # Rollback
 ```
 
 ### Execute Obsidian Commands
 
 ```bash
 # Find a command ID, then execute it
-obsidian-cli commands | grep "graph"
-obsidian-cli command id="graph:open"
+obsidian commands | grep "graph"
+obsidian command id="graph:open"
 
 # Open settings, trigger a plugin action
-obsidian-cli command id="app:open-settings"
-obsidian-cli command id="dataview:dataview-force-refresh-views"
+obsidian command id="app:open-settings"
+obsidian command id="dataview:dataview-force-refresh-views"
 ```
 
 ## Tips
 
 1. **Paths are vault-relative** — use `folder/note.md`, not absolute filesystem paths.
 2. **`create` paths omit `.md`** — the extension is added automatically.
-3. **`move` requires full target path** including `.md` extension.
+3. **`move to=` accepts a folder or path** — use a full destination path including `.md` when precision matters.
 4. **Pipe-friendly** — plain text output works with `grep`, `awk`, `sed`, `jq`.
 5. **JSON output** — use `format=json` on `search` for a JSON array of file paths. The `files` command does not support JSON output.
 6. **Stderr noise** — GPU/Electron warnings on headless are harmless; filter with `2>/dev/null`.
 7. **`daily:prepend`** inserts content after frontmatter, not at byte 0.
-8. **Use first-class subcommands before `eval`** — for example, use `obsidian-cli move` or `obsidian-cli rename` for file moves/renames. Reserve `eval` for cases where no suitable documented CLI subcommand exists or direct Obsidian API access is truly needed.
-9. **There is no dependable folder-rename command** — create the new folder, move each note with `obsidian-cli move`, then remove the empty source folder.
-10. **`template:insert`** inserts into the currently active file in the Obsidian UI — it does not accept a `path=` parameter. If no file is open, it returns `Error: No active editor. Open a file first.` To create a file from a template via CLI, use `obsidian-cli create path="..." template="..."` instead.
-11. **`property:set` stores list values as strings** — `value="tag1, tag2"` writes a literal comma-separated string, not a YAML array. For proper array fields, edit the note's frontmatter directly (e.g. via `read` → modify → `create --force`) or use `eval` to call the Obsidian API.
-12. **`eval` requires single-line JavaScript** — multiline JS passed inline fails with a token error. Write the script to a temp file instead:
+8. **Use first-class subcommands before `eval`** — for example, use `obsidian move` or `obsidian rename` for file moves/renames. Reserve `eval` for cases where no suitable documented CLI subcommand exists or direct Obsidian API access is truly needed.
+9. **Folder rename workflow** — create the new folder, move each note with `obsidian move`, then remove the empty source folder. Automatic link updates require **Automatically update internal links** to be enabled; otherwise update and verify links explicitly.
+10. **`template:insert`** inserts into the currently active file in the Obsidian UI — it does not accept a `path=` parameter. If no file is open, it returns `Error: No active editor. Open a file first.` To create a file from a template via CLI, use `obsidian create path="..." template="..."` instead.
+11. **Use typed properties** — use `property:set type=list` for lists and `type=date` for dates; verify both note content and dedicated property reads. When replacing a full note, the documented create flag is `overwrite`, for example `obsidian create path="note.md" content="..." overwrite`; read and preserve the complete body and unrelated frontmatter first.
+12. **If inline multiline JavaScript fails locally**, pass a genuinely single-line program. For a short script, write it on one line:
     ```bash
-    cat > /tmp/obs.js << 'JS'
-    var files = app.vault.getMarkdownFiles();
-    files.length;
-    JS
-    obsidian-cli eval code="$(cat /tmp/obs.js)"
+    obsidian eval code="var files = app.vault.getMarkdownFiles(); files.length;"
     ```
+    For complex scripts, use a JavaScript-aware bundler/minifier to emit one line before passing it; do not pass `$(cat multiline.js)` or blindly strip newlines (which can break comments and string literals).
 13. **Multi-vault targeting should use `vault=<name>`** — do not use positional vault syntax. If `vault=<name>` fails, omit the vault option and switch vaults manually in the Obsidian UI.
-14. **When colon subcommands are unavailable** (e.g. Windows Git Bash without wrapper), prefer non-colon alternatives: use `properties` instead of `property:read`, and `obsidian-cli daily:path` + `append` instead of `daily:append`.
+14. **When colon subcommands are unavailable** (e.g. Windows Git Bash without wrapper), prefer non-colon alternatives: use `properties` instead of `property:read`, and `obsidian daily:path` + `append` instead of `daily:append`.
 
 ## Gotchas
 
-- `The CLI is unable to find Obsidian` does not prove the app is closed. On macOS, a Codex sandbox can block IPC to a running Obsidian app. Check the main process if possible (process inspection may also be restricted), then retry one needed read-only CLI command such as `obsidian-cli version` outside the sandbox with scoped approval. If it succeeds, use narrowly scoped access for the task's CLI operations, respecting write authorization; never approve a broad CLI prefix because it includes mutating commands. If it still fails, check that the CLI is enabled and a vault is open. Use minimal direct file operations only when safe, and read back affected notes.
-- `property:set` is safe for scalar values such as `status`, `summary`, and `created`, but it can serialize list-shaped properties as plain strings. Treat `tags`, `aliases`, `up`, `in`, and similar multi-value properties as YAML you must preserve.
+- `The CLI is unable to find Obsidian` does not prove the app is closed. On macOS, a Codex sandbox can block IPC to a running Obsidian app. Check the main process if possible (process inspection may also be restricted), then retry one needed read-only CLI command such as `obsidian version` outside the sandbox with scoped approval. If it succeeds, use narrowly scoped access for the task's CLI operations, respecting write authorization; never approve a broad CLI prefix because it includes mutating commands. If it still fails, check that the CLI is enabled and a vault is open. Use minimal direct file operations only when safe, and read back affected notes.
+- Use `property:set type=list` for `tags`, `aliases`, `up`, `in`, and similar list properties; verify the resulting YAML list and dedicated property reads.
 - When the user asks to add or fix Obsidian properties, remember that those properties live in YAML frontmatter. The real success condition is not "a property command ran"; it is "the note now has valid frontmatter in the expected shape."
 - After any property write, read the exact note back and verify both the frontmatter shape and the body content. Do not assume a success exit code means the note changed correctly.
-- For property tasks, do not stop after `obsidian-cli read`. Also verify each changed property with `obsidian-cli property:read name="..." file="..."` or the working `path=` form in that environment. The skill should prove the properties are readable through the dedicated property command.
+- For property tasks, do not stop after `obsidian read`. Also verify each changed property with `obsidian property:read name="..." file="..."` or `path=` with the exact vault-relative path (preferred for precise targeting). The skill should prove the properties are readable through the dedicated property command.
 - If the note already has frontmatter, preserve unrelated keys and keep the body intact.
 
 ## Troubleshooting
@@ -328,13 +300,17 @@ obsidian-cli command id="dataview:dataview-force-refresh-views"
 |---|---|---|
 | Empty output / hangs | Obsidian not running, or admin terminal (Windows) | Start Obsidian; use normal-privilege terminal |
 | `The CLI is unable to find Obsidian` | App not running, CLI disabled, or sandboxed IPC | See **Gotchas** before concluding the app is closed |
-| `obsidian-cli` command not found | CLI not registered in PATH | Re-enable CLI in Settings; restart terminal; on macOS, use `/Applications/Obsidian.app/Contents/MacOS/obsidian-cli` if present |
+| `obsidian` command not found | Standard command unavailable | Check registration in Settings → General → Command line interface; verify any documented local variant with `version` and `help` |
 | Unicode errors | Fixed in v1.12.2+ | Update Obsidian |
-| Wrong vault targeted | Multi-vault ambiguity | Pass vault name as first arg |
+| Wrong vault targeted | Multi-vault ambiguity | Pass `vault=<name>` before the command |
 | IPC socket not found (Linux) | `PrivateTmp=true` in systemd | Set `PrivateTmp=false` |
 | Snap confinement issues | Snap restricts IPC | Use `.deb` package instead |
 | Multi-vault targeting fails | Vault name matching issue | Prefer `vault=<name>`; otherwise omit vault name and target the active vault |
-| `property:set` list value is a string | CLI stores value as-is | Edit frontmatter directly or use `eval` |
+| `property:set` list value is a string | Missing type or local version behavior | Use `type=list`; verify exact content and property reads |
 | Colon+params exit 127 (missing `.com`) | Outdated installer — `Obsidian.com` absent | Reinstall from [obsidian.md/download](https://obsidian.md/download) |
-| `obsidian` exits `-1` with no output | `obsidian` resolved to GUI executable instead of CLI | Do not use `obsidian`; use `obsidian-cli` only |
-| Colon+params exit 127 (Git Bash / MSYS2) | Shell wrapper invokes `.exe` instead of `.com` | Create a wrapper named `obsidian-cli` that calls `/c/path/to/Obsidian.com "$@"` |
+| `obsidian` exits `-1` with no output | `obsidian` resolved to GUI executable instead of CLI | Use the CLI executable (on Windows `Obsidian.com`, not the GUI `Obsidian.exe`); verify with `obsidian version` |
+| Colon+params exit 127 (Git Bash / MSYS2) | Shell wrapper invokes `.exe` instead of `.com` | Create a wrapper named `obsidian` that calls `/c/path/to/Obsidian.com "$@"` |
+
+## Evaluation Fixtures
+
+For repeatable evaluations without a personal vault, read `evals/SETUP.md` and initialize a fresh disposable vault with `python3 evals/init_vault.py --destination /tmp/obsidian-eval-vault`. The initializer refuses an existing destination; CLI evaluations require opening this disposable vault in Obsidian first.

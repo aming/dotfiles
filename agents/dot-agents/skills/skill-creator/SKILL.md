@@ -370,7 +370,7 @@ This is optional, usually uses `general` subagents that first read the relevant 
 
 ## Description Optimization
 
-The description field in SKILL.md frontmatter is the primary mechanism that determines whether OpenCode invokes a skill. After creating or improving a skill, offer to optimize the description for better triggering accuracy.
+The description field in SKILL.md frontmatter helps the host decide whether to invoke a skill. The bundled optimization harness specifically tests Claude Code via `claude -p`; it does not measure OpenCode or Codex triggering. Use it only when Claude Code is the target host, with the CLI configured and the `anthropic` Python package and API credentials available. For other hosts, review the query set manually and report automated trigger optimization as not run. After creating or improving a skill, offer to optimize the description for better triggering accuracy.
 
 ### Step 1: Generate trigger eval queries
 
@@ -417,15 +417,16 @@ Tell the user: "This will take some time — I'll run the optimization loop in t
 Save the eval set to the workspace, then run in the background:
 
 ```bash
-python -m scripts.run_loop \
+# Run from the skill-creator directory.
+python3 -m scripts.run_loop \
   --eval-set <path-to-trigger-eval.json> \
   --skill-path <path-to-skill> \
-  --model <model-id-powering-this-session> \
+  --model <anthropic-api-model-id> \
   --max-iterations 5 \
   --verbose
 ```
 
-Use the model ID from your system prompt (the one powering the current session) so the triggering test matches what the user actually experiences.
+`--model` selects the Anthropic API model used to propose improvements and the Claude CLI model used for trigger tests. Choose an identifier supported by both and your account; it need not match the current agent session. The harness is a Claude Code proxy measurement, so do not claim its scores describe OpenCode or Codex.
 
 While it runs, periodically tail the output to give the user updates on which iteration it's on and what the scores look like.
 
@@ -433,7 +434,7 @@ This handles the full optimization loop automatically. It splits the eval set in
 
 ### How skill triggering works
 
-Understanding the triggering mechanism helps design better eval queries. Skills appear in OpenCode's `available_skills` list with their name + description, and the model decides whether to consult a skill based on that description. The important thing to know is that the model only consults skills for tasks it can't easily handle on its own — simple, one-step queries like "read this PDF" may not trigger a skill even if the description matches perfectly, because the model can handle them directly with basic tools. Complex, multi-step, or specialized queries reliably trigger skills when the description matches.
+Understanding the triggering mechanism helps design better eval queries. In this harness, a temporary command is exposed to Claude Code via `.claude/commands/`; skills in other hosts may appear in an `available_skills` list with their name + description, and the model decides whether to consult a skill based on that description. The important thing to know is that the model only consults skills for tasks it can't easily handle on its own — simple, one-step queries like "read this PDF" may not trigger a skill even if the description matches perfectly, because the model can handle them directly with basic tools. Complex, multi-step, or specialized queries reliably trigger skills when the description matches.
 
 This means your eval queries should be substantive enough that the model would actually benefit from consulting a skill. Simple queries like "read file X" are poor test cases — they won't trigger skills regardless of description quality.
 

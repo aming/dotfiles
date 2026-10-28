@@ -27,6 +27,7 @@ def pack(
     original_file: str | None = None,
     validate: bool = True,
     infer_author_func=None,
+    author: str = "Editor",
 ) -> tuple[None, str]:
     input_dir = Path(input_directory)
     output_path = Path(output_file)
@@ -38,16 +39,15 @@ def pack(
     if suffix not in {".docx", ".pptx", ".xlsx"}:
         return None, f"Error: {output_file} must be a .docx, .pptx, or .xlsx file"
 
-    if validate and original_file:
-        original_path = Path(original_file)
-        if original_path.exists():
-            success, output = _run_validation(
-                input_dir, original_path, suffix, infer_author_func
-            )
-            if output:
-                print(output)
-            if not success:
-                return None, f"Error: Validation failed for {input_dir}"
+    if validate:
+        original_path = Path(original_file) if original_file else None
+        if original_path is not None and not original_path.is_file():
+            return None, f"Error: Original file not found: {original_file}"
+        success, output = _run_validation(input_dir, original_path, suffix, infer_author_func, author)
+        if output:
+            print(output)
+        if not success:
+            return None, f"Error: Validation failed for {input_dir}"
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_content_dir = Path(temp_dir) / "content"
@@ -71,27 +71,28 @@ def _run_validation(
     original_file: Path,
     suffix: str,
     infer_author_func=None,
+    author: str = "Editor",
 ) -> tuple[bool, str | None]:
     output_lines = []
     validators = []
 
     if suffix == ".docx":
-        author = "Claude"
         if infer_author_func:
             try:
                 author = infer_author_func(unpacked_dir, original_file)
             except ValueError as e:
-                print(f"Warning: {e} Using default author 'Claude'.", file=sys.stderr)
+                print(f"Warning: {e} Using default author 'Editor'.", file=sys.stderr)
 
         validators = [
             DOCXSchemaValidator(unpacked_dir, original_file),
-            RedliningValidator(unpacked_dir, original_file, author=author),
         ]
+        if original_file is not None:
+            validators.append(RedliningValidator(unpacked_dir, original_file, author=author))
     elif suffix == ".pptx":
         validators = [PPTXSchemaValidator(unpacked_dir, original_file)]
 
     if not validators:
-        return True, None
+        return False, "Error: XLSX schema validation is not implemented; use --validate false explicitly and verify with openpyxl and recalc.py."
 
     total_repairs = sum(v.repair() for v in validators)
     if total_repairs:
@@ -100,7 +101,7 @@ def _run_validation(
     success = all(v.validate() for v in validators)
 
     if success:
-        output_lines.append("All validations PASSED!")
+        output_lines.append("Enabled validation checks PASSED (see warnings for any skipped XSD coverage).")
 
     return success, "\n".join(output_lines) if output_lines else None
 
@@ -145,6 +146,7 @@ if __name__ == "__main__":
         metavar="true|false",
         help="Run validation with auto-repair (default: true)",
     )
+    parser.add_argument("--author", default="Editor", help="Author for tracked-change validation")
     args = parser.parse_args()
 
     _, message = pack(
@@ -152,6 +154,7 @@ if __name__ == "__main__":
         args.output_file,
         original_file=args.original,
         validate=args.validate,
+        author=args.author,
     )
     print(message)
 

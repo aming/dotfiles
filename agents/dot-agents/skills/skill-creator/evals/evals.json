@@ -3,10 +3,10 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "Review the draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/outdated-skill and patch it for OpenAgent compatibility. Fix any eval-schema mismatches, remove assumptions about custom subagent types, and make the helper agent docs tell the caller to use Task with subagent_type \"general\" and read the relevant agents/*.md file first. Save the updated skill copy under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-0-openagent-portability/<CONFIG>/run-1/outputs/outdated-skill, where <CONFIG> is the run's config directory. Also save a brief transcript.md in the run directory summarizing what you changed and why.",
+      "prompt": "Resolve input paths relative to the skill-creator directory. Review the draft skill at evals/fixtures/outdated-skill and patch it for OpenAgent compatibility. Fix any eval-schema mismatches, remove assumptions about custom subagent types, and make the helper agent docs tell the caller to use Task with subagent_type \"general\" and read the relevant agents/*.md file first. Save the updated skill copy under the run-specific output directory supplied by the caller, in a subdirectory named outdated-skill. Also save a brief transcript.md in the run directory summarizing what you changed and why.",
       "expected_output": "An updated copy of the draft skill with normalized expectations terminology and OpenAgent-compatible Task/general helper-role instructions.",
       "files": [
-        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/outdated-skill"
+        "evals/fixtures/outdated-skill"
       ],
       "expectations": [
         "The updated `SKILL.md` replaces eval-schema references to `assertions` with `expectations`.",
@@ -17,7 +17,7 @@
     },
     {
       "id": 1,
-      "prompt": "Create a new skill named notes-cleanup for turning messy pasted meeting notes into a concise action-focused markdown summary. Put the skill under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-1-new-skill-bootstrap/<CONFIG>/run-1/outputs/notes-cleanup. Include SKILL.md, an evals/evals.json file with 2-3 realistic prompts and empty expectations, and at least one reference file that the skill loads conditionally. The SKILL.md should include a Gotchas section and explain why the workflow choices matter. Also save a brief transcript.md in the run directory summarizing the created files.",
+      "prompt": "Resolve input paths relative to the skill-creator directory. Create a new skill named notes-cleanup for turning messy pasted meeting notes into a concise action-focused markdown summary. Put the skill under the run-specific output directory supplied by the caller, in a subdirectory named notes-cleanup. Include SKILL.md, an evals/evals.json file with 2-3 realistic prompts and empty expectations, and at least one reference file that the skill loads conditionally. The SKILL.md should include a Gotchas section and explain why the workflow choices matter. Also save a brief transcript.md in the run directory summarizing the created files.",
       "expected_output": "A bootstrapped skill folder with SKILL.md, evals/evals.json, and a conditionally-loaded reference file.",
       "files": [],
       "expectations": [
@@ -30,10 +30,10 @@
     },
     {
       "id": 2,
-      "prompt": "Update an existing draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/metadata-missing-skill so it has Codex/OpenAI UI metadata. Add or update agents/openai.yaml, keep any agents/grader.md helper-role markdown separate from metadata, and save the updated skill under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-2-openai-metadata/<CONFIG>/run-1/outputs/metadata-missing-skill. Also save transcript.md explaining what metadata fields you created.",
+      "prompt": "Resolve input paths relative to the skill-creator directory. Update an existing draft skill at evals/fixtures/metadata-missing-skill so it has Codex/OpenAI UI metadata. Add or update agents/openai.yaml, keep any agents/grader.md helper-role markdown separate from metadata, and save the updated skill under the run-specific output directory supplied by the caller, in a subdirectory named metadata-missing-skill. Also save transcript.md explaining what metadata fields you created.",
       "expected_output": "An updated skill copy with agents/openai.yaml that includes display_name, short_description, and a default_prompt mentioning the skill name.",
       "files": [
-        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/metadata-missing-skill"
+        "evals/fixtures/metadata-missing-skill"
       ],
       "expectations": [
         "The output copy includes `agents/openai.yaml`.",
@@ -44,7 +44,7 @@
     },
     {
       "id": 3,
-      "prompt": "Create a new skill using the skill-creator scaffolding flow and save it under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-3-safe-initializer/<CONFIG>/run-1/outputs/metadata-skill. Use the name Metadata Skill, include scripts/ and references/ resource directories, include agents/openai.yaml, and show that init_skill.py would refuse to overwrite an existing metadata-skill directory. Save transcript.md with the commands or steps used.",
+      "prompt": "Resolve input paths relative to the skill-creator directory. Create a new skill using the skill-creator scaffolding flow and save it under the run-specific output directory supplied by the caller, in a subdirectory named metadata-skill. Use the name Metadata Skill, include scripts/ and references/ resource directories, include agents/openai.yaml, and show that init_skill.py would refuse to overwrite an existing metadata-skill directory. Save transcript.md with the commands or steps used.",
       "expected_output": "A safely initialized metadata-skill folder with SKILL.md, agents/openai.yaml, requested resource directories, and overwrite-protection evidence.",
       "files": [],
       "expectations": [
@@ -57,10 +57,10 @@
     },
     {
       "id": 4,
-      "prompt": "Review the validator and helper-agent guidance in a draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/validator-dependency-skill. Patch it so quick validation does not require PyYAML, malformed frontmatter still fails clearly, and agents/grader.md is treated as helper-role markdown read by a general task rather than a custom subagent type. Save the updated copy under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-4-validator-helper-role/<CONFIG>/run-1/outputs/validator-dependency-skill plus transcript.md.",
+      "prompt": "Resolve input paths relative to the skill-creator directory. Review the validator and helper-agent guidance in a draft skill at evals/fixtures/validator-dependency-skill. Patch it so quick validation does not require PyYAML, malformed frontmatter still fails clearly, and agents/grader.md is treated as helper-role markdown read by a general task rather than a custom subagent type. Save the updated copy under the run-specific output directory supplied by the caller, in a subdirectory named validator-dependency-skill plus transcript.md.",
       "expected_output": "An updated skill copy whose validator guidance is dependency-light and whose helper-agent files are not described as custom subagent types.",
       "files": [
-        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/validator-dependency-skill"
+        "evals/fixtures/validator-dependency-skill"
       ],
       "expectations": [
         "The updated validation guidance says default Python should not fail from a missing PyYAML package.",
@@ -71,10 +71,10 @@
     },
     {
       "id": 5,
-      "prompt": "Eval and improve the draft skill at /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/no-subagent-skill from a host where Task/general subagents are unavailable or policy-gated. Save the patched skill under /Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/iteration-1/eval-5-static-eval-fallback/<CONFIG>/run-1/outputs/no-subagent-skill and include transcript.md with what eval layer did and did not run.",
+      "prompt": "Resolve input paths relative to the skill-creator directory. Eval and improve the draft skill at evals/fixtures/no-subagent-skill from a host where Task/general subagents are unavailable or policy-gated. Save the patched skill under the run-specific output directory supplied by the caller, in a subdirectory named no-subagent-skill and include transcript.md with what eval layer did and did not run.",
       "expected_output": "A scoped skill improvement based on deterministic validation rather than fabricated subagent benchmark output.",
       "files": [
-        "/Users/tolau/dotfiles/agents/dot-agents/skills/skill-creator-workspace/shared-inputs/no-subagent-skill"
+        "evals/fixtures/no-subagent-skill"
       ],
       "expectations": [
         "The transcript states that full with-skill/baseline subagent evals were unavailable or not permitted.",

@@ -23,6 +23,7 @@ import zipfile
 from pathlib import Path
 
 import defusedxml.minidom
+from clean import relationship_target
 from office.soffice import get_soffice_env
 from PIL import Image, ImageDraw, ImageFont
 
@@ -102,18 +103,21 @@ def get_slide_info(pptx_path: Path) -> list[dict]:
             rid = rel.getAttribute("Id")
             target = rel.getAttribute("Target")
             rel_type = rel.getAttribute("Type")
-            if "slide" in rel_type and target.startswith("slides/"):
-                rid_to_slide[rid] = target.replace("slides/", "")
+            if rel_type.endswith("/slide"):
+                part = relationship_target(Path("."), Path("ppt/_rels/presentation.xml.rels"), rel)
+                if part is not None:
+                    rid_to_slide[rid] = part.as_posix()
 
         pres_content = zf.read("ppt/presentation.xml").decode("utf-8")
         pres_dom = defusedxml.minidom.parseString(pres_content)
 
         slides = []
-        for sld_id in pres_dom.getElementsByTagName("p:sldId"):
-            rid = sld_id.getAttribute("r:id")
+        for sld_id in pres_dom.getElementsByTagNameNS("*", "sldId"):
+            rid = sld_id.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id")
             if rid in rid_to_slide:
-                hidden = sld_id.getAttribute("show") == "0"
-                slides.append({"name": rid_to_slide[rid], "hidden": hidden})
+                slide_dom = defusedxml.minidom.parseString(zf.read(rid_to_slide[rid]))
+                hidden = slide_dom.documentElement.getAttribute("show") in {"0", "false"}
+                slides.append({"name": Path(rid_to_slide[rid]).name, "hidden": hidden})
 
         return slides
 
@@ -123,6 +127,9 @@ def build_slide_list(
     visible_images: list[Path],
     temp_dir: Path,
 ) -> list[tuple[Path, str]]:
+    expected = sum(not slide["hidden"] for slide in slide_info)
+    if len(visible_images) != expected:
+        raise ValueError(f"Rendered page count {len(visible_images)} does not match visible slide count {expected}; check hidden-slide PDF export settings")
     if visible_images:
         with Image.open(visible_images[0]) as img:
             placeholder_size = img.size
@@ -190,7 +197,7 @@ def convert_to_images(pptx_path: Path, temp_dir: Path) -> list[Path]:
     if result.returncode != 0:
         raise RuntimeError("Image conversion failed")
 
-    return sorted(temp_dir.glob("slide-*.jpg"))
+    return sorted(temp_dir.glob("slide-*.jpg"), key=lambda path: int(path.stem.rsplit("-", 1)[1]))
 
 
 def create_grids(

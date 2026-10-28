@@ -7,7 +7,7 @@ description: Use this skill whenever the user wants to do anything with PDF file
 
 ## Overview
 
-This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see REFERENCE.md. If you need to fill out a PDF form, read FORMS.md and follow its instructions.
+This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see [reference.md](reference.md). If you need to fill out a PDF form, read [forms.md](forms.md) and follow its instructions.
 
 ## Quick Start
 
@@ -197,6 +197,15 @@ pdftotext -layout input.pdf output.txt
 pdftotext -f 1 -l 5 input.pdf output.txt  # Pages 1-5
 ```
 
+### Searchable scanned PDFs
+
+The pytesseract example below extracts plain text only. To create a searchable PDF that retains page images, use OCRmyPDF:
+
+```bash
+ocrmypdf --skip-text input.pdf searchable.pdf
+pdftotext searchable.pdf -  # verify the added text layer
+```
+
 ### qpdf
 ```bash
 # Merge PDFs
@@ -229,7 +238,7 @@ pdftk input.pdf rotate 1east output rotated.pdf
 
 ### Extract Text from Scanned PDFs
 ```python
-# Requires: pip install pytesseract pdf2image
+# Requires: the project-local environment from Reproducible setup; native Tesseract and Poppler are also required.
 # Also requires Poppler (`pdftoppm`/`pdftocairo`) to be installed.
 import pytesseract
 from pdf2image import convert_from_path
@@ -303,11 +312,27 @@ with open("encrypted.pdf", "wb") as output:
 | Create PDFs | reportlab | Canvas or Platypus |
 | Command line merge | qpdf | `qpdf --empty --pages ...` |
 | OCR scanned PDFs | pytesseract | Convert to image first |
-| Fill PDF forms | pdf-lib or pypdf (see FORMS.md) | See FORMS.md |
+| Fill PDF forms | pdf-lib or pypdf (see [forms.md](forms.md)) | See [forms.md](forms.md) |
 
 ## Next Steps
 
-- For advanced pypdfium2 usage, see REFERENCE.md
-- For JavaScript libraries (pdf-lib), see REFERENCE.md
-- If you need to fill out a PDF form, follow the instructions in FORMS.md
-- For troubleshooting guides, see REFERENCE.md
+- For advanced pypdfium2 usage, see [reference.md](reference.md)
+- For JavaScript libraries (pdf-lib), see [reference.md](reference.md)
+- If you need to fill out a PDF form, follow the instructions in [forms.md](forms.md)
+- For troubleshooting guides, see [reference.md](reference.md)
+
+## Reproducible setup
+
+Use a project-local environment; do not install Python packages system-wide:
+
+```bash
+SKILL_DIR="/absolute/path/to/installed/pdf"
+TASK_DIR="$PWD"
+python3 -m venv "$TASK_DIR/.venv"
+SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
+"$SKILL_PYTHON" -m pip install pypdf==5.9.0 pdfplumber==0.11.7 reportlab==4.4.3 pypdfium2==4.30.0 pdf2image==1.17.0 Pillow==11.3.0 pytesseract==0.3.13 ocrmypdf==16.10.4
+```
+
+System prerequisites (provision through the host's supported package manager): Poppler (`pdfimages`, `pdftoppm`, `pdftotext`), qpdf (including `fix-qdf`), Tesseract and the OCR language data needed by the document, and Ghostscript for OCRmyPDF. Check these with `pdftoppm -v`, `qpdf --version`, `tesseract --version`, and `gs --version`. JavaScript examples additionally require Node.js and local `pdf-lib`/`pdfjs-dist` dependencies; keep PDF.js and its worker from the same installed version.
+
+Form helpers target the pypdf 5.x API (setup pins 5.9.0), including `pypdf.annotations.FreeText`. Some fillable-field helpers access private pypdf objects: recheck those accesses before upgrading to another major version and render/inspect the filled output. Poppler is required for pdf2image previews; Tesseract is required for OCR; qpdf/Ghostscript are optional native tools for the workflows that name them.

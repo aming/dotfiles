@@ -1,11 +1,16 @@
 ---
 name: para
-description: Use this skill whenever the user asks to organize, classify, audit, create, move, rename, or clean up notes, files, folders, tasks, projects, or a knowledge base using PARA, Projects/Areas/Resources/Archive, Second Brain organization, actionability-based filing, inbox triage, or knowledge routing. This skill is especially important for Obsidian vaults, personal knowledge management systems, workspace folder structures, project dashboards, and note migrations, even when the user does not explicitly say "PARA" but asks where something should live or how to keep information organized.
+description: Use this skill whenever the user asks to organize, classify, audit, create, move, rename, or clean up notes, files, folders, tasks, projects, or a knowledge base using PARA, Projects/Areas/Resources/Archive, Second Brain organization, actionability-based filing, inbox triage, or knowledge routing. For ACE vaults, defer routing and meeting-note placement to the ACE skill. PARA covers non-ACE PKM. This skill is especially important for non-ACE Obsidian vaults, personal knowledge management systems, workspace folder structures, project dashboards, and note migrations, even when the user does not explicitly say "PARA" but asks where something should live or how to keep information organized.
 ---
 
 # PARA Organization
 
 Organize information by actionability so the user can find the material needed for current work without maintaining a fussy taxonomy. PARA is a routing system, not a decorative folder scheme: each destination should make the next action, responsibility, reference use, or inactive state clearer.
+
+## Activation Precedence
+
+For an ACE vault (local rules identify ACE, or the established `+`, `Atlas`, `Calendar`, `Efforts` layout does), use the **ACE skill** for PKM routing and organization. PARA covers non-ACE PKM and ordinary PARA workspaces; do not impose Projects/Areas/Resources/Archives on an ACE vault. Meeting-note routing also defers to the ACE skill inside ACE vaults, including its Calendar/Meetings conventions and links to relevant Efforts. If the user explicitly requests a migration from ACE to PARA, treat that as a migration task and establish the target mapping first.
+
 
 ## Source Basis
 
@@ -40,6 +45,7 @@ If the task involves a large audit, migration, ambiguous Area-vs-Resource decisi
 5. Execute safely when action is requested.
    - For a single clear item, route or move it directly and verify the result.
    - For bulk changes, produce a move plan first unless the user already approved the exact mapping.
+   - In Obsidian, automatic internal-link updates require the vault setting **Automatically update internal links** to be enabled; otherwise plan explicit link updates and verification.
    - Prefer reversible, link-aware moves. Preserve backlinks, aliases, frontmatter, source context, and indexes.
    - Update related overview or index notes when that is the local convention.
 
@@ -147,7 +153,7 @@ Remaining:
 - Do not make every interesting topic into an Area; Areas carry maintenance responsibility.
 - Do not put active maintenance procedures into Resources when they govern an ongoing responsibility.
 - Do not delete instead of archiving unless the user explicitly asks for deletion.
-- Do not perform bulk moves without a clear mapping, link-aware method, and verification step.
+- Do not perform bulk moves without a clear mapping, link-aware method, and verification step; prior approval of an exact mapping satisfies the plan requirement.
 - Do not create a second PARA root when the workspace already has one.
 - Do not treat daily notes as canonical storage. They are chronological pointers.
 - Do not ignore local workspace conventions. A local `AGENTS.md` or deeper rule can override generic PARA folder names.

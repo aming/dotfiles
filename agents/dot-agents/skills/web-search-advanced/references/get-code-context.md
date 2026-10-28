@@ -1,21 +1,19 @@
 # Code Context (Exa)
 
-## Tool Restriction (Critical)
+## Capability and compatibility
 
-ONLY use `get_code_context_exa`. Do NOT use other Exa tools.
-
-## Token Isolation (Critical)
-
-Never run Exa in main context. Always spawn Task agents:
-- Agent calls `get_code_context_exa`
-- Agent extracts the minimum viable snippet(s) + constraints
-- Agent deduplicates near-identical results (mirrors, forks, repeated StackOverflow answers) before presenting
-- Agent returns copyable snippets + brief explanation
-- Main context stays clean regardless of search volume
+Prefer `get_code_context_exa` for external code research.
+Read `api-compatibility.md` before choosing fields. Follow the parent SKILL.md's
+capability discovery, permitted-delegation/direct-search fallback, GitHub routing,
+and Results / Sources / Notes answer structure. The examples below require the
+advertised connector schema; use supported fields only and disclose lost controls.
 
 ## When to Use
 
-Use this tool for ANY programming-related request:
+Use this tool when programming work requires external discovery or current,
+authoritative examples. Local code edits, supplied snippets, and reasoning-only
+questions do not trigger this workflow. Explicit GitHub questions follow github-kb
+first; consult this reference only for broader external code research such as:
 - API usage and syntax
 - SDK/library examples
 - config and setup patterns
@@ -44,12 +42,14 @@ Token strategy:
 - Complex integration → tokensNum 10000–20000
 - Only go larger when necessary (avoid dumping large context)
 
-## Output Format (Recommended)
+## Output Format
 
-Return:
-1) Best minimal working snippet(s) (keep it copy/paste friendly)
-2) Notes on version / constraints / gotchas
-3) Sources (URLs if present in returned context)
+Follow the parent's Results / Sources / Notes structure:
 
-Before presenting:
-- Deduplicate similar results and keep only the best representative snippet per approach.
+1) Results: minimal working snippets with a brief explanation.
+2) Sources: verified URLs supporting each approach; retrieve official documentation
+   when returned context lacks a usable source. Never invent a source link.
+3) Notes: versions, constraints, gotchas, and evidence gaps.
+
+Before presenting, deduplicate similar results and keep the best representative
+snippet per approach. GitHub-owned answers instead follow github-kb's template.

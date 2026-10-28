@@ -25,11 +25,11 @@ Only include optional fields when the user provides a real value.
 
 ## Generation
 
-Use `scripts/generate_openai_yaml.py` from the skill directory or from the repository root:
+Use `scripts/generate_openai_yaml.py` from the skill-creator directory (change to that directory first):
 
 ```bash
-python3 skills/skill-creator/scripts/generate_openai_yaml.py <skill-dir> \
-  --interface default_prompt="Use $skill-name to create a focused skill."
+python3 scripts/generate_openai_yaml.py <skill-dir> \
+  --interface 'default_prompt=Use $skill-name to create a focused skill.'
 ```
 
 The generator rejects unknown interface keys and validates `short_description` length and `default_prompt` skill mention.

@@ -176,11 +176,17 @@ async function mergePDFs() {
 PDF.js is Mozilla's JavaScript library for rendering PDFs in the browser.
 
 #### Basic PDF Loading and Rendering
-```javascript
-import * as pdfjsLib from 'pdfjs-dist';
 
-// Configure worker (important for performance)
-pdfjsLib.GlobalWorkerOptions.workerSrc = './pdf.worker.js';
+Browser/bundler context (for example Vite): install `pdfjs-dist` locally in the web project, then resolve the worker from the same installed package. Vite's `?url` import publishes it as an asset with a stable URL; other bundlers need their equivalent asset rule. Do not mix a CDN library with a worker from another release.
+
+```bash
+npm install --save-exact pdfjs-dist@5.4.296
+```
+
+```javascript
+import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs';
+import workerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
 
 async function renderPDF() {
     // Load PDF
@@ -299,6 +305,7 @@ pdfimages -j -p document.pdf page_images
 pdfimages -list document.pdf
 
 # Extract images in their original format
+mkdir -p images
 pdfimages -all document.pdf images/img
 ```
 
@@ -310,7 +317,7 @@ pdfimages -all document.pdf images/img
 qpdf --split-pages=3 input.pdf output_group_%02d.pdf
 
 # Extract specific pages with complex ranges
-qpdf input.pdf --pages input.pdf 1,3-5,8,10-end -- extracted.pdf
+qpdf input.pdf --pages input.pdf 1,3-5,8,10-z -- extracted.pdf
 
 # Merge specific pages from multiple PDFs
 qpdf --empty --pages doc1.pdf 1-3 doc2.pdf 5-7 doc3.pdf 2,4 -- combined.pdf
@@ -322,14 +329,17 @@ qpdf --empty --pages doc1.pdf 1-3 doc2.pdf 5-7 doc3.pdf 2,4 -- combined.pdf
 qpdf --linearize input.pdf optimized.pdf
 
 # Remove unused objects and compress
-qpdf --optimize-level=all input.pdf compressed.pdf
+qpdf --object-streams=generate --stream-data=compress --recompress-flate --compression-level=9 input.pdf compressed.pdf
 
 # Attempt to repair corrupted PDF structure
 qpdf --check input.pdf
-qpdf --fix-qdf damaged.pdf repaired.pdf
+qpdf --qdf --object-streams=disable input.pdf edited.qdf
+# Make targeted edits to edited.qdf, then repair its QDF offsets:
+fix-qdf < edited.qdf > repaired.qdf
+qpdf repaired.qdf repaired.pdf  # for edited QDF files, not arbitrary corrupt PDFs
 
 # Show detailed PDF structure for debugging
-qpdf --show-all-pages input.pdf > structure.txt
+qpdf --show-pages input.pdf > structure.txt
 ```
 
 #### Advanced Encryption
@@ -434,36 +444,28 @@ doc.build(elements)
 #### Method 1: Using pdfimages (fastest)
 ```bash
 # Extract all images with original quality
+mkdir -p images
 pdfimages -all document.pdf images/img
 ```
 
-#### Method 2: Using pypdfium2 + Image Processing
+#### Method 2: Render and crop a known figure region
 
-This does **not** extract embedded images from the PDF object model. It renders each page, then heuristically looks for figure-like regions in the bitmap. Use `pdfimages` when you need the original embedded assets.
+Vector figures are often composed of drawing commands, so `pdfimages` cannot extract them as one image. Render the page, inspect its bounds, and crop the identified region explicitly; automatic figure detection is not provided.
+
 ```python
+from pathlib import Path
 import pypdfium2 as pdfium
-from PIL import Image
-import numpy as np
 
-def extract_figures(pdf_path, output_dir):
-    pdf = pdfium.PdfDocument(pdf_path)
-    
-    for page_num, page in enumerate(pdf):
-        # Render high-resolution page
-        bitmap = page.render(scale=3.0)
-        img = bitmap.to_pil()
-        
-        # Convert to numpy for processing
-        img_array = np.array(img)
-        
-        # Simple figure detection (non-white regions)
-        mask = np.any(img_array != [255, 255, 255], axis=2)
-        
-        # Find contours and extract bounding boxes
-        # (This is simplified - real implementation would need more sophisticated detection)
-        
-        # Save detected figures
-        # ... implementation depends on specific needs
+output_dir = Path("figures")
+output_dir.mkdir(parents=True, exist_ok=True)
+with pdfium.PdfDocument("document.pdf") as pdf:
+    page = pdf[0]
+    bitmap = page.render(scale=3)
+    image = bitmap.to_pil()
+    # Bounds in rendered pixels, measured from the top-left; replace after inspection.
+    image.crop((150, 240, 1200, 1100)).save(output_dir / "figure-1.png")
+    bitmap.close()
+    page.close()
 ```
 
 ### Batch PDF Processing with Error Handling

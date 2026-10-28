@@ -6,7 +6,9 @@ Usage:
 
 The first argument can be either:
 - An unpacked directory containing the Office document XML files
-- A packed Office file (.docx/.pptx/.xlsx) which will be unpacked to a temp directory
+- A packed DOCX/PPTX file which will be unpacked to a temp directory
+
+XLSX schema validation is not implemented and returns a nonzero status.
 
 Auto-repair fixes:
 - paraId/durableId values that exceed OOXML limits
@@ -23,10 +25,10 @@ from validators import DOCXSchemaValidator, PPTXSchemaValidator, RedliningValida
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate Office document XML files")
+    parser = argparse.ArgumentParser(description="Validate DOCX/PPTX XML; XLSX schema validation is not implemented")
     parser.add_argument(
         "path",
-        help="Path to unpacked directory or packed Office file (.docx/.pptx/.xlsx)",
+        help="Path to unpacked directory or packed DOCX/PPTX file (XLSX unsupported)",
     )
     parser.add_argument(
         "--original",
@@ -47,8 +49,8 @@ def main():
     )
     parser.add_argument(
         "--author",
-        default="Claude",
-        help="Author name for redlining validation (default: Claude)",
+        default="Editor",
+        help="Author name for redlining validation (default: Editor)",
     )
     args = parser.parse_args()
 
@@ -67,6 +69,10 @@ def main():
     assert file_extension in [".docx", ".pptx", ".xlsx"], (
         f"Error: Cannot determine file type from {path}. Use --original or provide a .docx/.pptx/.xlsx file."
     )
+
+    if file_extension == ".xlsx":
+        print("Error: XLSX schema validation is not implemented; use openpyxl and recalc.py for workbook/formula checks.")
+        sys.exit(1)
 
     if path.is_file() and path.suffix.lower() in [".docx", ".pptx", ".xlsx"]:
         temp_dir = tempfile.mkdtemp()
@@ -102,7 +108,7 @@ def main():
     success = all(v.validate() for v in validators)
 
     if success:
-        print("All validations PASSED!")
+        print("Enabled validation checks PASSED (see warnings for any skipped XSD coverage).")
 
     sys.exit(0 if success else 1)
 

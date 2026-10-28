@@ -7,14 +7,14 @@ import argparse
 import logging
 import shutil
 import subprocess
+import zipfile
+import tempfile
+import defusedxml.ElementTree as ET
 from pathlib import Path
 
 from office.soffice import get_soffice_env
 
 logger = logging.getLogger(__name__)
-
-LIBREOFFICE_PROFILE = "/tmp/libreoffice_docx_profile"
-MACRO_DIR = f"{LIBREOFFICE_PROFILE}/user/basic/Standard"
 
 ACCEPT_CHANGES_MACRO = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
@@ -37,6 +37,11 @@ def accept_changes(
     input_file: str,
     output_file: str,
 ) -> tuple[None, str]:
+    with tempfile.TemporaryDirectory(prefix="docx-accept-") as profile:
+        return _accept_changes(input_file, output_file, Path(profile))
+
+
+def _accept_changes(input_file: str, output_file: str, profile: Path) -> tuple[None, str]:
     input_path = Path(input_file)
     output_path = Path(output_file)
 
@@ -52,13 +57,16 @@ def accept_changes(
     except Exception as e:
         return None, f"Error: Failed to copy input file to output location: {e}"
 
-    if not _setup_libreoffice_macro():
-        return None, "Error: Failed to setup LibreOffice macro"
+    try:
+        if not _setup_libreoffice_macro(profile):
+            return None, "Error: Failed to setup LibreOffice macro"
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return None, f"Error: Failed to initialize LibreOffice: {exc}"
 
     cmd = [
         "soffice",
         "--headless",
-        f"-env:UserInstallation=file://{LIBREOFFICE_PROFILE}",
+        f"-env:UserInstallation={profile.as_uri()}",
         "--norestore",
         "vnd.sun.star.script:Standard.Module1.AcceptAllTrackedChanges?language=Basic&location=application",
         str(output_path.absolute()),
@@ -73,14 +81,35 @@ def accept_changes(
             check=False,
             env=get_soffice_env(),
         )
-    except subprocess.TimeoutExpired:
+    except (OSError, subprocess.TimeoutExpired) as exc:
         return (
             None,
-            f"Successfully accepted all tracked changes: {input_file} -> {output_file}",
+            f"Error: LibreOffice failed or timed out; acceptance is unverified: {exc}",
         )
 
     if result.returncode != 0:
         return None, f"Error: LibreOffice failed: {result.stderr}"
+
+    try:
+        tracked = {"ins", "del", "moveFrom", "moveTo", "moveFromRangeStart",
+                   "moveFromRangeEnd", "moveToRangeStart", "moveToRangeEnd",
+                   "cellIns", "cellDel", "cellMerge", "numberingChange",
+                   "delText", "delInstrText", "conflictIns", "conflictDel"}
+        with zipfile.ZipFile(output_path) as archive:
+            if "word/document.xml" not in archive.namelist():
+                return None, "Error: Output has no word/document.xml"
+            for name in archive.namelist():
+                if name.startswith("word/") and name.endswith(".xml"):
+                    for element in ET.fromstring(archive.read(name)).iter():
+                        namespace, _, local = element.tag.rpartition("}")
+                        if namespace in {"{http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+                                         "{http://purl.oclc.org/ooxml/wordprocessingml/main",
+                                         "{http://schemas.microsoft.com/office/word/2010/wordml"} and (
+                            local in tracked or local.endswith("Change") or (local.startswith("customXml") and local.endswith(("RangeStart", "RangeEnd")))
+                        ):
+                            return None, f"Error: Tracked changes remain in {name}"
+    except Exception as exc:
+        return None, f"Error: Cannot verify accepted changes: {exc}"
 
     return (
         None,
@@ -88,19 +117,19 @@ def accept_changes(
     )
 
 
-def _setup_libreoffice_macro() -> bool:
-    macro_dir = Path(MACRO_DIR)
+def _setup_libreoffice_macro(profile: Path) -> bool:
+    macro_dir = profile / "user/basic/Standard"
     macro_file = macro_dir / "Module1.xba"
 
     if macro_file.exists() and "AcceptAllTrackedChanges" in macro_file.read_text():
         return True
 
     if not macro_dir.exists():
-        subprocess.run(
+        result = subprocess.run(
             [
                 "soffice",
                 "--headless",
-                f"-env:UserInstallation=file://{LIBREOFFICE_PROFILE}",
+                f"-env:UserInstallation={profile.as_uri()}",
                 "--terminate_after_init",
             ],
             capture_output=True,
@@ -108,10 +137,17 @@ def _setup_libreoffice_macro() -> bool:
             check=False,
             env=get_soffice_env(),
         )
+        if result.returncode != 0:
+            return False
         macro_dir.mkdir(parents=True, exist_ok=True)
 
     try:
         macro_file.write_text(ACCEPT_CHANGES_MACRO)
+        (macro_dir / "script.xlb").write_text(
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<library:library xmlns:library="http://openoffice.org/2000/library" library:name="Standard" library:readonly="false" library:passwordprotected="false">'
+            '<library:element library:name="Module1"/></library:library>'
+        )
         return True
     except Exception as e:
         logger.warning(f"Failed to setup LibreOffice macro: {e}")
