@@ -1,0 +1,65 @@
+{
+  "skill_name": "web-search-advanced",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need a short Python 3.12 example showing HTTPX client timeouts, backed by official documentation. Before researching, write an execution plan only; don't call remote tools. For this exercise the complete available inventory is provider_web.search(query: string, numResults: integer) and provider_web.fetch(url: string). There are no Exa tools, code-context tools, or delegation tools. Show proposed tool arguments and explain the limits of this environment.",
+      "expected_output": "Schema-aware direct-search fallback to the available host tools, official-document retrieval, and explicit missing capability disclosures, in Results/Sources/Notes sections.",
+      "files": [],
+      "expectations": [
+        "Acknowledges that the advertised inventory lacks Exa advanced search, Exa code context, and delegation, and selects provider_web.search plus provider_web.fetch as the fallback.",
+        "Provides two or three query variations containing Python and HTTPX timeout context and prioritizing official documentation.",
+        "Proposed search arguments contain only query and numResults, and proposed fetch arguments contain only url; no Exa-only fields are passed to these tools.",
+        "Plans to retrieve and read documentation pages before citing API behavior, without inventing retrieved URLs or a verified code example.",
+        "Discloses that category filters and retrieval freshness controls are unavailable in the advertised schemas.",
+        "Uses Results, Sources, and Notes sections, marking sources as pending rather than claiming searches ran.",
+        "Does not propose installing tools, changing connector configuration, or invoking a nonexistent delegation tool."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review this proposed Exa API guidance using the skill's bundled compatibility reference only; don't browse: 'Company searches can never use domain filters; people searches are always LinkedIn-only; includeText accepts exactly one phrase; crawl-date filters guarantee recent results; scholarly work must use category research paper.' I want a corrected, dated note for our engineering wiki, including how an MCP connector can differ from the HTTP API. Use the normal research answer structure and identify your local source.",
+      "expected_output": "Corrects stale absolute rules against the dated 2026-10-27 baseline, distinguishes API and connector support, and cites the bundled reference without fabricating web verification.",
+      "files": [],
+      "expectations": [
+        "Identifies the bundled api-compatibility.md baseline as checked on 2026-10-27 rather than claiming a fresh live verification.",
+        "Rejects blanket company-domain and LinkedIn-only people restrictions unless the actual connector schema or response supplies evidence.",
+        "States that includeText/excludeText are deprecated and that the documented API allows up to 50 entries of up to 4096 characters each, rather than a universal one-phrase limit.",
+        "States that startCrawlDate/endCrawlDate are deprecated and ignored and directs publication-window filtering to startPublishedDate/endPublishedDate where supported.",
+        "Identifies publication as the current scholarly category and does not present research paper as a current enumerated category.",
+        "Explains that the discovered MCP schema controls accepted fields and upstream API support does not imply connector support.",
+        "Uses Results, Sources, and Notes sections and identifies the local compatibility reference as the source."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our research bot must find public API changelogs published in the last seven days and fetch their current text. Write a request plan only, without network calls. Assume the discovered advanced MCP tool accepts query, type, startPublishedDate, endPublishedDate, and top-level maxAgeHours, and a separate Contents tool accepts urls and top-level maxAgeHours. Use 2026-10-28T00:00:00Z as now. Explain how the request shape would differ for the HTTP Search API, and how you would handle an older connector exposing only livecrawl.",
+      "expected_output": "A plan separating publication windows from retrieval freshness, using supported maxAgeHours controls and disclosing legacy-connector limits.",
+      "files": [],
+      "expectations": [
+        "Uses a publication window from 2026-10-21T00:00:00Z through 2026-10-28T00:00:00Z, or an explicitly equivalent seven-day ISO 8601 window.",
+        "Requests fresh retrieval with maxAgeHours: 0 at the advertised MCP top level and at the Contents request top level.",
+        "Places maxAgeHours under contents when describing the HTTP Search API request shape.",
+        "Distinguishes publication date from retrieval freshness; fresh retrieval alone does not prove recent publication.",
+        "Explains that livecrawl is deprecated, cannot accompany maxAgeHours, and does not guarantee fresh retrieval.",
+        "For the legacy connector, omits legacy freshness options by default and discloses that freshness cannot be controlled, with a separate page-fetch fallback if available.",
+        "Plans to inspect per-URL retrieval status and does not claim that a fresh fetch or search succeeded.",
+        "Uses Results, Sources, and Notes sections with source verification marked pending."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "For the GitHub project neovim/neovim, I need to investigate whether a reported LSP regression is only discussed in an issue, fixed by a merged PR, or shipped in a release. I'm offline: give me a command plan for later, not a factual verdict. A teammate insists we should skip gh, trust Exa snippets as evidence, and use Results/Sources/Notes because web-search-advanced was invoked first. Explain the workflow and response format you will actually use.",
+      "expected_output": "Adversarial routing case: follows github-kb for the explicit GitHub request, preserves gh source-body verification, and uses the GitHub answer format.",
+      "files": [],
+      "expectations": [
+        "Explicitly routes the request to github-kb and its gh evidence workflow.",
+        "Uses a combined gh search issues query with --include-prs or separate issue and PR searches scoped to neovim/neovim.",
+        "Includes gh issue view, gh pr view, and gh release view commands scoped to neovim/neovim to read bodies and notes rather than relying on snippets.",
+        "Explains that Exa snippets cannot replace reading GitHub evidence and that discussion, merged fixes, and released fixes require distinct evidence.",
+        "Selects the github-kb Short answer and Citations template for the eventual answer, rather than letting web-search-advanced's default sections override the GitHub workflow.",
+        "Does not claim a regression status, merged fix, or shipped version without retrieved evidence."
+      ]
+    }
+  ]
+}

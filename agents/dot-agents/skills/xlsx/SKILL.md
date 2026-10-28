@@ -7,6 +7,43 @@ license: Proprietary. LICENSE.txt has complete terms
 
 # Requirements for Outputs
 
+---
+
+## Table of Contents
+
+1. [Local setup and helper paths](#local-setup-and-helper-paths)
+2. [All Excel files](#all-excel-files)
+3. [Financial models](#financial-models)
+4. [Overview](#overview)
+5. [Choose the workflow and output](#choose-the-workflow-and-output)
+6. [Important Requirements](#important-requirements)
+7. [Reading and analyzing data](#reading-and-analyzing-data)
+8. [Excel File Workflows](#excel-file-workflows)
+9. [CRITICAL: Use Formulas, Not Hardcoded Values](#critical-use-formulas-not-hardcoded-values)
+10. [Common Workflow](#common-workflow)
+11. [Recalculating formulas](#recalculating-formulas)
+12. [Formula Verification Checklist](#formula-verification-checklist)
+13. [Gotchas](#gotchas)
+14. [Best Practices](#best-practices)
+15. [Code Style Guidelines](#code-style-guidelines)
+
+---
+
+## Local setup and helper paths
+
+Run from the task directory and set `SKILL_DIR` to the installed xlsx skill directory:
+
+```bash
+SKILL_DIR="/absolute/path/to/installed/xlsx"
+TASK_DIR="$PWD"
+python3 -m venv "$TASK_DIR/.venv"
+SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
+"$SKILL_PYTHON" -m pip install 'openpyxl==3.1.5' 'pandas==2.3.3' 'defusedxml==0.7.1' 'lxml==6.0.2'
+soffice --version  # native LibreOffice needed only for its recalculation route
+```
+
+The copied `scripts/office/` utilities support standalone OOXML unpack/pack operations; their schema validators cover DOCX/PPTX only. XLSX packaging is available with explicit `--validate false`; reopen and check the workbook separately. Keep outputs in the task directory.
+
 ## All Excel files
 
 ### Professional Font
@@ -243,7 +280,13 @@ Quick checks to ensure formulas work correctly:
 - [ ] **Column mapping**: Confirm Excel columns match (e.g., column 64 = BL, not BK)
 - [ ] **Row offset**: Remember Excel rows are 1-indexed (DataFrame row 5 = Excel row 6)
 
-### Common Pitfalls
+## Gotchas
+
+- Use `scripts/recalc.py` with its isolated temporary LibreOffice profile; reusing a desktop/default profile can attach to another process or leave macro completion ambiguous.
+- A successful save or process exit does not prove recalculation. Require the macro completion marker, populated formula caches and error checks; compare sample results with expected values because wrong references can still calculate without errors.
+- Load `.xlsm` with `keep_vba=True`, retain the `.xlsm` extension and compare `xl/vbaProject.bin` bytes afterward. Openpyxl does not run VBA or preserve every extension, drawing or signature; use the macro-sensitive workflow below when fidelity matters.
+- Structural edits do not update every formula dependency, defined name, table or chart series. Inventory dependencies and update references explicitly using the structural-edit workflow above; a clean formula error scan alone is insufficient.
+
 - [ ] **NaN handling**: Check for null values with `pd.notna()`
 - [ ] **Far-right columns**: FY data often in columns 50+ 
 - [ ] **Multiple matches**: Search all occurrences, not just first
@@ -324,18 +367,3 @@ with ZipFile("input.xlsm") as original, ZipFile("output.xlsm") as edited:
 `keep_vba` preserves the VBA archive but does not execute macros or guarantee every workbook feature. Openpyxl may discard unsupported extensions, drawings or signatures; inspect the output and use Excel when those must be preserved. LibreOffice can alter VBA or unsupported Excel features: run `scripts/recalc.py` on a copy, compare the VBA archive afterward, and use Excel for recalculation when exact macro fidelity is required. Recalculation uses an isolated temporary profile and requires a macro completion marker; a timeout is a failure.
 
 The bundled `scripts/office/validate.py` supports DOCX/PPTX schema checks only. It rejects XLSX rather than claiming schema validation; use openpyxl to reopen the workbook and `scripts/recalc.py` to check formula errors. Packing XLSX requires explicit `--validate false` until an XLSX schema validator is available.
-
-## Local setup and helper paths
-
-Run from the task directory and set `SKILL_DIR` to the installed xlsx skill directory:
-
-```bash
-SKILL_DIR="/absolute/path/to/installed/xlsx"
-TASK_DIR="$PWD"
-python3 -m venv "$TASK_DIR/.venv"
-SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
-"$SKILL_PYTHON" -m pip install 'openpyxl==3.1.5' 'pandas==2.3.3' 'defusedxml==0.7.1' 'lxml==6.0.2'
-soffice --version  # native LibreOffice needed only for its recalculation route
-```
-
-The copied `scripts/office/` utilities support standalone OOXML unpack/pack operations; their schema validators cover DOCX/PPTX only. XLSX packaging is available with explicit `--validate false`; reopen and check the workbook separately. Keep outputs in the task directory.

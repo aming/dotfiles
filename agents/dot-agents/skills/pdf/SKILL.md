@@ -5,6 +5,22 @@ description: Use this skill whenever the user wants to do anything with PDF file
 
 # PDF Processing Guide
 
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Quick Start](#quick-start)
+3. [Python Libraries](#python-libraries)
+4. [Command-Line Tools](#command-line-tools)
+5. [Common Tasks](#common-tasks)
+6. [Quick Reference](#quick-reference)
+7. [Next Steps](#next-steps)
+8. [Gotchas](#gotchas)
+9. [Reproducible setup](#reproducible-setup)
+
+---
+
 ## Overview
 
 This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see [reference.md](reference.md). If you need to fill out a PDF form, read [forms.md](forms.md) and follow its instructions.
@@ -320,6 +336,13 @@ with open("encrypted.pdf", "wb") as output:
 - For JavaScript libraries (pdf-lib), see [reference.md](reference.md)
 - If you need to fill out a PDF form, follow the instructions in [forms.md](forms.md)
 - For troubleshooting guides, see [reference.md](reference.md)
+
+## Gotchas
+
+- **Private pypdf objects**: Some fillable-field helpers access private objects in the pinned pypdf 5.x API. Recheck those accesses before a major-version upgrade and inspect the filled output.
+- **ReportLab glyph gaps**: Built-in fonts may lack Unicode subscript/superscript glyphs. Use `<sub>`/`<super>` in `Paragraph`, or register a supporting TrueType font; canvas text needs manual size/position adjustments.
+- **Coordinate origins**: AcroForm rectangles and ReportLab canvas use a bottom-left origin; pdfplumber structure boxes and image coordinates use a top-left origin. For an unrotated page of height H, convert a top-origin box with `bottom = H - y_bottom` and `top = H - y_top`; scale pixels to PDF points first. Follow [forms.md](forms.md) for the helper's dimension keys and do not mix origins or units.
+- **Project-local Python**: Run examples and helpers with `SKILL_PYTHON` from the project-local `.venv` in Reproducible setup. System Python may lack the pinned libraries; native Poppler/Tesseract dependencies are separate.
 
 ## Reproducible setup
 

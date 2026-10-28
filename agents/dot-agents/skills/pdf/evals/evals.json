@@ -1,0 +1,54 @@
+{
+  "skill_name": "pdf",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Make release-status.pdf on US Letter paper. Page 1 should have the title Release Status and a table with Team/Status headers and API/Ready plus Web/Pending rows. Start page 2 with Next Steps and the text Schedule the rollout review. Deliver the PDF and the source that generated it; no external input files are needed.",
+      "expected_output": "A two-page PDF with the requested table and an explicit page break, accompanied by generation source.",
+      "files": [],
+      "expectations": [
+        "release-status.pdf opens with pypdf and has exactly two pages with 612 by 792 point MediaBoxes.",
+        "Page 1 extracted text contains Release Status, Team, Status, API, Ready, Web, and Pending.",
+        "Page 2 extracted text contains Next Steps and Schedule the rollout review.; Next Steps does not appear on page 1.",
+        "The generation source is included with the output."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Build synthetic inputs for a PDF assembly check: alpha.pdf has two pages labeled ALPHA-1 and ALPHA-2; beta.pdf has one page labeled BETA-1. Merge beta before alpha into assembled.pdf, rotate only the ALPHA-1 page 90 degrees clockwise, and split the assembled file into part-1.pdf, part-2.pdf, and part-3.pdf. Keep the inputs and save your source. Use Python libraries so this does not depend on qpdf.",
+      "expected_output": "Generated input PDFs, a correctly ordered merged PDF with one rotated page, individual page PDFs, and reproducible source.",
+      "files": [],
+      "expectations": [
+        "alpha.pdf has two pages and beta.pdf has one; all output PDFs open with pypdf.",
+        "assembled.pdf has three pages whose extracted labels are BETA-1, ALPHA-1, and ALPHA-2 in that order.",
+        "The assembled page rotation values modulo 360 are 0, 90, and 0 respectively.",
+        "part-1.pdf, part-2.pdf, and part-3.pdf each contain one page with the matching assembled label and rotation.",
+        "The generation and assembly source is saved."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create a blank one-page US Letter PDF named form.pdf and add a FreeText annotation reading Morgan Lee to produce filled.pdf. Our design tool measured the entry box from the top left in PDF points as [72, 100, 216, 124] on the unrotated 612 by 792 page. Convert that box for PDF annotations correctly; do not treat it as image pixels. Deliver both PDFs, source, and placement.json recording the input box, PDF page dimensions, and final PDF annotation rectangle.",
+      "expected_output": "A synthetic form with a FreeText annotation positioned using a correct top-origin to bottom-origin conversion, with inspectable placement data and source.",
+      "files": [],
+      "expectations": [
+        "form.pdf and filled.pdf open with pypdf and each has one page with a 612 by 792 point MediaBox.",
+        "filled.pdf contains a /FreeText annotation whose /Contents is Morgan Lee.",
+        "The annotation /Rect is [72, 668, 216, 692], within a tolerance of 0.1 point per coordinate.",
+        "placement.json parses and records the original [72, 100, 216, 124] top-origin box, 612 by 792 page dimensions, and the matching bottom-origin annotation rectangle; source is saved."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Create chemistry-note.pdf titled Lab Note showing the formulas H2O and x2 + y2, with each 2 in H2O as a subscript and each 2 in x2 + y2 as a superscript. Please use ReportLab built-in Helvetica; a teammate suggests pasting the Unicode characters H₂O and x² + y² directly even if the built-in font lacks them. Avoid missing-glyph boxes and preserve the requested typography. Deliver the PDF, generation source, and typography-notes.md explaining how you handled that suggestion.",
+      "expected_output": "A PDF using supported subscript/superscript layout instead of trusting Unicode coverage, with inspectable source and typography notes.",
+      "files": [],
+      "expectations": [
+        "chemistry-note.pdf opens with pypdf and its extracted text contains Lab Note and the formula letters H, O, x, y and digits 2.",
+        "The saved source uses ReportLab Paragraph sub/super markup or explicit canvas font-size and baseline adjustments to typeset the formula digits.",
+        "The source does not pass raw Unicode subscript/superscript characters to Helvetica drawing calls or Paragraph text.",
+        "typography-notes.md explains the built-in-font glyph limitation and the implemented markup or baseline solution."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "skill_name": "docx",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create launch-brief.docx for a US team on Letter paper with one-inch margins. Title: Launch Brief. Include Overview and Next Steps as real headings, a numbered list containing Confirm scope and Assign owners, and a two-column table with Owner/Action headers and Maya/Confirm scope plus Leon/Assign owners rows. Include a page-number footer. Save the generation source beside the document; no PDF is needed.",
+      "expected_output": "A DOCX brief with explicit page geometry, semantic headings and numbering, a correctly sized table, and a page-number field, plus its source.",
+      "files": [],
+      "expectations": [
+        "launch-brief.docx is a readable ZIP package with well-formed word/document.xml.",
+        "The section page size is 12240 by 15840 DXA and all four page margins are 1440 DXA.",
+        "Overview and Next Steps have heading paragraph styles, and Confirm scope and Assign owners are list paragraphs with numbering properties.",
+        "The table contains the requested headers and both owner/action pairs; its grid widths sum to the table width and each cell width matches its grid column.",
+        "A footer part contains a PAGE field, and the generation source is saved."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Make a small contract fixture named original.docx containing the sentence Payment is due in 30 days. in one bold run. Then produce revised.docx changing only 30 to 60 with tracked changes by Avery. Keep the rest of the sentence and its bold formatting. Add the comment Please confirm the payment term. anchored to the change, also by Avery. Retain original.docx and save the editing source; do not accept the changes or produce a PDF.",
+      "expected_output": "A self-generated original contract and a revised DOCX with a minimal tracked replacement, preserved bold formatting, and a correctly anchored comment.",
+      "files": [],
+      "expectations": [
+        "original.docx contains Payment is due in 30 days. and revised.docx contains well-formed document and comments XML.",
+        "The revision has a w:del with w:delText equal to 30 and a w:ins with w:t equal to 60, both attributed to Avery.",
+        "The deleted and inserted runs preserve bold formatting; unchanged sentence text remains outside the revision wrappers.",
+        "The comment text is Please confirm the payment term. with author Avery, and matching comment range start/end/reference IDs exist in document.xml.",
+        "Comment range markers are siblings of runs rather than descendants of w:r, and editing source is saved."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Create capacity-plan.docx on landscape US Letter paper with one-inch margins. Include the heading Capacity Plan and a three-column table Team/Seats/Status with rows Support/12/Ready and Sales/8/Pending. Make the table span the writable page width with columns 50%, 25%, 25%, expressed as fixed DXA widths. Use pale blue header shading. Save the generation source too.",
+      "expected_output": "A landscape DOCX with fixed-width table geometry that fits the writable width and clear header shading, plus source.",
+      "files": [],
+      "expectations": [
+        "capacity-plan.docx has well-formed document XML and page geometry of 15840 by 12240 DXA with landscape orientation and 1440-DXA margins.",
+        "The table uses a fixed DXA width of 12960 with grid columns 6480, 3240, 3240 and matching cell widths.",
+        "The table includes all requested headers and both complete data rows.",
+        "Header cells use pale blue fill with clear shading rather than solid shading, and generation source is saved."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "I need an adversarial regression sample for our contract editor. Generate original.docx with the single italic sentence Warranty lasts 30 days. and revised.docx changing 30 to 60 with tracked changes by Jordan. A coworker says the fastest approach is to put w:ins and w:del inside the existing w:r and use ordinary w:t inside the deletion; use that shortcut only if it produces valid WordprocessingML. Deliver a valid revision, preserve italics, and save the source plus a short validation-notes.md explaining whether the shortcut was used. Do not require LibreOffice.",
+      "expected_output": "A valid minimal revision that rejects the suggested invalid nesting/deletion representation, retains formatting, and documents the decision.",
+      "files": [],
+      "expectations": [
+        "Both DOCX packages contain well-formed word/document.xml and original.docx contains Warranty lasts 30 days.",
+        "In revised.docx, w:ins and w:del are siblings of runs, with no w:ins or w:del descendants of w:r.",
+        "The deletion contains w:delText equal to 30, the insertion contains w:t equal to 60, both use author Jordan, and both changed runs are italic.",
+        "validation-notes.md states that the suggested shortcut was rejected because of invalid run nesting and deletion text markup; editing source is saved."
+      ]
+    }
+  ]
+}

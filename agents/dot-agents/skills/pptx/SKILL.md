@@ -7,6 +7,23 @@ license: Proprietary. LICENSE.txt has complete terms
 
 # PPTX Skill
 
+## Dependencies
+
+Run from the task directory, keeping generated slides there. Set `SKILL_DIR` to the installed pptx skill directory:
+
+```bash
+SKILL_DIR="/absolute/path/to/installed/pptx"
+TASK_DIR="$PWD"
+python3 -m venv "$TASK_DIR/.venv"
+SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
+"$SKILL_PYTHON" -m pip install 'markitdown[pptx]==0.1.3' 'Pillow==11.3.0' 'defusedxml==0.7.1' 'lxml==6.0.2'
+npm install --save-exact pptxgenjs@4.0.1
+```
+
+Write CommonJS examples as `.cjs` files in the task directory so `require()` resolves local dependencies. Optional icon examples additionally need local `react-icons`, `react`, `react-dom` and `sharp` (see pptxgenjs.md). Native LibreOffice (`soffice`) is required for PDF conversion and Poppler (`pdftoppm`) for image rendering; check their versions and provision them through the host’s supported package manager. The soffice helper configures the runtime environment, it does not install these applications.
+
+---
+
 ## Quick Reference
 
 | Task | Guide |
@@ -224,17 +241,9 @@ pdftoppm -jpeg -r 150 -f N -l N output.pdf slide-fixed
 
 ---
 
-## Dependencies
+## Gotchas
 
-Run from the task directory, keeping generated slides there. Set `SKILL_DIR` to the installed pptx skill directory:
-
-```bash
-SKILL_DIR="/absolute/path/to/installed/pptx"
-TASK_DIR="$PWD"
-python3 -m venv "$TASK_DIR/.venv"
-SKILL_PYTHON="$TASK_DIR/.venv/bin/python3"
-"$SKILL_PYTHON" -m pip install 'markitdown[pptx]==0.1.3' 'Pillow==11.3.0' 'defusedxml==0.7.1' 'lxml==6.0.2'
-npm install --save-exact pptxgenjs@4.0.1
-```
-
-Write CommonJS examples as `.cjs` files in the task directory so `require()` resolves local dependencies. Optional icon examples additionally need local `react-icons`, `react`, `react-dom` and `sharp` (see pptxgenjs.md). Native LibreOffice (`soffice`) is required for PDF conversion and Poppler (`pdftoppm`) for image rendering; check their versions and provision them through the host’s supported package manager. The soffice helper configures the runtime environment, it does not install these applications.
+- Hidden slides remain in presentation order but may be omitted from PDF exports. `thumbnail.py` labels them with placeholders; check the visible-slide count before mapping rendered pages to slides, and inspect hidden slide XML separately.
+- Resolve OPC relationship targets relative to the owning part; `/ppt/slides/slide1.xml` is package-root-relative, not a filesystem path. Skip external relationships and reject targets that escape the package rather than blindly prepending `ppt/`.
+- Make targeted XML replacements with the host's available editor or patch tool; do not assume a tool literally named `Edit` exists. Read the XML first and review the resulting diff.
+- Package/schema validation checks OOXML structure, not rendered layout or content accuracy. A successful pack does not replace content and visual QA; record unavailable rendering checks instead of claiming they passed.
