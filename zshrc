@@ -8,6 +8,9 @@ zstyle :compinstall filename '~/.zshrc'
 #==================== zsh options ====================#
 setopt AUTO_PUSHD     # auto pushd on every cd
 
+# Keep PATH unique: first occurrence wins, so prepended dirs keep precedence.
+typeset -U path PATH
+
 #==================== oh-my-zsh configuration ====================#
 
 export DOTFILES=$HOME/dotfiles
