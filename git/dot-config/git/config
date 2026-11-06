@@ -1,44 +1,44 @@
+# See https://git-scm.com/docs/git-config
 [user]
-    name = AMing
-    email = cyberming@gmail.com
-[color]
-    ui = auto
+  name = AMing
+  email = cyberming@gmail.com
 [alias]
-    co = checkout
-    ci = commit
-    st = status
-    br = branch
-    hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --branches --date-order
-    type = cat-file -t
-    dump = cat-file -p
-    llog = log --oneline @{upstream}..HEAD
-    llp = log -p @{upstream}..HEAD
-    dag = log --graph --format='format:%C(yellow)%h%C(reset) %C(blue)\"%an\" <%ae>%C(reset) %C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order
-    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-    share-feature = "! git add-share-remote && git push share \"HEAD:refs/share/$USER/${1:-$(git symbolic-ref --short -q HEAD)}\" #"
-    pull-feature = ! git add-share-remote \"$1\" && git pull \"$1\" \"refs/share/$1/$2\" && true
-    backup = ! git add-backup-remote && git push backup
-    ff = ! git diff --name-only | fzf -m --ansi --preview \"git diff --color=always  -- {-1}\"
-[push]
-    default = simple
-	autoSetupRemote = true
-[rebase]
-    autosquash = true
-[core]
-    excludesfile = ~/.config/git/ignore
-    pager = delta
-    quotepath = false
-[interactive]
-    diffFilter = delta --color-only
-[delta]
-    features = side-by-side line-numbers decorations
-    whitespace-error-style = 22 reverse
-[delta "decorations"]
-    commit-decoration-style = bold yellow box ul
-    file-style = bold yellow ul
-    file-decoration-style = none
+  co = checkout
+  ci = commit
+  st = status
+  br = branch
+  hist = log --graph --format='format:%C(yellow)%h%C(reset) %C(blue)\"%an\" <%ae>%C(reset) %C(magenta)%cr%C(reset)%C(auto)%d%C(reset)%n%s' --date-order
+
+  uphist = log --oneline @{upstream}..HEAD
+  uplp = log -p @{upstream}..HEAD
+  share-feature = "! git add-share-remote && git push share \"HEAD:refs/share/$USER/${1:-$(git symbolic-ref --short -q HEAD)}\" #"
+  pull-feature = ! git add-share-remote \"$1\" && git pull \"$1\" \"refs/share/$1/$2\" && true
+  backup = ! git add-backup-remote && git push backup
+  ff = ! git diff --name-only | fzf -m --ansi --preview \"git diff --color=always  -- {-1}\"
 [init]
-    defaultBranch = master
+  defaultBranch = master
+[push]
+  default = simple
+  autoSetupRemote = true   # Automatically set upstream branch on push
+[pull]
+  rebase = true   		 # Rebase (instead of merge) on pull
+[rebase]
+  autosquash = true
+[diff]
+  algorithm = histogram    # Clearer diffs on moved/edited lines
+  colorMoved = plain       # Highlight moved blocks in diffs
+  mnemonicPrefix = true    # More intuitive refs in diff output
+[commit]
+  verbose = true           # Include diff comment in commit message template
+[column]
+  ui = auto 			     # Output in columns when possible
+[branch]
+  sort = -committerdate    # Sort branches by most recent commit first
+[tag]
+  sort = -version:refname  # Sort version numbers as you would expect
+[rerere]
+  enabled = true           # Record and reuse conflict resolutions
+  autoupdate = true        # Apply stored conflict resolutions automatically
 [credential "https://github.com"]
     helper = !/usr/bin/gh auth git-credential
 [credential "https://gist.github.com"]
