@@ -1,0 +1,46 @@
+[
+  {
+    "query": "Use ASD-STE100 to simplify this English: The request may have failed due to a possible mismatch.",
+    "should_trigger": true
+  },
+  {
+    "query": "Can you use ASD STE100 to simplify the English in this paragraph?",
+    "should_trigger": true
+  },
+  {
+    "query": "STE100 rewrite please: Once the job has completed, the agent should proceed.",
+    "should_trigger": true
+  },
+  {
+    "query": "Apply STE-100 to these maintenance instructions.",
+    "should_trigger": true
+  },
+  {
+    "query": "Rewrite this error message in Simplified Technical English.",
+    "should_trigger": true
+  },
+  {
+    "query": "asd-ste100 to simplified the English in my README please",
+    "should_trigger": true
+  },
+  {
+    "query": "What is ASD-STE100 and who publishes it?",
+    "should_trigger": false
+  },
+  {
+    "query": "Where can I obtain the official ASD-STE100 dictionary?",
+    "should_trigger": false
+  },
+  {
+    "query": "Review the Python implementation of the ste-lint script for bugs.",
+    "should_trigger": false
+  },
+  {
+    "query": "Make this advertisement more poetic and persuasive.",
+    "should_trigger": false
+  },
+  {
+    "query": "Rewrite this marketing copy using ASD-STE100, even if it loses its voice.",
+    "should_trigger": true
+  }
+]
