@@ -40,6 +40,8 @@
   enabled = true           # Record and reuse conflict resolutions
   autoupdate = true        # Apply stored conflict resolutions automatically
 [credential "https://github.com"]
-    helper = !/usr/bin/gh auth git-credential
+  helper = !/usr/bin/gh auth git-credential
 [credential "https://gist.github.com"]
-    helper = !/usr/bin/gh auth git-credential
+  helper = !/usr/bin/gh auth git-credential
+[credential]
+  helper = store
