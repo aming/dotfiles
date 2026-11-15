@@ -1365,6 +1365,11 @@ def lint(text, filename="<stdin>", *, text_type="description", mode="clarity", v
         # interrupted by one, so the same text in a paragraph is prose.
         reference_definition = (not was_paragraph
                                 and bool(REFERENCE_DEFINITION.match(content)))
+        if reference_definition:
+            # A definition is markup that starts a block: keep it out of the
+            # paragraph state, so the definitions after it stay markup too.
+            in_paragraph = False
+            paragraph_depth = 0
         # a GitHub alert marker is a label that stands alone, as a heading does.
         # Accept it only in an unindented quote of one level after a blank line,
         # a fence, or at the start of the text. Elsewhere a list item or a lazy

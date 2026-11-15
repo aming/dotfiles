@@ -127,6 +127,22 @@ class AssistedSteTests(unittest.TestCase):
             self.assertEqual([finding for finding in findings
                               if finding["line"] == 3], [])
 
+    def test_consecutive_reference_definitions_are_not_prose(self):
+        text = ("Start.\n\n[first]: https://example.com/one\n"
+                "[second]: https://example.com/two\n")
+        with tempfile.TemporaryDirectory() as temporary:
+            dictionary = Path(temporary) / "dictionary.json"
+            dictionary.write_text(json.dumps({
+                "issue": 9, "source": "Unit-test vocabulary", "entries": [
+                    {"word": word, "pos": pos, "approved": True, "meaning": "Test"}
+                    for word, pos in (("start", "v"), ("first", "n"),
+                                      ("second", "n"))]}),
+                encoding="utf-8")
+            vocabulary = Vocabulary(dictionary_path=dictionary)
+            findings = self.findings(text, vocabulary=vocabulary)
+            self.assertEqual([finding for finding in findings
+                              if finding["line"] > 1], [])
+
     def test_single_quoted_label_with_possessive_is_one_word(self):
         for label in ("‘Pilot’s Menu’", "'Pilot's Menu'"):
             with self.subTest(label=label):
