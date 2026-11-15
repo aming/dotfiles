@@ -1,21 +1,21 @@
 # Before / After Examples
 
-## Part 1 — Official STE Examples
+## Part 1 — STE Rule Illustrations
 
-These illustrate real ASD-STE100 rules, drawn from public secondary sources (see `references/writing-rules.md`). They are paraphrased illustrations of the rule, not quotes from the standard itself.
+These are illustrative rewrites, not verified compliant documents. Consult the official Issue 9 and `references/rule-coverage.json` for each rule and its exceptions. Vocabulary, meanings, and terminology still need review.
 
 | Rule | Before | After | Why |
 |---|---|---|---|
 | Consistent terms for the same action | "Check the cable connection. Verify the cable connection again after startup." | "Check the cable connection. Check the cable connection again after startup." | Use one term when the source refers to the same action. Preserve distinct actions and objects. Dictionary approval is not verified here. |
-| One part of speech per word | "Oil the valve." | "Apply oil to the valve." | If "oil" is approved only as a noun, using it as a verb breaks the one-word-one-role guarantee. |
+| Technical nouns are not verbs (1.7) | "Oil the valve." | "Apply oil to the valve." | “Oil” can qualify as a technical noun for a material. Do not use that technical noun as a verb. |
 | Precise verb meaning | "Follow the safety instructions." | "Obey the safety instructions." | "Follow" can mean "come after" or "obey" — STE picks the unambiguous one. |
-| Simple tense only | "We have received the technical reports from HQ." | "We received the technical reports from HQ." | Present perfect adds a second parse ("received, and still relevant now?") that simple past avoids. |
+| Simple tense (3.2/3.4) | "We have received the technical reports from HQ." | "We received the technical reports from HQ." | The revision removes a complex tense. If present relevance carries necessary information, preserve it in a permitted construction or report the conflict. |
 | Verb, not noun | "Perform an inspection of the filter." | "Inspect the filter." | The noun form hides the action and adds a filler verb that carries no meaning. |
 | No phrasal verbs | "Take off the access panel." | "Remove the access panel." | "Take off" also means "depart" and "deduct" — the two words together do not predict the meaning. |
 
-## Part 2 — Applied to Agent Output
+## Part 2 — Clarity Mode Applied to Agent Output
 
-These are original examples built for this skill's actual use case: rewriting AI agent output so another agent, a translation layer, or a non-native reader can parse it without ambiguity. They are illustrations, not quotes from any real system.
+These original examples use clarity mode, not the full STE review contract. They can retain necessary vocabulary and verb constructions that STE does not permit. An explicit STE request also needs the official dictionary, approved project terminology, all applicable rule reviews, and disclosure of remaining issues.
 
 Word counts below are whitespace-separated tokens (`text.split()`), punctuation not counted separately. A different tokenizer will produce a different number.
 
@@ -25,7 +25,7 @@ Word counts below are whitespace-separated tokens (`text.split()`), punctuation 
 > This tool will attempt to synchronize state across the various backends that have been configured, and if a conflict is detected it may resolve it automatically depending on the strategy that has been set, or otherwise it will surface the conflict for manual review.
 
 **Violations flagged:**
-- Two instructions in one sentence (sync + resolve/surface).
+- Multiple described behaviors in one long sentence (synchronize, resolve, and report).
 - Present perfect in the relative clauses ("have been configured", "has been set").
 - 44 words, far over the 25-word descriptive cap.
 
@@ -52,7 +52,7 @@ Not flagged: "may have occurred" and "could be caused by". The message is writte
 
 **This example is the reason the modality rule exists.** An earlier version of this file rewrote the first sentence as "The request failed", and the third as "an outdated client **is the most common cause**". Both read better. Both are wrong: the first asserts a failure the system only suspects, and the second invents a frequency claim that appears nowhere in the input. A rewrite that supplies a cause, a frequency, or a mechanism has stopped being a rewrite.
 
-Note also that "may have occurred" keeps a compound verb form that the simple-tense rule would otherwise remove. **When the tense rule and the modality rule conflict, modality wins** — dropping the auxiliary here would delete the uncertainty along with the tense.
+Clarity mode retains the compound form to protect meaning. In STE mode, flag the construction under 3.2/3.4, then seek an approved construction with the same uncertainty. If none is established, preserve the source meaning and report that compliance is unresolved.
 
 ### Example C — Inter-agent instruction
 
@@ -69,7 +69,7 @@ Note also that "may have occurred" keeps a compound verb form that the simple-te
 
 The rewrite preserves "should" as a recommendation and "sometimes" as the stated frequency. It adds no completeness check or waiting instruction.
 
-### Example D — README prose (STE-flavored mode)
+### Example D — README prose (clarity mode)
 
 **Before:**
 > Our caching layer is designed to slot seamlessly into your existing stack with minimal friction and no vendor lock-in; it leverages semantic similarity to dramatically reduce the cache misses that traditionally plague LLM workloads.
@@ -83,10 +83,10 @@ The rewrite preserves "should" as a recommendation and "sometimes" as the stated
 **After:**
 > We designed our cache layer to fit into your current stack without vendor lock-in. It uses semantic similarity to reduce cache misses, a long-standing problem for LLM workloads.
 
-Flavored mode did not force one fixed term per concept. It still cut the marketing adjectives, the semicolon, and the length. It kept "designed to", because the input states a design goal, not a result.
+Clarity mode did not force a fixed vocabulary. It removed marketing language and the semicolon, and shortened the sentences. It kept "designed to", because the input states a design goal, not a result.
 
 An earlier version of this file added two facts. It said that a normal cache matches requests by exact text. It also said that this cache stores no data outside your stack. The input states neither fact. A rewrite that adds a fact is no longer a rewrite.
 
 ## How to Read These Examples
 
-Part 1 shows the actual rules this skill is built on. Part 2 shows the transfer: the same discipline — one meaning per word, active voice, simple tense, one instruction per sentence, explicit conditions instead of buried subordinate clauses — makes machine-to-machine and cross-language text safer to parse, not just aircraft manuals.
+Part 1 illustrates selected STE principles. Part 2 illustrates meaning-preserving clarity rewrites. Neither part replaces the complete Issue 9 review or establishes official dictionary compliance.

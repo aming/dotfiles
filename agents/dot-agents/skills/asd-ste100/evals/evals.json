@@ -64,6 +64,40 @@
         "Preserves possible partial receipt and does not assert definite receipt or failure.",
         "Preserves should, only-if-no-receipt, and the 10-minute condition."
       ]
+    },
+    {
+      "id": 7,
+      "prompt": "Review this text for ASD-STE100 Issue 9 compliance: Open the cover; clean the seal. No official dictionary export or approved project terminology is supplied. Show the rule analysis.",
+      "expected_output": "An assisted STE review that identifies the semicolon and discloses missing vocabulary and semantic review.",
+      "files": [],
+      "expectations": [
+        "Identifies the semicolon under rule 8.1 and separates the sequential actions without inventing additional steps.",
+        "Reports that dictionary meanings, parts of speech, and technical terminology have not been verified.",
+        "Does not declare the result compliant or treat the supported pattern checks as covering all 53 rules."
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Use ASD-STE100 to rewrite this status while preserving its uncertainty, and show the analysis: The request may have failed. No dictionary or approved project glossary is available.",
+      "expected_output": "Meaning-preserving STE assistance that identifies the complex construction and the limits of verification.",
+      "files": [],
+      "expectations": [
+        "Preserves uncertainty about whether the request failed.",
+        "Identifies the complex construction under 3.2 or 3.4 rather than claiming the hedge makes it STE-approved.",
+        "Either uses a faithful alternative construction or explicitly reports the unresolved conflict.",
+        "Discloses missing vocabulary verification and does not assert complete compliance."
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Apply ASD-STE100 and show the rule analysis: Hold the panel open and cut the wire. In this procedure these actions must happen at the same time. No official dictionary export is supplied.",
+      "expected_output": "An assisted review that preserves simultaneity and the rule 5.2 exception.",
+      "files": [],
+      "expectations": [
+        "Preserves simultaneous holding and cutting; does not turn the two actions into sequential work steps.",
+        "Recognizes the simultaneous-action exception under rule 5.2.",
+        "Discloses that vocabulary and safety correctness are not established by the rewrite."
+      ]
     }
   ]
 }

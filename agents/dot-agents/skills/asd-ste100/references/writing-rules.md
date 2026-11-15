@@ -1,59 +1,56 @@
-# ASD-STE100 Writing Rules — Summary and Sources
+# ASD-STE100 Issue 9: Rule Sources and Review
 
-This file summarizes the public, official description of ASD-STE100 (Simplified Technical English). It paraphrases rule *categories*. It does not reproduce the standard's text or its ~900-word dictionary verbatim. For the authoritative document, request the free download at the official site.
+The authoritative source is [ASD-STE100 Issue 9, January 2025](https://zenodo.org/records/23666006/files/ASD-STE100_ISSUE9.pdf?download=1). The [ASD website](https://www.asd-ste100.org/about_STE.html) links this official Zenodo record. The download-request form is not the only access route.
 
-## What ASD-STE100 Is
+This skill paraphrases rule purposes and bundles vocabulary approval/form facts in `references/issue9-dictionary.json`. Original definitions, help, and examples remain in the linked standard; each approved index entry has a `meaning_ref` locator. Consult the edition's copyright notice and [ASD usage notice](https://www.asd-ste100.org/STE_downloads.html) before redistributing source text. The standard's availability is not tool certification.
 
-ASD-STE100 is a controlled natural language, first released in 1986 (as AECMA Document PSC-85-16598) by what is now ASD (the AeroSpace and Defense Industries Association of Europe). It was built at the request of European airlines — most staffed by non-native English speakers — who needed maintenance documentation that could not be misread, because a misread instruction on an aircraft can kill people. The standard is maintained by the Simplified Technical English Maintenance Group (STEMG) and has been free to download since Issue 6 (2013). The current edition is Issue 9 (January 2025).
+## Complete rule inventory
 
-## Structure
+Read `references/rule-coverage.json` for every STE task. It is the single maintained inventory of all 53 official writing-rule IDs, partial script checks, and remaining review criteria.
 
-- **53 writing rules across 9 sections** covering word choice, grammar, sentence structure, and style.
-- **A dictionary** of roughly 900 approved words, each restricted to one meaning and one part of speech, plus roughly 1,200 words to avoid with suggested replacements.
-- **A terminology allowance**: organizations may define their own dictionary of approved technical nouns and verbs beyond the base ~900 words, for domain-specific vocabulary the base dictionary can't cover.
+| Section | Subject | Rules |
+|---|---|---|
+| 1 | Words, forms, terminology, spelling | 1.1–1.14 |
+| 2 | Multi-word nouns | 2.1–2.2 |
+| 3 | Verbs | 3.1–3.7 |
+| 4 | Sentences | 4.1–4.5 |
+| 5 | Procedural writing | 5.1–5.5 |
+| 6 | Descriptive writing | 6.1–6.6 |
+| 7 | Safety instructions | 7.1–7.3 |
+| 8 | Punctuation and word count | 8.1–8.7 |
+| 9 | Writing practices | 9.1–9.4 |
 
-## Rule Categories (Paraphrased)
+Do not count the general recommendations in section 9 as additional writing rules. Issue 9 moved the former rule 2.3 to 4.5.
 
-**Word choice**
-- Use approved words only in their approved meaning and part of speech.
-- Each word maps to exactly one meaning — don't rely on context to disambiguate a word that has several dictionary senses.
-- Prefer the plainer, shorter, more common word over a formal or rare synonym.
-- Use an approved verb for an action, not a noun derived from that verb (Rule 3.7).
-- Do not make phrasal verbs by putting a verb and a preposition together (Rule 9.3). Their meaning is not predictable from the parts, and non-native readers and translation systems both mishandle them.
+## Dictionary and terminology
 
-**Verb forms**
-- Permitted forms: infinitive, imperative, simple present, simple past, simple future, and past participle used only as an adjective.
-- No present perfect, past perfect, or other compound/auxiliary constructions. "We have received" is not allowed. "We received" is allowed.
-- "-ing" forms are permitted only as a technical noun or as part of a technical noun, not as a verb form.
+Part 2, introduction page 2-0-3, identifies 875 approved words and 1274 non-approved words. These are edition-specific word counts, not a validation checksum for a JSON export. Entries specify part of speech, approved meanings or alternatives, and relevant forms/help.
 
-**Voice**
-- Active voice is required for procedures and instructions.
-- Passive voice is allowed only in descriptive text, and only when the actor performing the action is genuinely unknown or irrelevant to the reader.
+Part 2, pages 2-0-5 through 2-0-8, explains noun plurals, permitted verb forms, auxiliary/modal restrictions, and adjective forms. For example, a noun plural can be permitted without being printed as its own entry. A local export must explicitly enumerate the surface forms accepted by this script; the script does not invent morphology.
 
-**Sentence structure**
-- One instruction per sentence.
-- Maximum ~20 words per sentence for procedures and instructions. Maximum ~25 words for descriptive text.
-- Do not omit sentence parts (verb, subject, article) just to shorten the sentence — the standard explicitly warns that this creates ambiguity rather than clarity.
-- Noun clusters (strings of nouns stacked as a modifier) are capped at 3 words.
-- Semicolons are not permitted at all (Rule 8.1): "You can use all standard English punctuation marks but not the semicolon (;)." Write separate sentences instead. Every other standard mark, including the em dash, remains permitted.
+Rules 1.5 and 1.12 allow qualifying technical nouns and verbs. There are 22 technical-noun categories and four technical-verb categories. Company terminology needs definitions, applicable categories, approved forms, and a consistent designation for each concept. It is not a blanket exemption for jargon or an arbitrary allowlist.
 
-**Paragraph and document structure**
-- One topic per paragraph.
-- Maximum ~6 sentences per paragraph.
-- Use vertical (numbered or bulleted) lists for sequences, conditions, or complex enumerations instead of burying them in prose.
+If using local vocabulary files, read `references/vocabulary-format.md`. Membership lookup cannot establish grammatical use, approved meaning, or technical-category qualification. These remain review tasks under 1.2, 1.3, 1.5–1.13, and 9.2 as applicable.
 
-**Safety instructions**
-- Safety-critical instructions must open with a clear command or condition, not be buried mid-sentence.
+## Important exceptions and corrections
 
-## Why This Skill Repurposes STE for Agent Output
+- **3.3/3.6:** A participial adjective can describe a condition after “be” without being passive voice. Passive voice is permitted in descriptive text only when the agent is unknown, not merely irrelevant. Source: pages 1-3-3 and 1-3-5.
+- **3.2/3.4:** Perfect and other complex auxiliary constructions are not exempt merely because they preserve uncertainty or current relevance. Preserve meaning through an approved construction, or report the unresolved conflict. Source: pages 1-3-2 through 1-3-4.
+- **5.2:** One instruction per sentence is the normal rule. Simultaneous actions can be combined. Establish timing before splitting a command. Source: page 1-5-2.
+- **2.1/2.2:** Apply the three-word limit together with the provisions for full technical nouns, introduced shorter forms/abbreviations, and appropriate hyphens. A long official term is not automatically a defect. Source: pages 1-2-1 through 1-2-4.
+- **4.2/4.5:** Do not shorten by omitting necessary words or using contractions. Article use has grammatical exceptions, including identified items such as an item followed by its identifier. Source: pages 1-4-3 and 1-4-8.
+- **5.5:** Notes give information, not essential instructions, limits, or results. A reader must be able to perform the procedure correctly without the notes. Source: pages 1-5-5 through 1-5-7.
+- **7.1–7.3:** Identify risk appropriately, start the safety instruction with a clear command/condition, and explain the risk or result. Correct language does not establish that the technical instruction is safe.
+- **8.1:** Semicolons are not permitted. Other punctuation still needs correct use; this is not a blanket ban on em dashes.
+- **8.4:** A colon introducing a vertical list ends the introductory counting unit. Each list item is counted separately.
+- **8.5:** Parenthetical text counts as one outer word, but its inner text must also be checked separately.
+- **8.6:** Numbers with units, abbreviations, identifiers, quoted text, specified titles/labels, and proper names have special one-word counting provisions. Work-step and paragraph numbers do not count.
+- **8.7:** Hyphenated words count as one word. Spelling and appropriate hyphenation still require review.
 
-STE was designed to eliminate ambiguity for a reader who cannot ask a follow-up question — a technician on a tarmac, working from a manual, with no author to call. An AI agent parsing another agent's output, a tool description, or a system message is in the same position: no back-channel to resolve "does this passive-voice sentence mean the caller does X, or the callee does X?" The same rule set that protects an airline mechanic from a misread torque spec protects a downstream agent from a misread instruction.
+The section 8 provisions are on pages 1-8-4 through 1-8-7. The script handles a documented subset, including explicitly configured counting units; it does not identify every semantic exemption.
 
-## Sources
+## Interpreting a report
 
-- [ASD-STE100 official site](https://www.asd-ste100.org/)
-- [ASD-STE100 — About STE](https://www.asd-ste100.org/about_STE.html)
-- [ASD Europe — Simplified Technical English](https://www.asd-europe.org/standards-specifications/simplified-technical-english/)
-- [Simplified Technical English — Wikipedia](https://en.wikipedia.org/wiki/Simplified_Technical_English)
-- [TechScribe — ASD-STE100 Simplified Technical English](https://www.techscribe.co.uk/techw/asd-simplified-technical-english.htm)
-- [SKYbrary — Simplified Technical English (STE)](https://skybrary.aero/articles/simplified-technical-english-ste)
+A mapped check establishes only the part it actually analyzes. A `partial` coverage entry still requires the record's `review` criterion. A `review-required` entry is not a passed rule. Applicability metadata guides review; classify mixed sections, notes, and safety text yourself.
+
+STE mode returns exit 3 when no hard findings remain because automated acceptance is not supported. Complete all applicable rule reviews and verify the dictionary uses and technical terminology before making a document-level compliance claim.
