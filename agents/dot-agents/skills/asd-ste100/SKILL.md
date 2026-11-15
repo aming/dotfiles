@@ -1,150 +1,109 @@
 ---
 name: asd-ste100
-description: "Simplify or rewrite English using ASD-STE100-inspired Simplified Technical English. Use whenever the user asks to apply ASD-STE100, ASD STE100, STE100, STE-100, or Simplified Technical English to text, including requests such as simplify this English using ASD-STE100. Also use to clarify dense or ambiguous technical prose, tool descriptions, error messages, and status reports. Preserve meaning, uncertainty, and requirement strength. Do not use for questions about the standard alone or for creative or marketing copy unless the user explicitly requests an STE rewrite."
+description: "Rewrite or review English using ASD-STE100 Simplified Technical English. Use for explicit STE100, STE-100, ASD-STE100, or STE compliance requests, and to clarify technical instructions, tool descriptions, error messages, and agent output. For STE requests, review all 53 Issue 9 rules, the official dictionary, and approved project terminology. Preserve meaning, uncertainty, and requirement strength. Use clarity mode for general simplification. Do not apply to creative or marketing copy unless requested."
+compatibility: Python 3 for the optional stdlib-only linter; authoritative Issue 9 and approved project terminology for a complete assisted review.
 ---
 
-# Simplified Technical English (ASD-STE100)
+# Simplified Technical English
 
-ASD-STE100 is a controlled-language standard built by the aerospace and defense industry (ASD, the AeroSpace and Defense Industries Association of Europe) to stop maintenance technicians from misreading English instructions. The standard removes the two biggest sources of misreading: words with more than one meaning, and sentences with more than one possible structure.
+## Choose the contract
 
-This skill borrows that same discipline for a different reader: an **AI agent or a downstream system** that has to parse an English string — an error message, a tool description, an inter-agent instruction, a status report — without a human in the loop to resolve ambiguity. If a maintenance technician can misread "close the valve" as an adjective ("the valve that is near") instead of a command, so can a language model.
+**STE review**: Use when the user requests ASD-STE100, STE compliance, or a rewrite in STE. Apply the actual Issue 9 rules and vocabulary. The script supplies partial checks, not a compliance certificate. Meaning, grammatical function, terminology qualifications, and safety need review.
 
-## When to Use This Skill
+**Clarity**: Use for general simplification without an explicit STE requirement. Prefer short, clear sentences, active voice, direct verbs, and consistent terminology. Preserve necessary vocabulary and verb forms. Describe the result as a clarity rewrite, not verified STE.
 
-- An agent's output (explanation, instruction, log message, tool description) reads as dense, jargon-heavy, or ambiguous.
-- Text will be consumed by another agent, a translation pipeline, or a non-native English reader, and misparsing has a real cost.
-- You are writing a prompt, system message, or tool description and want to remove ambiguity before a model ever sees it.
-- You want a **before/after** comparison showing exactly which rule was violated and how the rewrite fixes it. Ask for it — the default output is the rewritten text alone (see Output Format).
+An aircraft procedure and an agent instruction can have different subject matter. Both still need the correct STE rules when the user requests STE. Do not invent an exception because the text concerns software.
 
-For creative or marketing copy, apply this skill only when the user explicitly requests an STE rewrite. STE is deliberately flat and literal, so preserve meaning while following that requested style.
+## Authoritative sources
 
-## Two Modes
+Issue 9, January 2025, has 53 writing rules in nine sections and a controlled dictionary. Technical nouns and technical verbs extend the dictionary only under the standard's terminology rules.
 
-Pick a mode before rewriting. If the user does not say which, infer it from the text type. Keep the choice internal unless the user asks for the rule table (see Output Format).
+For every STE task, read `references/rule-coverage.json`. It accounts for each official rule ID, the script's related checks, and the judgment still required. When interpreting a rule or a dictionary entry, consult the actual [official Issue 9 PDF](https://zenodo.org/records/23666006/files/ASD-STE100_ISSUE9.pdf?download=1), linked from the [ASD website](https://www.asd-ste100.org/about_STE.html). Use `references/writing-rules.md` for the source map and important exceptions, not as a substitute for the standard.
 
-**Strict** — procedures, error messages, tool and function descriptions, inter-agent instructions, safety text. Anywhere a wrong reading has a cost. Apply every rule below, including the hard length caps and one-word-one-meaning discipline.
+Use the dictionary's actual approved meanings, parts of speech, and forms. A common English word is not automatically approved. A word that appears in the dictionary is not necessarily approved for every grammatical use or meaning.
 
-**STE-flavored** — READMEs, PR descriptions, changelogs, explanatory prose. Apply the structural rules in full and treat the lexical rules as advisory (see Core Rewrite Rules for that split). In practice that means keeping the sentence length caps, active voice, simple tenses, no phrasal verbs, no semicolons, no nominalization and no marketing adjectives, while dropping the one-word-one-meaning lockdown: prose needs some range, and a strict rewrite of prose reads as a personality transplant rather than a clarification.
+Use the bundled vocabulary facts in `references/issue9-dictionary.json`: headword approvals, part-of-speech labels, explicitly printed forms, and authoritative entry references. Definition text, help, and examples remain in the official PDF. Keep private project terminology local. Consult the edition's copyright notice and the [official usage notice](https://www.asd-ste100.org/STE_downloads.html) before redistributing source text. Neither ASD nor STEMG certifies this skill or its output.
 
-The two modes and the structural/lexical split are the same distinction seen from two directions. The split says which rules this skill can verify without ASD's dictionary. The modes say which of them to enforce for a given kind of text.
+## Workflow
 
-## Source and Scope
+1. **Read for meaning.** Identify the actions, actors, conditions, quantities, exceptions, recommendations, obligations, uncertainty, and frequency. Preserve all of them. Resolve genuine ambiguity with the author rather than supplying a fact.
+2. **Classify the text.** Separate procedures from descriptions. Instructions use procedural rules and the 20-word sentence limit. Descriptions use the 25-word limit and paragraphs of at most six sentences. Notes within procedures are descriptive text. Review safety instructions under section 7. Lint different text types separately.
+3. **Establish vocabulary sources for STE review.** Use `references/issue9-dictionary.json` and the project's approved technical nouns and verbs. If configuring vocabulary inputs, read `references/vocabulary-format.md`. Follow each relevant `meaning_ref` in the bundled data to review the actual approved meaning and restrictions in the official PDF. An empty, explicitly supplied terminology list means the project has no additional terms. A missing list means approval is unknown. If a necessary source is unavailable, continue only as a partial review and disclose the gap.
+4. **Review every applicable rule.** Use all 53 records in `references/rule-coverage.json`. Record each rule internally as satisfied, revised, not applicable with a reason, or requiring review. An unmapped rule is a review task, not an automatic pass. Establish each word's approved meaning and grammatical function. Check that domain terms qualify under the technical-noun or technical-verb categories.
+5. **Rewrite without changing the contract.** Use approved wording and a different sentence construction when a word-for-word replacement fails. Keep conditions before the related commands when necessary. Keep distinct concepts distinct. Do not change a recommendation into an obligation or a possibility into a fact.
+6. **Run the appropriate checks on the resulting text.** Use the commands below when Python is available. Inspect advisory findings as well as hard findings. A supported pattern is evidence for review, not proof of grammatical function. If execution is unavailable, state that automated checks were not run when reporting verification.
+7. **Finish the review, not just the pattern scan.** Check the remaining rule criteria against the source text and authoritative standard. Qualified subject-matter review is necessary for safety, technical correctness, and terminology approval. Report unresolved items rather than declaring compliance.
 
-This skill encodes the **rule categories** of ASD-STE100 Issue 9 (Jan 2025): 53 writing rules across 9 sections covering word choice, grammar, sentence structure, and style, backed by a dictionary of ~900 approved words (one meaning, one part of speech each) and ~1,200 words to avoid with suggested replacements. See `references/writing-rules.md` for the full rule summary and citations.
+## Script
 
-It does **not** reproduce ASD's ~900-word approved dictionary verbatim. ASD-STE100 is free to obtain, but it is not free to redistribute: Issue 9, page 2 states that "no reproduction or publication of it, in whole or in part, shall be made without the written authority of an officer of ASD," and grants free reproduction rights only to eight listed categories (ASD/AIA/AIAC member associations and their member companies and customers, member-state defence ministries, A4A, airworthiness authorities, and universities and research institutes for educational purposes). This project is in none of them, so the dictionary stays out of this repo.
+Run from the installed skill directory:
 
-Instead, this skill applies the *underlying principle* (pick the plainest, most common word available and use it the same way every time) rather than checking against a fixed word list. When exact ASD-approved wording matters (e.g. actual aircraft maintenance documentation), get the standard and check word-by-word against the real dictionary. Request it from the [official downloads page](https://www.asd-ste100.org/STE_downloads.html) — note that this is a request form that emails you a link, not a direct download.
+```bash
+# Assisted STE review. Inputs remain local; nothing is uploaded.
+python3 scripts/ste-lint.py --mode ste --text-type procedure \
+  --dictionary references/issue9-dictionary.json \
+  --terminology /path/to/project-terms.json instructions.md
 
-## Core Rewrite Rules
+# Dictionary lookup without project terminology still needs terminology review.
+python3 scripts/ste-lint.py --mode ste --text-type description \
+  --dictionary references/issue9-dictionary.json --json description.md
 
-STE's rules divide into two kinds, and this skill can only fully deliver one of them. **Structural rules** are self-contained: they describe sentence shape, and you can apply them from the description alone. **Lexical rules** are defined entirely by the official ~900-word dictionary, which this skill deliberately does not reproduce (see Source and Scope). Without that dictionary, the lexical rules degrade from a checkable standard into a preference for plain words.
+# General clarity, without a claim of STE compliance.
+python3 scripts/ste-lint.py --mode clarity description.md
 
-Apply the structural rules with confidence. Apply the lexical rules as a direction of travel, and explain the limitation when the user requests analysis. Never imply verified dictionary compliance.
-
-### Structural rules — apply these
-
-| Rule | Do | Don't |
-|---|---|---|
-| Active voice | "The agent deletes the file." | "The file is deleted (by the agent)." — unless the actor is genuinely unknown or irrelevant |
-| No phrasal verbs (Rule 9.3) | "Remove the panel." / "Start the job." | "Take off the panel." / "Spin up the job." — a two-word verb has meanings the parts do not predict |
-| One instruction per sentence | "Open the file. Read line 3." | "Open the file and read line 3, then check if it matches." |
-| Sentence length | ≤20 words for instructions/procedures, ≤25 words for descriptions | Long compound/subordinate-clause sentences |
-| No semicolons (Rule 8.1) | Split into separate sentences | Any semicolon at all — STE bans the mark outright, not only as a clause join. (Rule 8.1 permits every other standard punctuation mark. The em dash is *not* banned by STE, though it often signals a sentence that should be split.) |
-| Noun clusters | ≤3 words stacked as a noun phrase ("fuel pump valve") | 4+ word noun stacks ("high pressure fuel pump inlet valve assembly") |
-| No ellipsis | Keep the subject, verb, and article explicit even if it reads longer | Drop words to save space ("Files not backed up will be lost" → ambiguous which files) |
-| Keep modality | "The request **may have** failed." stays "may have" | Promote a hedge to a fact ("The request failed.") or invent a certainty the source did not state |
-| Paragraph limits | One topic per paragraph, ≤6 sentences | Multi-topic paragraphs |
-| Lists for sequences | Use a numbered or bulleted list for 3+ steps or conditions | Bury a sequence inside one prose sentence |
-
-### Lexical rules — direction of travel only
-
-| Rule | Do | Don't | Why it is weaker here |
-|---|---|---|---|
-| One word, one meaning | Pick one verb for one action and reuse it every time (e.g. always "check", never mix "check"/"verify"/"confirm" for the same action) | Rotate synonyms for the same idea across a document | Consistency within a document is checkable. Which word is the *approved* one is not, without the dictionary. |
-| One part of speech per word | "Apply oil to the valve" (oil = noun) | "Oil the valve" (oil = verb) | Whether "oil" is approved as a noun only is a dictionary fact. Prefer the noun form when both read equally well. Do not claim compliance. |
-| Verb, not noun (Rule 3.7) | "Analyze the log." | "Perform an analysis of the log." — a noun form of an action makes the sentence longer and hides who acts | Rule 3.7 says "use an **approved** verb to describe an action." Preferring the verb form is safe to apply anywhere. Knowing which verb is the approved one needs the dictionary. |
-| Domain terms | Keep necessary technical nouns/verbs, but define them once if not common English (STE allows a project-specific glossary beyond its base dictionary) | Use jargon without ever defining it | The glossary allowance is real STE, but the base dictionary it extends is absent. |
-
-### Simple tenses — apply with one exception
-
-STE permits infinitive, imperative, simple present, simple past, simple future, and past participle as adjective. It excludes present perfect and other compound forms: "we received the report", not "we have received the report".
-
-Aircraft manuals never need present perfect, so the exclusion costs the standard nothing. Other text is not always so lucky. "The job has completed" (and its output is available now) and "the job completed" (at some past point) are different statements, and status text frequently needs the first. **Where the compound form carries information the simple form cannot — current relevance, or a hedge as in "may have failed" — keep it. Explain the departure only when the user requests analysis.** Elsewhere, follow the rule.
-
-## Scan Checklist
-
-These six habits cover most of what makes machine-written English hard to parse. Each one is mechanical: you can point at the exact word or punctuation mark that breaks the rule, with no judgment call. Scan for all six before you rewrite anything.
-
-1. **Synonym rotation** — the same thing gets several names in one document ("the user", "the customer", "the client"). The reader cannot tell whether they are one thing or three. Fix: pick one name, use it every time.
-2. **Hedge stacking** — helper verbs and qualifiers pile up until the sentence asserts nothing ("it is important to note that this may potentially help to improve"). Fix: state the claim, or delete it.
-3. **Nominalization** — an action frozen into a noun ("perform an analysis of", "provides assistance to"). Fix: use the verb ("analyze", "helps").
-4. **Marketing adjectives** — words that claim quality instead of showing it: seamless, robust, powerful, cutting-edge, effortless, blazing-fast. Fix: delete, or replace with the measurement that earns the claim.
-5. **Run-on sentences** — several ideas joined by semicolons or em dashes. Fix: one idea per sentence.
-6. **Soft phrasal verbs** — spin up, reach out, dive into, kick off. Fix: use the single plain verb (start, contact, read, begin).
-
-## Host Compatibility
-
-Use the tools available in the current host. Resolve bundled resource paths relative to this skill directory. The optional linter requires Python 3 and no external packages. If command execution or Python is unavailable, apply the rules manually. When asked for verification, state that automated linting was not run.
-
-## Process
-
-1. Pick the mode (Strict or STE-flavored). Say which only when the user asked for the rule table — see Output Format.
-2. Read the input text once for meaning — do not start rewriting before you understand what it must still say afterward.
-3. Walk it sentence by sentence. Flag every rule violation from the Core Rewrite Rules tables and every habit from the Scan Checklist. In STE-flavored mode, flag the lexical rules but do not enforce them. For a mechanical first pass over the structural rules, run `scripts/ste-lint.py` (stdin or file args, `--json` for structured output); it checks semicolons, sentence length, phrasal verbs, nominalization, marketing adjectives, synonym rotation, dangling-conjunction in supported list items, passive voice, and compound tenses, and by design never flags hedges or modality. `--text-type procedure` sets the 20-word instruction cap; the default `--text-type description` uses 25 words. For mixed text, lint the procedure sections separately. `--baseline N` tolerates N hard violations (for adopting on existing docs); `--disable rule1,rule2` silences named rules.
-4. Rewrite each flagged sentence to fix the violation while preserving the original meaning exactly. If a rewrite would drop necessary precision (a safety condition, a scope qualifier, a number), keep the longer phrasing and flag it instead of silently simplifying.
-   - **Check modality before you commit to a rewrite.** Hedges ("may", "could", "sometimes", "is likely to") carry the author's confidence, and confidence is content. A shorter sentence that upgrades a hedge to a fact is not a simplification — it is a different claim. This is the most common way a well-intentioned STE rewrite goes wrong, because hedges are exactly what a length cap tempts you to cut.
-   - Preserve requirement strength: keep "should" as a recommendation and "must" as a requirement. Do not turn either into a different obligation. Do not add troubleshooting steps or checks.
-   - Never add a fact the source did not state. A rewrite that reads better because it supplies a cause, a frequency, or a mechanism has stopped being a rewrite.
-5. Output the rewritten text (see Output Format). Keep the mode choice and the rule analysis internal unless the user asked to see them.
-6. If the input already complies, return it unchanged. State that no changes were needed only when the user requests analysis.
-
-## Output Format
-
-**Default: the rewritten text, and nothing else.** Most callers want a result they can paste straight into a tool description, an error string, or a prompt. Print the simplified text on its own. Do not add a preamble about this skill, a mode announcement, a violation count, a summary of what changed, a rule table, or a closing offer to explain further.
-
-The one permitted addition: if step 4 kept a longer phrasing on purpose, add a single line after the text, prefixed `Kept as-is:`, naming the phrase and the precision that would have been lost. Omit the line when there is nothing to report.
-
-**On request: the rule table.** When the user asks to see the reasoning — "show the diff", "which rules did it break", "explain the changes", "before/after" — output this table instead:
-
-```markdown
-| Rule violated | Original | Simplified |
-|---|---|---|
-| Present perfect tense | "We have received your request." | "We received your request." |
-| Noun cluster (4+ words) | "the agent task queue priority handler" | "the handler that sets task-queue priority" |
-
-Mode: Strict. 7 violations found.
+# Inspect the complete rule inventory.
+python3 scripts/ste-lint.py --list-rules --json
 ```
 
-Follow the table with a one-line note on anything you deliberately did **not** simplify, and why (usually: simplifying would lose required precision).
+The default script mode is `clarity`. Explicit STE requests require `--mode ste`.
 
-## Boundaries
+In STE mode the script checks semicolons, sentence length, contractions, descriptive paragraph length, selected phrasal verbs and nominalizations, possible passive/progressive/perfect constructions, and supplied vocabulary. Local terminology can identify noncanonical aliases and explicitly configured counting units.
 
-**Will:**
-- Rewrite ambiguous or dense English into short, single-meaning, active-voice sentences.
-- Return the rewritten text alone by default, and name the rules it applied when the user asks.
-- Preserve every fact, condition, and scope qualifier in the original.
-- Preserve the strength of every hedge, and add no claim the source did not make.
-- Suggest glossary entries only when the user requests analysis. Preserve existing technical terms in the default rewrite.
+The grammar checks are heuristic. The dictionary check establishes surface-form membership only. It does not establish the meaning, part of speech, or permissible technical use in the sentence. Missing vocabulary sources remain coverage gaps.
 
-**Will not:**
-- Reproduce ASD's official ~900-word dictionary as if it were memorized verbatim — always treat the official download as the source of truth for exact approved wording.
-- Simplify creative, marketing, or persuasive copy without an explicit request for an STE rewrite.
-- Silently drop a safety condition, exception, or scope qualifier to shorten a sentence — it will flag the trade-off instead.
-- Convert "may have failed" into "failed", or "could be caused by X" into "X is the cause" — losing a hedge changes the claim.
-- Guarantee an aerospace/defense-grade STE-compliant document. This is a general-purpose clarity tool inspired by STE, not a certified STE authoring tool.
-- Make weak content true or useful. STE fixes the *form* of a text, not its substance. A hollow paragraph rewritten under these rules becomes a clean, short, well-punctuated hollow paragraph. If the text has nothing to say, preserve its limited content. Explain that limitation only when the user requests analysis.
-- Shorten past the point of clarity. Cutting words is not the goal. Removing ambiguity is the goal. Past a certain point compression starts costing the reader time rather than saving it, so stop when the sentence is unambiguous, not when it is shortest.
+The JSON report includes the 53-rule coverage inventory, source gaps, official rule IDs for findings, and applicable `review_required` criteria. Read it before making any compliance claim.
+
+| Exit | Meaning |
+|---|---|
+| 0 | Clarity checks passed, or a rule-list/self-test command completed. Not an STE acceptance. |
+| 1 | Hard findings exceed the allowed baseline. |
+| 2 | Invalid input, flags, or vocabulary configuration. |
+| 3 | Assisted STE scan completed with no hard findings; review is still required. |
+
+STE mode permits neither nonzero baselines nor disabled checks. In clarity mode, `--baseline N` and `--disable rule1,rule2` support selective lint.
+
+## Meaning-preserving STE review
+
+- **Uncertainty is content.** In clarity mode, `may have failed` can remain unchanged. In STE mode, flag its complex verb construction under 3.2/3.4. Find a permitted construction with the same uncertainty, or report an unresolved conflict. The hedge does not make the construction STE-approved.
+- **Requirement strength is content.** Preserve what `must`, `should`, `may`, and `can` mean in the source. If a word or sense is not approved, restructure the sentence or request a decision. Do not silently strengthen it.
+- **Active voice has a specific exception.** Rule 3.6 permits passive voice in descriptions when the agent is unknown. An irrelevant but known agent is not the stated exception. A past participle describing a condition can be an adjective rather than passive voice.
+- **Instruction count has an exception.** Rule 5.2 normally requires one instruction per sentence, but simultaneous actions can occur in one sentence. Establish the intended timing before splitting them.
+- **Multi-word nouns have an exception.** Apply 2.1 together with 2.2. A long official technical noun can need its full form before a clear shorter form or permitted hyphenation.
+- **Count with section 8.** Parenthetical text counts as one outer word and is checked separately. Quoted text, specified names/titles/labels, quantities with units, and hyphenated words have special counting rules. Whitespace counting alone is not an STE word count.
+- **Terminology is not an arbitrary allowlist.** A term needs a subject-field definition, an applicable category, and project approval. Review noun/verb use and approved inflections. Similar words can refer to different things.
+
+## Output
+
+Default: return the rewritten text alone.
+
+If an STE request still has missing sources, unresolved rules, or required subject-matter review, append one concise line:
+
+`Review required: <specific missing source, unresolved rule, or subject-matter review>.`
+
+If shortening would lose necessary information, preserve it and append:
+
+`Kept as-is: <wording and the information it preserves>.`
+
+For a requested analysis, use a table with **Rule ID**, **Original**, **Revision**, and **Remaining review**. Name the mode and the vocabulary sources used. Distinguish detected patterns from established violations. Describe an unverified result as partial or review-required, not compliant or certified.
 
 ## Gotchas
 
-- Preserve recommendations, obligations, uncertainty, and frequency. A clearer sentence must not strengthen any of them.
-- Do not add recovery steps or implementation details to make an example more useful.
-- Reuse one term only when the actions and objects are the same. Similar words can describe different tasks.
-- A clean linter result does not prove meaning preservation or official dictionary compliance.
+- A clean automated scan is not proof of STE compliance or meaning preservation.
+- Dictionary membership does not establish approved meaning, part of speech, or inflection.
+- Do not exempt compound tenses silently in STE mode to preserve modality. Report the conflict if a faithful permitted rewrite is unavailable.
+- Do not unify words that describe different actions merely because a synonym heuristic flags them.
+- Do not hide essential instructions, limits, results, or safety precautions in notes.
+- Do not infer the correct safety sequence or invent a hazard, cause, frequency, or recovery step.
+- Fenced and inline code are not reviewed as prose. Markup handling and rule coverage remain partial.
 
-## Additional Resources
-
-- If the user requests rule details or source attribution, read `references/writing-rules.md` for a fuller summary of the 9 rule sections and dictionary structure, with citations to the official standard and secondary sources.
-- If a rewrite needs a worked example, read `examples/before-after.md` for rule illustrations and agent-output examples.
-- **`scripts/ste-lint.py`** — deterministic, stdlib-only linter for the structural rules, including dangling-conjunction in supported list items, plus a synonym-rotation check (one word, one meaning) scoped per file. Exit 1 when hard violations exceed `--baseline` (default 0); advisory findings (passive voice, compound tenses) never fail the run; `--disable` silences named rules. It never flags hedges or modality: those are content, not style, and `--selftest` asserts that "may have failed" passes clean.
+For illustrative rewrites, read `examples/before-after.md`. Those clarity examples are not independently verified STE-compliant documents.

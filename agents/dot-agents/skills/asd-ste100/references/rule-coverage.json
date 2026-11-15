@@ -1,0 +1,378 @@
+{
+  "standard": "ASD-STE100",
+  "issue": 9,
+  "source": "https://zenodo.org/records/23666006",
+  "rules": [
+    {
+      "id": "1.1",
+      "summary": "Use approved dictionary vocabulary or qualifying technical nouns and verbs. Domain terms must meet the standard's category and usage requirements; a glossary is not an exemption for ordinary unapproved prose.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["dictionary-word"],
+      "review": "Verify the vocabulary source is authoritative and complete. For every unlisted word, establish a qualifying technical use or another explicit provision; rewrite ordinary unapproved prose with an accurate approved construction."
+    },
+    {
+      "id": "1.2",
+      "summary": "Use each approved dictionary word only in the part of speech the dictionary specifies. If the needed replacement has a different part of speech, rebuild the sentence instead of forcing the word into that slot.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Check each approved word's dictionary part of speech in context; where the required sense has another part of speech, confirm the sentence was rebuilt rather than the word misused."
+    },
+    {
+      "id": "1.3",
+      "summary": "Use each approved word only in its approved meaning. Approved meanings are often narrower than standard English, so other senses of the same word are not permitted.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "For every approved word used in an unusual or extended sense, compare it with the dictionary's approved meaning and rewrite with a word that matches."
+    },
+    {
+      "id": "1.4",
+      "summary": "Use only the verb forms and adjective forms listed in the dictionary. Adjectives formed with more and most do not need listed comparative or superlative forms because those words are approved.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Check each verb form and each comparative or superlative against its dictionary entry; adjectives that take more or most must not be given invented -er or -est forms."
+    },
+    {
+      "id": "1.5",
+      "summary": "Technical nouns are permitted when they fit one of the 22 technical-noun categories, such as parts, vehicles, tools, materials, facilities, and subject-field terms. The examples in each category illustrate the category and are not a complete vocabulary.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "For each technical noun, establish an applicable category and approved subject-field use. A company glossary entry alone does not authorize a word that fails the standard's terminology requirements."
+    },
+    {
+      "id": "1.6",
+      "summary": "A word absent from the approved dictionary may be used only as a technical noun or as part of one. Any other use needs an approved alternative or a different sentence construction.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["dictionary-word"],
+      "review": "For each flagged unapproved word, confirm it functions as a technical noun or part of a technical noun; a non-technical use must be rewritten."
+    },
+    {
+      "id": "1.7",
+      "summary": "Do not use a technical noun as a verb. Keep it as a noun, or as an adjective inside another technical noun, and rebuild the sentence when an action must be expressed.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Inspect verbs that are also technical nouns, such as oil, snow, or drill; confirm each is either a legitimate technical verb from an approved category or rewrite so the word stays a noun."
+    },
+    {
+      "id": "1.8",
+      "summary": "When the company, industry, or subject field has an approved technical noun for an item or process, use that term instead of an improvised or generic one.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Compare each key technical noun with official parts information or the company terminology source; record and correct any term that disagrees."
+    },
+    {
+      "id": "1.9",
+      "summary": "When no approved technical noun exists, choose one that is short, no more than three words, and easy to understand. Add only modifiers that genuinely help the reader.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Count the words in each newly chosen technical noun; if it exceeds three, shorten it or confirm it is an unavoidable official term that rule 2.2 handles."
+    },
+    {
+      "id": "1.10",
+      "summary": "Do not use regional words, slang, or jargon as technical nouns. Use broadly understood plain terms instead.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Ask whether a reader outside the region or trade would understand each technical noun immediately; replace doubtful terms with plain alternatives."
+    },
+    {
+      "id": "1.11",
+      "summary": "Use a consistent technical noun for the same item throughout the text. Avoid unexplained synonyms or variants, while allowing introduced short forms that meet rule 2.2.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["technical-term"],
+      "review": "When technical-term reports aliases, confirm they denote the same item and choose the approved term; without a glossary, track repeated items and remove noun rotation manually."
+    },
+    {
+      "id": "1.12",
+      "summary": "Technical verbs are permitted only when they fit one of four categories: manufacturing processes; computer processes and applications; instructions and information for applicable subject fields such as engineering, medicine, civil or military operations, navigation, vehicles, and energy; or law and regulations. Prefer an approved dictionary verb that expresses the action, and obey all rules in section 3.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "For each technical verb, name its category, confirm its forms follow section 3, and check whether an approved dictionary verb would express the action better or more clearly."
+    },
+    {
+      "id": "1.13",
+      "summary": "Do not use a technical verb as a noun. Its past participle may serve as an adjective inside a technical noun.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Check verbs used in noun position, such as give it a ream; rewrite so the technical verb stays a verb, while permitting participial adjectives such as reamed hole."
+    },
+    {
+      "id": "1.14",
+      "summary": "Use American English spelling unless a binding publication specification, style guide, or contract requires another variety. Leave quoted text in its original spelling.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Scan for British or mixed spellings and confirm each either matches the required official directive or lies inside unchangeable quoted text."
+    },
+    {
+      "id": "2.1",
+      "summary": "Keep multi-word nouns to three words or fewer. When modifiers would stack beyond three words, use prepositions or restructure the sentence.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Identify each multi-word noun and count its words; split longer groups with prepositions or a clause unless rule 2.2 permits an official longer term."
+    },
+    {
+      "id": "2.2",
+      "summary": "Write a technical noun longer than three words in full at first occurrence, then use a defined shorter form or an approved abbreviation. As an alternative, join related words with hyphens so they act as one unit, but never hyphenate more than three words and never alter hyphens in an approved term.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Confirm the full form appears at first use, the short form or abbreviation is introduced and approved, and hyphens group only related words without hiding a cluster longer than three words."
+    },
+    {
+      "id": "3.1",
+      "summary": "Use only the verb forms listed for that verb in its dictionary entry.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Check irregular and regular verb forms against the dictionary entry; an unlisted form requires a different approved verb or a different construction."
+    },
+    {
+      "id": "3.2",
+      "summary": "Permitted tenses are the infinitive, imperative, simple present, simple past, simple future, and past participle used adjectivally. Present perfect, past perfect, progressive forms, and other complex constructions are excluded.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["present-perfect", "ing-form"],
+      "review": "Present-perfect coverage is partial: also look for past perfect, progressive forms, and modal-plus-auxiliary strings, and rewrite them to a permitted simple tense."
+    },
+    {
+      "id": "3.3",
+      "summary": "A past participle may act as an adjective showing condition, either before a noun or after be, become, or stay. This is not passive voice, and the participle must be an approved or listed form.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Distinguish adjectival participles from passive verbs; confirm each participle appears in the dictionary and describes a condition rather than an action with an agent."
+    },
+    {
+      "id": "3.4",
+      "summary": "Do not build complex verb constructions with auxiliary verbs, including have, has, or had plus a participle and modal or be-to passive strings.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["present-perfect"],
+      "review": "The check catches have, has, or had plus a participle only; also inspect modal be-passives such as can be adjusted or must be installed and rewrite them as simple active or imperative sentences."
+    },
+    {
+      "id": "3.5",
+      "summary": "An -ing word is allowed only as a technical noun or as a modifier inside a technical noun. A small set of approved -ing nouns, adjectives, a pronoun, and a preposition is also permitted. Progressive verbs and free-standing gerunds are not.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["ing-form"],
+      "review": "Treat the check as advisory: confirm each flagged -ing word is an approved dictionary form or part of an approved technical noun, not a progressive verb or a loose participial clause."
+    },
+    {
+      "id": "3.6",
+      "summary": "Write in active voice. Passive voice is allowed only in descriptive writing and only when the agent, the doer of the action, is genuinely unknown. A guessed agent must not replace an unknown-agent passive.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["passive-voice"],
+      "review": "For every passive, identify the agent; keep it only in description when the agent is truly unknown, and rewrite it actively when the agent is known or merely unmentioned. Do not accept irrelevant as the test."
+    },
+    {
+      "id": "3.7",
+      "summary": "If an approved verb exists for the action, use that verb rather than an action noun or another part of speech. If a word is not an approved verb, do not use it as one.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["nominalization"],
+      "review": "For each action noun or nominalized phrase, check whether an approved verb expresses the action and rewrite; retain a noun only when no accurate approved verb exists."
+    },
+    {
+      "id": "4.1",
+      "summary": "Write short, clear, concrete sentences. In description each sentence carries one topic and does not use the imperative; in procedures the instruction goes directly to the reader. Avoid abstract or ambiguous statements.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Read each sentence for a single topic, a concrete action or fact, and the correct procedural or descriptive mood; split or rewrite any sentence that hides the action or carries two ideas."
+    },
+    {
+      "id": "4.2",
+      "summary": "Keep every sentence part. Do not drop nouns, verbs, subjects, or articles, and do not use contractions.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["contraction"],
+      "review": "Beyond contractions, check for elliptical subjects, verbless instructions, and omitted articles; confirm each sentence reads completely on its own."
+    },
+    {
+      "id": "4.3",
+      "summary": "Use a vertical list for complex enumerations or sequences. Introduce it with a colon, mark and capitalize each item, use periods only on full-sentence items, avoid commas or semicolons at item ends, and keep one list level per list.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Inspect the lead-in colon, item markers and capitalization, terminal punctuation, and whether nested or mixed procedure-and-description items break the list."
+    },
+    {
+      "id": "4.4",
+      "summary": "Use approved connecting words and phrases, such as and, but, then, thus, as a result, and at the same time, to link sentences with related topics. Connectors may also introduce necessary explanation or safety links.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Check that each sentence-to-sentence link is explicit and uses an approved connector rather than an unmarked jump or a connector with the wrong logical relation."
+    },
+    {
+      "id": "4.5",
+      "summary": "Use a, an, the, this, or these before a noun or multi-word noun when the reference is specific. Omit articles for general statements and abstract concepts, and do not put the before a noun followed by an alphanumeric identifier.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "For each noun phrase, decide whether it is specific or generic, then confirm the article or demonstrative is present and correct; check identifier constructions such as circuit breaker 36L7."
+    },
+    {
+      "id": "5.1",
+      "summary": "Limit each procedural sentence, including warnings and cautions, to 20 words. Notes are information and instead follow the 25-word descriptive limit.",
+      "applies_to": ["procedure"],
+      "checks": ["long-sentence"],
+      "review": "Classify each over-limit sentence as procedure, safety instruction, or note; confirm notes use the 25-word cap and that splitting did not separate simultaneous actions."
+    },
+    {
+      "id": "5.2",
+      "summary": "Write one instruction per sentence unless two or more actions genuinely occur at the same time. Separate sequential actions into distinct work steps. A work step may contain more than one sentence when actions are simultaneous or a result immediately follows the action.",
+      "applies_to": ["procedure"],
+      "checks": [],
+      "review": "For each compound instruction, decide whether the actions are simultaneous, which is permitted, or sequential, which requires splitting; also confirm test limits and immediate results stay with their action."
+    },
+    {
+      "id": "5.3",
+      "summary": "Write instructions as imperatives. Use must before an imperative only in a safety instruction or for an important condition.",
+      "applies_to": ["procedure"],
+      "checks": [],
+      "review": "Confirm every work-step verb is imperative and that any must is justified by safety or a critical condition rather than ordinary obligation."
+    },
+    {
+      "id": "5.4",
+      "summary": "When a condition must be known first, put the condition before the command and separate it with a comma. Comma placement can change which verb an adverb modifies.",
+      "applies_to": ["procedure"],
+      "checks": [],
+      "review": "Check condition-first order and the comma boundary in each conditional instruction, and confirm the comma does not shift an adverb onto the wrong verb."
+    },
+    {
+      "id": "5.5",
+      "summary": "Notes give information only: no instructions, requirements, limits, or tolerances. They follow descriptive rules, each sentence may have up to 25 words, and notes in descriptions are limited to illustrations or tables.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Remove any note that contains an imperative, a limit, or a requirement; confirm the procedure remains executable without its notes, and that a description note is limited to an illustration or table."
+    },
+    {
+      "id": "6.1",
+      "summary": "In descriptive writing, introduce information gradually, with one subject or idea per sentence, and make the relationship between sentences explicit.",
+      "applies_to": ["description"],
+      "checks": [],
+      "review": "Check that each descriptive sentence adds one idea and that no sentence compresses multiple relationships the reader must untangle."
+    },
+    {
+      "id": "6.2",
+      "summary": "Use repeated key words and key phrases to connect ideas and give descriptive text a logical structure. Keep those terms unchanged across the text.",
+      "applies_to": ["description"],
+      "checks": [],
+      "review": "Trace the key terms across sentences and paragraphs; flag synonym shifts that break the verbal thread, even when no glossary is configured."
+    },
+    {
+      "id": "6.3",
+      "summary": "Limit each descriptive sentence to 25 words.",
+      "applies_to": ["description"],
+      "checks": ["long-sentence"],
+      "review": "Confirm that sentences the check does not classify, especially headings, table cells, and parenthetical text, are counted under the descriptive 25-word limit."
+    },
+    {
+      "id": "6.4",
+      "summary": "Use paragraphs to group related information in descriptive writing. Start with a topic sentence and keep the paragraph's sequence logical.",
+      "applies_to": ["description"],
+      "checks": [],
+      "review": "Check that each paragraph opens with a topic sentence and that every following sentence supports that topic in a logical order."
+    },
+    {
+      "id": "6.5",
+      "summary": "Each descriptive paragraph must cover only one topic.",
+      "applies_to": ["description"],
+      "checks": [],
+      "review": "State each paragraph's topic in one phrase; split the paragraph if a second topic appears."
+    },
+    {
+      "id": "6.6",
+      "summary": "No paragraph may contain more than six sentences. Divide longer paragraphs into smaller ones.",
+      "applies_to": ["description"],
+      "checks": ["paragraph-length"],
+      "review": "Confirm the check's paragraph boundaries match the document's real blocks and that lists or headings are not miscounted as sentences."
+    },
+    {
+      "id": "7.1",
+      "summary": "Use warning for a risk of injury or death and caution for a risk of damage. When both risks exist, use warning. Other industries' signal words or symbols are acceptable only if the content still meets rules 7.1 through 7.3.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Perform a risk analysis for each safety instruction: identify injury or death versus equipment damage, and change the signal word when it understates or overstates the risk."
+    },
+    {
+      "id": "7.2",
+      "summary": "Begin a safety instruction with a clear, accurate command or, when the reader must know it first, the condition.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Confirm the first clause is an actionable command or prerequisite condition, not an abstract statement or a buried instruction."
+    },
+    {
+      "id": "7.3",
+      "summary": "Explain the risk or possible result so the reader understands why the safety instruction matters.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Check that each safety instruction states the consequence, such as injury, death, damage, or malfunction, in concrete terms rather than a general warning."
+    },
+    {
+      "id": "8.1",
+      "summary": "Do not use the semicolon. Split the text into separate sentences instead.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["semicolon"],
+      "review": "For each semicolon, confirm the replacement is two grammatical sentences with the relationship made explicit, not a comma splice."
+    },
+    {
+      "id": "8.2",
+      "summary": "Use hyphens to join words that are directly related: compound adjectives before nouns, two-word fractions or numbers, letter-or-number plus noun shapes, verbs whose first part is another part of speech, and vowel-boundary prefixes. A hyphen is not a dash.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Check that each hyphen joins a genuine unit and that no dash, range, or pause has been written as a hyphen."
+    },
+    {
+      "id": "8.3",
+      "summary": "Parentheses are permitted for illustration or text references, item identifiers, work-step numbers, abbreviations, singular and plural pairs, explanations, and alternatives.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "Classify each parenthetical use against the seven permitted purposes; rewrite parentheses used for asides, emphasis, or unlisted content."
+    },
+    {
+      "id": "8.4",
+      "summary": "In a vertical list the colon acts like a period: the lead-in and each item are separate sentences subject to the 20-word procedural or 25-word descriptive limit.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["long-sentence"],
+      "review": "Count the lead-in before the colon and each list item independently against the applicable cap."
+    },
+    {
+      "id": "8.5",
+      "summary": "Parenthetical text counts as one word in its host sentence, but the words inside it also form a separate sentence that must be counted separately. Parenthetical identifiers and abbreviations count as one word.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["long-sentence"],
+      "review": "Confirm the counter treated the parenthesis as one word in the host sentence and separately counted the inner sentence; inspect any parenthetical that was not measured."
+    },
+    {
+      "id": "8.6",
+      "summary": "Count each number, number plus unit, abbreviation, alphanumeric identifier, quoted text, title, heading, placard or label text, and proper noun of a person, group, organization, or geopolitical entity as one word. Do not count paragraph or work-step numbers.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["long-sentence"],
+      "review": "Check number-plus-unit pairs, identifiers, names and titles, and configured glossary spans as one word; where the counter lacks a source, count them manually."
+    },
+    {
+      "id": "8.7",
+      "summary": "A hyphenated word, or a hyphenated group functioning as one unit, counts as one word for sentence length.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["long-sentence"],
+      "review": "Confirm hyphenated compounds were counted once, including long hyphenated technical-noun units."
+    },
+    {
+      "id": "9.1",
+      "summary": "When replacing an unapproved word with an approved one would change the part of speech or the meaning, rewrite the sentence instead of forcing a word-for-word substitution.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "For each proposed replacement, check that the approved word preserves both the part of speech and the intended meaning; rewrite if either changes."
+    },
+    {
+      "id": "9.2",
+      "summary": "Use approved words with their dictionary-approved meaning and part of speech. Restricted meanings do not extend to other standard-English senses.",
+      "applies_to": ["procedure", "description"],
+      "checks": [],
+      "review": "For every approved word used in a shifted or figurative sense, compare the dictionary's approved meaning and part of speech, then replace or restructure."
+    },
+    {
+      "id": "9.3",
+      "summary": "Do not combine a verb and a preposition or particle into a phrasal verb with a new meaning. A few listed phrasal verbs are approved only with restricted meanings.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["phrasal-verb"],
+      "review": "Inspect verb-plus-particle combinations the check misses, including literal-looking ones, and confirm they are either approved with the intended restricted meaning or replaced by a single verb."
+    },
+    {
+      "id": "9.4",
+      "summary": "Use consistent terminology and wording. In particular, use the same wording whenever the same type of work step recurs; descriptions must maintain correct wording and a logical structure.",
+      "applies_to": ["procedure", "description"],
+      "checks": ["technical-term"],
+      "review": "Compare repeated instructions and references to the same concepts for consistent wording. For descriptions, also review sentence use and logical structure; glossary aliases alone do not establish consistency."
+    }
+  ]
+}

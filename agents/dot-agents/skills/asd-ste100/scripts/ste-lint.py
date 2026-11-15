@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Deterministic linter for the structural STE rules in SKILL.md.
-
-Checks only rules verifiable without ASD's dictionary. Deliberately never
-flags hedges or modality (may/might/could): the skill treats confidence as
-content, and a linter that pressures hedges out would rewrite claims.
+"""Clarity lint and assisted ASD-STE100 Issue 9 review, not certification.
 
 Usage:
-    ste-lint.py FILE [FILE ...]
-    echo "text" | ste-lint.py [--json]
-    ste-lint.py --baseline 5 FILE      # pass unless hard violations exceed 5
-    ste-lint.py --disable passive-voice,present-perfect FILE
+    ste-lint.py FILE [FILE ...]                 # lightweight clarity checks
+    ste-lint.py --mode ste --dictionary LOCAL.json --terminology TERMS.json FILE
+    ste-lint.py --mode ste --json FILE          # reports missing vocabulary
+    ste-lint.py --list-rules [--json]           # all 53 official rule IDs
     ste-lint.py --selftest
 
-Exit 1 when hard ("advisory-free") violations exceed the baseline (default 0).
-Advisory findings (passive voice, compound tenses) never fail the run.
-Exit 2 on a usage error (unknown flag, bad value, unknown rule, unreadable file).
+STE mode checks supported patterns and local vocabulary, then requires review
+of meaning, grammar, terminology qualifications, document structure, and safety.
+It never turns a clean pattern scan into a claim of complete STE compliance.
+
+Exit 0: clarity checks within baseline. Exit 1: hard findings exceed baseline.
+Exit 2: invalid input/configuration. Exit 3: STE review remains required.
+Baselines and disabled rules are available only in clarity mode.
 """
 import argparse
 import bisect
@@ -26,6 +26,9 @@ import os
 import re
 import sys
 import tempfile
+from pathlib import Path
+
+from ste_vocabulary import Vocabulary
 
 # ponytail: regex heuristics, not a parser. No noun-cluster rule — needs POS
 # tagging to avoid constant false positives; add spaCy-backed rule if ever needed.
@@ -122,6 +125,8 @@ CONJUNCTION_END = re.compile(r"\b(?:and|or)\s*$", re.I)
 TABLE_SEPARATOR_CELL = re.compile(r"^:?-+:?$")
 # Headings, thematic breaks, front-matter delimiters, and HTML lines stand alone.
 STANDALONE_LINE = re.compile(r"^ {0,3}(?:#|<|(?:[-*_=] *){3,}$)")
+# A link reference definition ("[label]: destination") is markup, not prose.
+REFERENCE_DEFINITION = re.compile(r"^ {0,3}\[[^\]\n]+\]:[ \t]*\S")
 BLOCKQUOTE_PREFIX = re.compile(r"^ {0,3}(?:> ?)+")
 # A GitHub alert marker, alone on the first line of a quote: "> [!NOTE]".
 GITHUB_ALERT = re.compile(r"\[!(?:note|tip|important|warning|caution)\]", re.I)
@@ -146,6 +151,98 @@ ABBREVIATIONS = {"vs.", "cf.", "approx.", "mr.", "mrs.", "ms.", "dr.", "fig.", "
 # Dotted initialisms such as "e.g." and "U.S." end a sentence only when the
 # next word starts with a capital letter.
 DOTTED_ABBREVIATION = re.compile(r"(?:[a-z]\.){2,}", re.I)
+
+# These checks are specific to the assisted STE profile. A progressive-looking
+# construction is advisory: approved technical nouns can also end in "-ing".
+STE_CONTRACTION = re.compile(
+    r"\b(?:\w+n['’]t|(?:i|you|we|they|he|she|it|that|there|here|what|who|where|when|why|how)"
+    r"['’](?:m|re|ve|ll|d|s)|let['’]s)\b", re.I)
+STE_PROGRESSIVE = re.compile(
+    r"\b(?:am|is|are|was|were|be|been|being)\s+(?:\w+ly\s+)?\w+ing\b", re.I)
+STE_PERFECT = re.compile(
+    r"\b(?:has|have|had)\s+(?:been\s+)?(?:\w+(?:ed|en)|" + IRREGULAR_PARTICIPLES + r")\b", re.I)
+# A straight or curly apostrophe that is followed by a letter belongs to the
+# word ("Pilot's"); only an apostrophe that ends before a non-word character
+# closes the quoted span.
+STE_QUOTED = re.compile(
+    r'''"[^"]*"|“[^”]*”|(?<!\w)'(?:[^'\n]|'(?=\w))*'(?!\w)|‘[^\n]*?’(?!\w)''')
+# A masked-only line (for example, a line that holds one code span) is a hard
+# prose boundary. Three spaces in the joined block make _is_soft_separator
+# reject a multi-word match across it without adding a word.
+STE_HARD_GAP = " "
+
+
+def _ste_regions(text, vocabulary=None):
+    """Return non-overlapping counted-as-one spans and parenthetical bodies.
+
+    Unmarked titles, names, formulas, labels, and quantities need glossary
+    configuration or review. Capitalization alone does not prove an exemption.
+    """
+    quoted = [(m.start(), m.end()) for m in STE_QUOTED.finditer(text)]
+    quote_starts = {start: end for start, end in quoted}
+    stack, parentheses = [], []
+    index = 0
+    while index < len(text):
+        if index in quote_starts:
+            index = quote_starts[index]
+            continue
+        if text[index] == "(":
+            stack.append(index)
+        elif text[index] == ")" and stack:
+            start = stack.pop()
+            # A masked link destination leaves "()" with no prose inside. It is
+            # not a parenthetical counting unit or a separate sentence.
+            if any(char.isalnum() for char in text[start + 1:index]):
+                parentheses.append((start, index + 1))
+        index += 1
+    spans = quoted + parentheses
+    if vocabulary is not None:
+        spans += vocabulary.spans(text)
+    outer, end = [], -1
+    for start, stop in sorted(spans, key=lambda span: (span[0], -span[1])):
+        if start >= end:
+            outer.append((start, stop))
+            end = stop
+    return outer, parentheses
+
+
+def _ste_count_words(text, vocabulary=None):
+    spans, _ = _ste_regions(text, vocabulary)
+    pieces, previous = [], 0
+    for start, end in spans:
+        pieces.extend((text[previous:start], " counted-unit "))
+        previous = end
+    pieces.append(text[previous:])
+    return _count_words("".join(pieces))
+
+
+def _ste_sentence_counts(text, vocabulary=None):
+    """Yield (source start, source end, count), including text in parentheses."""
+    spans, parentheses = _ste_regions(text, vocabulary)
+    # Equal-length masking prevents punctuation inside a quoted label or
+    # parenthesis from splitting the surrounding sentence.
+    masked = list(text)
+    for start, end in spans:
+        masked[start:end] = "x" + " " * (end - start - 1)
+    starts = _sentence_starts("".join(masked))
+    for start, end in zip(starts, starts[1:] + [len(text)]):
+        if text[start:end].strip():
+            yield start, end, _ste_count_words(text[start:end], vocabulary)
+    for start, end in sorted(parentheses):
+        body = text[start + 1:end - 1]
+        # Rule 8.5 makes parenthetical text a separate sentence, but a
+        # parenthetical identifier or abbreviation is one word in the host
+        # sentence and must not add a sentence or trigger 6.6.
+        if _ste_count_words(body, vocabulary) <= 1:
+            continue
+        body_spans, _ = _ste_regions(body, vocabulary)
+        masked_body = list(body)
+        for left, right in body_spans:
+            masked_body[left:right] = "x" + " " * (right - left - 1)
+        starts = _sentence_starts("".join(masked_body))
+        for left, right in zip(starts, starts[1:] + [len(body)]):
+            if body[left:right].strip():
+                yield start + 1 + left, start + 1 + right, _ste_count_words(body[left:right], vocabulary)
 
 
 def _word_re(base):
@@ -593,7 +690,7 @@ def _sentence_starts(text):
     return starts
 
 
-def _long_sentence_findings(pieces, filename, max_words=MAX_WORDS):
+def _long_sentence_findings(pieces, filename, max_words=MAX_WORDS, *, mode="clarity", vocabulary=None):
     """Flag long sentences in one prose block.
 
     pieces is a list of (lineno, source_column, text) tuples. The texts are
@@ -606,9 +703,13 @@ def _long_sentence_findings(pieces, filename, max_words=MAX_WORDS):
         position += len(text) + 1
     joined = " ".join(text for _, _, text in pieces)
     findings = []
-    starts = _sentence_starts(joined)
-    for start, end in zip(starts, starts[1:] + [len(joined)]):
-        n = _count_words(joined[start:end])
+    if mode == "ste":
+        sentences = _ste_sentence_counts(joined, vocabulary)
+    else:
+        starts = _sentence_starts(joined)
+        sentences = ((start, end, _count_words(joined[start:end]))
+                     for start, end in zip(starts, starts[1:] + [len(joined)]))
+    for start, end, n in sentences:
         if n <= max_words:
             continue
         index = bisect.bisect_right(offsets, start) - 1
@@ -619,6 +720,58 @@ def _long_sentence_findings(pieces, filename, max_words=MAX_WORDS):
                          "rule": "long-sentence", "level": "advisory-free",
                          "match": f"{n} words",
                          "message": f"Sentence has {n} words (cap {max_words}). Split it."})
+    return findings
+
+
+def _ste_block_findings(pieces, filename, text_type, vocabulary):
+    """Check prose using the existing Markdown parser's source coordinates."""
+    if not pieces:
+        return []
+    joined = " ".join(piece[2] for piece in pieces)
+    offsets, position = [], 0
+    for _, _, text in pieces:
+        offsets.append(position)
+        position += len(text) + 1
+    findings = []
+
+    def add(start, rule, level, match, message):
+        index = bisect.bisect_right(offsets, start) - 1
+        lineno, column, _ = pieces[index]
+        findings.append({"file": filename, "line": lineno,
+                         "col": column + start - offsets[index] + 1,
+                         "rule": rule, "level": level, "match": match, "message": message})
+
+    for rule, level, pattern, message in RULES:
+        if rule in {"marketing-adjective", "synonym-rotation"}:
+            continue
+        if rule == "present-perfect":
+            pattern = STE_PERFECT
+            message = ("Possible complex verb construction (3.2/3.4). Preserve uncertainty "
+                       "when rewriting; a modal does not exempt a perfect construction.")
+        elif rule == "passive-voice":
+            message = ("Possible passive voice (3.6). Use active voice in procedures. "
+                       "In descriptions, establish whether the agent is unknown. "
+                       "A participial adjective is not passive voice.")
+        for match in pattern.finditer(joined):
+            add(match.start(), rule, level, match.group(), message)
+    for rule, level, pattern, message in (
+        ("contraction", "advisory-free", STE_CONTRACTION,
+         "Write the contraction in full (4.2). Preserve its obligation and uncertainty."),
+        ("ing-form", "advisory", STE_PROGRESSIVE,
+         "Possible progressive verb (3.5). Verify whether this is a verb or an approved technical noun."),
+    ):
+        for match in pattern.finditer(joined):
+            add(match.start(), rule, level, match.group(), message)
+    if text_type == "description":
+        count = sum(1 for _ in _ste_sentence_counts(joined, vocabulary))
+        if count > 6:
+            start = len(joined) - len(joined.lstrip())
+            add(start, "paragraph-length", "advisory-free", f"{count} sentences",
+                "A descriptive paragraph has more than six sentences (6.6). Divide it by topic.")
+    if vocabulary is not None:
+        for finding in vocabulary.scan(joined):
+            add(finding["start"], finding["rule"], finding["level"],
+                finding["match"], finding["message"])
     return findings
 
 
@@ -1012,9 +1165,11 @@ def _front_matter(text):
     return "\n" * (end + 1) + "\n".join(lines[end + 1:]), pieces
 
 
-def lint(text, filename="<stdin>", *, text_type="description"):
+def lint(text, filename="<stdin>", *, text_type="description", mode="clarity", vocabulary=None):
     if text_type not in {"description", "procedure"}:
         raise ValueError("text_type must be description or procedure")
+    if mode not in {"clarity", "ste"}:
+        raise ValueError("mode must be clarity or ste")
     max_words = 20 if text_type == "procedure" else MAX_WORDS
     text, description = _front_matter(text)
     findings = []
@@ -1044,11 +1199,24 @@ def lint(text, filename="<stdin>", *, text_type="description"):
     span_end, span_runs = -1, {}
 
     def flush():
-        findings.extend(_long_sentence_findings(block, filename, max_words))
+        nonlocal words_total
+        findings.extend(_long_sentence_findings(
+            block, filename, max_words, mode=mode, vocabulary=vocabulary))
+        if mode == "ste" and block:
+            words_total += _ste_count_words(" ".join(piece[2] for piece in block), vocabulary)
+            findings.extend(_ste_block_findings(block, filename, text_type, vocabulary))
         block.clear()
 
     def check(lineno, segment, source_column, line, skip, is_table):
         nonlocal words_total
+        if mode == "ste":
+            if line[skip:].strip():
+                block.append((lineno, source_column + skip, line[skip:]))
+            elif segment[skip:].strip():
+                # The line had prose, but masking removed it all (a code-only
+                # line). Keep a hard boundary so a phrase cannot match across it.
+                block.append((lineno, source_column + skip, STE_HARD_GAP))
+            return
         words_total += len(line.split())
         for rule_id, level, pattern, msg in RULES:
             for m in pattern.finditer(line):
@@ -1193,6 +1361,10 @@ def lint(text, filename="<stdin>", *, text_type="description"):
         is_quote = bool(quote)
         # judge block boundaries on the text inside any blockquote prefix
         content = raw_line[quote.end():] if quote else raw_line
+        # A definition that starts a block is markup; a paragraph cannot be
+        # interrupted by one, so the same text in a paragraph is prose.
+        reference_definition = (not was_paragraph
+                                and bool(REFERENCE_DEFINITION.match(content)))
         # a GitHub alert marker is a label that stands alone, as a heading does.
         # Accept it only in an unindented quote of one level after a blank line,
         # a fence, or at the start of the text. Elsewhere a list item or a lazy
@@ -1210,7 +1382,10 @@ def lint(text, filename="<stdin>", *, text_type="description"):
         in_quote = is_quote
         after_boundary = not raw_line.strip()
         for segment, source_column in segments:
-            if in_html:
+            if reference_definition and not is_table:
+                # A link reference definition is markup, not prose.
+                line = " " * len(segment)
+            elif in_html:
                 # an HTML block has no Markdown links; backtick pairs stay blanked
                 line = _mask_non_prose(_mask_inline_code(segment))
             elif is_table:
@@ -1253,23 +1428,76 @@ def lint(text, filename="<stdin>", *, text_type="description"):
                                  "rule": "synonym-rotation", "level": "advisory-free",
                                  "match": match,
                                  "message": f"'{base}' and '{first_base}' name the same action. Pick one and use it every time."})
-    findings.extend(_dangling_conjunction_findings(text, filename))
+    if mode == "clarity":
+        findings.extend(_dangling_conjunction_findings(text, filename))
     findings.sort(key=lambda f: (f["line"], f["col"]))
     return findings, words_total
 
 
-def report(findings, words_total, as_json, hard_count, baseline):
+def _load_rule_catalog():
+    path = Path(__file__).resolve().parents[1] / "references" / "rule-coverage.json"
+    with path.open(encoding="utf-8") as source:
+        catalog = json.load(source)
+    expected = {f"{section}.{rule}"
+                for section, size in enumerate((14, 2, 7, 5, 5, 6, 3, 7, 4), 1)
+                for rule in range(1, size + 1)}
+    rules = catalog["rules"]
+    if len(rules) != 53 or {rule["id"] for rule in rules} != expected:
+        raise ValueError(f"{path}: expected all 53 unique Issue 9 rule IDs")
+    return catalog
+
+
+def _review_coverage(catalog, text_type, vocabulary):
+    available = RULE_IDS - {"marketing-adjective", "synonym-rotation", "dangling-conjunction"}
+    gaps = []
+    if not vocabulary.dictionary_loaded:
+        available -= {"dictionary-word"}
+        gaps.append("Official dictionary not supplied: vocabulary membership was not checked.")
+    if not vocabulary.terminology_loaded:
+        available -= {"technical-term"}
+        gaps.append("Project terminology not supplied: technical-term approval was not established.")
+    rules = []
+    for rule in catalog["rules"]:
+        checks = [check for check in rule["checks"] if check in available]
+        applicable = text_type in rule["applies_to"]
+        rules.append({**rule, "automatic_checks": checks if applicable else [],
+                      "coverage": "partial" if applicable and checks else "review-required",
+                      "applicable": applicable})
+    return {**catalog, "rules": rules, "gaps": gaps,
+            "dictionary": "supplied" if vocabulary.dictionary_loaded else "missing",
+            "terminology": "supplied" if vocabulary.terminology_loaded else "missing"}
+
+
+def report(findings, words_total, as_json, hard_count, baseline, *, mode="clarity", coverage=None):
     rate = round(len(findings) * 100 / words_total, 1) if words_total else 0.0
+    result = {"violations": findings, "count": len(findings),
+              "hard_count": hard_count, "baseline": baseline,
+              "words": words_total, "per_100_words": rate, "mode": mode,
+              "compliance": "not-verified",
+              "status": ("violations-found" if hard_count > baseline else
+                         "review-required" if mode == "ste" else "clarity-checks-passed")}
+    if coverage is not None:
+        result["coverage"] = coverage
+        result["review_required"] = [
+            {"id": rule["id"], "review": rule["review"]}
+            for rule in coverage["rules"] if rule["applicable"]]
     if as_json:
-        print(json.dumps({"violations": findings, "count": len(findings),
-                          "hard_count": hard_count, "baseline": baseline,
-                          "words": words_total, "per_100_words": rate}, indent=2))
+        print(json.dumps(result, indent=2))
         return
     for f in findings:
-        print(f"{f['file']}:{f['line']}:{f['col']} {f['rule']}: {f['message']} [{f['match']}]")
-    print(f"\n{len(findings)} violations ({hard_count} hard, baseline {baseline}), "
+        official = f" (STE {', '.join(f['ste_rules'])})" if f.get("ste_rules") else ""
+        print(f"{f['file']}:{f['line']}:{f['col']} {f['rule']}{official}: {f['message']} [{f['match']}]")
+    print(f"\n{len(findings)} findings ({hard_count} hard, baseline {baseline}), "
           f"{words_total} words, {rate} per 100 words")
-    print("Hedges/modality (may, might, could) are never flagged: confidence is content.")
+    if coverage is None:
+        print("Clarity checks only. STE compliance is not verified. Hedges/modality are preserved.")
+        return
+    for gap in coverage["gaps"]:
+        print(f"Missing source: {gap}")
+    print("STE compliance is not verified. Review required against all applicable Issue 9 rules:")
+    for rule in coverage["rules"]:
+        if rule["applicable"]:
+            print(f"  {rule['id']} [{rule['coverage']}]: {rule['review']}")
 
 
 def selftest():
@@ -1998,7 +2226,8 @@ def selftest():
 
 
 RULE_IDS = {rule_id for rule_id, *_ in RULES} | {
-    "long-sentence", "synonym-rotation", "dangling-conjunction"}
+    "long-sentence", "synonym-rotation", "dangling-conjunction",
+    "contraction", "paragraph-length", "ing-form", "dictionary-word", "technical-term"}
 
 
 def _rule_list(value):
@@ -2024,9 +2253,15 @@ def _non_negative_int(value):
 def main(argv):
     parser = argparse.ArgumentParser(
         prog="ste-lint.py", allow_abbrev=False,
-        description="Deterministic linter for the structural STE rules. "
-                    "Reads stdin when no FILE is given.")
+        description="Clarity lint or assisted ASD-STE100 Issue 9 review; not certification. "
+                    "Reads stdin when no FILE is given.",
+        epilog="Exit codes: 0 clarity pass; 1 hard findings; 2 usage/input error; 3 STE review required.")
     parser.add_argument("paths", nargs="*", metavar="FILE")
+    parser.add_argument("--mode", choices=("clarity", "ste"), default="clarity",
+                        help="clarity (default) or assisted STE review")
+    parser.add_argument("--dictionary", metavar="JSON", help="local Issue 9 dictionary export")
+    parser.add_argument("--terminology", metavar="JSON", help="approved project technical nouns/verbs")
+    parser.add_argument("--list-rules", action="store_true", help="list all 53 Issue 9 rules and review criteria")
     parser.add_argument("--text-type", choices=("description", "procedure"),
                         default="description", help="sentence cap: description 25, procedure 20")
     parser.add_argument("--json", action="store_true", help="print findings as JSON")
@@ -2043,6 +2278,26 @@ def main(argv):
         return 0
     as_json, baseline, paths = args.json, args.baseline, args.paths
     disabled = set().union(*args.disable)
+    if args.mode == "ste" and (baseline or disabled):
+        parser.error("STE review does not permit --baseline or --disable; use --mode clarity for selective lint")
+    if args.mode == "clarity" and (args.dictionary or args.terminology):
+        parser.error("--dictionary and --terminology require --mode ste")
+    try:
+        catalog = _load_rule_catalog() if args.mode == "ste" or args.list_rules else None
+        vocabulary = Vocabulary(args.dictionary, args.terminology) if args.mode == "ste" else None
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError) as error:
+        parser.error(str(error))
+    if args.list_rules:
+        if args.json:
+            print(json.dumps(catalog, indent=2))
+        else:
+            print(f"ASD-STE100 Issue 9: {len(catalog['rules'])} rules. Automatic coverage is partial.")
+            for rule in catalog["rules"]:
+                checks = ", ".join(rule["checks"]) or "review only"
+                print(f"{rule['id']}: {rule['summary']} [{checks}]")
+                print(f"  Review: {rule['review']}")
+        return 0
+    coverage = _review_coverage(catalog, args.text_type, vocabulary) if catalog else None
 
     findings, words_total = [], 0
     if paths:
@@ -2050,18 +2305,29 @@ def main(argv):
             try:
                 with open(p, encoding="utf-8") as fh:
                     text = fh.read()
-            except OSError as e:
-                parser.error(f"cannot read {p}: {e.strerror}")
-            f, w = lint(text, filename=p, text_type=args.text_type)
+            except (OSError, UnicodeError) as e:
+                parser.error(f"cannot read {p}: {e}")
+            f, w = lint(text, filename=p, text_type=args.text_type, mode=args.mode, vocabulary=vocabulary)
             findings.extend(f)
             words_total += w
     else:
-        findings, words_total = lint(sys.stdin.read(), text_type=args.text_type)
+        try:
+            text = sys.stdin.read()
+        except UnicodeError as error:
+            parser.error(f"cannot read stdin as text: {error}")
+        findings, words_total = lint(text, text_type=args.text_type, mode=args.mode, vocabulary=vocabulary)
 
     findings = [f for f in findings if f["rule"] not in disabled]
+    if catalog:
+        for finding in findings:
+            finding["ste_rules"] = [rule["id"] for rule in catalog["rules"]
+                                    if finding["rule"] in rule["checks"]
+                                    and args.text_type in rule["applies_to"]]
     hard_count = sum(1 for f in findings if f["level"] == "advisory-free")
-    report(findings, words_total, as_json, hard_count, baseline)
-    return 1 if hard_count > baseline else 0
+    report(findings, words_total, as_json, hard_count, baseline, mode=args.mode, coverage=coverage)
+    if hard_count > baseline:
+        return 1
+    return 3 if args.mode == "ste" else 0
 
 
 if __name__ == "__main__":
