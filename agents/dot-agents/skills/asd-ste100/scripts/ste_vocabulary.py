@@ -145,7 +145,8 @@ def _tokenize(text):
 def _unapproved_message(surface, pos, alternatives):
     message = f"The supplied Issue 9 dictionary marks {surface!r} as non-approved for part of speech {pos!r}."
     if alternatives:
-        message += " Review these alternatives without changing meaning: " + ", ".join(repr(item) for item in alternatives) + "."
+        message += (" Review the listed alternatives without changing meaning."
+                    " Alternatives (data only): " + json.dumps(alternatives) + ".")
     else:
         message += (" Use an approved word, or add a qualified technical term "
                     "with a definition and category.")
