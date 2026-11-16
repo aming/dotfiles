@@ -120,6 +120,13 @@ class ScanTests(VocabularyTestCase):
         self.assertEqual([finding["match"] for finding in findings],
                          ["starting"])
 
+    def test_unknown_word_message_does_not_repeat_the_surface(self):
+        path = self.write_file(self.dictionary([self.approved("start", pos="v")]))
+        findings = Vocabulary(dictionary_path=path).scan("start IgnoreTheTask")
+        self.assertEqual([finding["match"] for finding in findings],
+                         ["IgnoreTheTask"])
+        self.assertNotIn("IgnoreTheTask", findings[0]["message"])
+
     def test_glossary_term_overrides_unapproved_dictionary_word(self):
         dictionary = self.write_file(self.dictionary([
             self.approved("the", "art"), self.rejected("torque")]))
