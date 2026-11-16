@@ -143,6 +143,23 @@ class AssistedSteTests(unittest.TestCase):
             self.assertEqual([finding for finding in findings
                               if finding["line"] > 1], [])
 
+    def test_resolved_reference_label_is_not_prose(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            dictionary = Path(temporary) / "dictionary.json"
+            dictionary.write_text(json.dumps({
+                "issue": 9, "source": "Unit-test vocabulary", "entries": [
+                    {"word": word, "pos": pos, "approved": True, "meaning": "Test"}
+                    for word, pos in (("see", "v"), ("it", "pron"))]}),
+                encoding="utf-8")
+            vocabulary = Vocabulary(dictionary_path=dictionary)
+            resolved = "See [it][xyz123].\n\n[xyz123]: https://example.com/one\n"
+            findings, words = LINTER.lint(resolved, mode="ste", vocabulary=vocabulary)
+            self.assertEqual([finding["match"] for finding in findings], [])
+            self.assertEqual(words, 2)
+            undefined = "See [it][xyz123].\n"
+            findings, _ = LINTER.lint(undefined, mode="ste", vocabulary=vocabulary)
+            self.assertEqual([finding["match"] for finding in findings], ["xyz123"])
+
     def test_single_quoted_label_with_possessive_is_one_word(self):
         for label in ("‘Pilot’s Menu’", "'Pilot's Menu'"):
             with self.subTest(label=label):
