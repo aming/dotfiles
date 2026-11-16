@@ -915,7 +915,7 @@ _BLOCK_TAGS = (
 HTML_BLOCK_KINDS = [
     (re.compile(r"^ {0,3}<(?:script|pre|style|textarea)(?:\s|>|$)", re.I),
      re.compile(r"</(?:script|pre|style|textarea)>", re.I)),
-    (re.compile(r"^ {0,3}<!--"), re.compile(r"-->")),
+    (re.compile(r"^ {0,3}<!--"), re.compile(r"--!?>")),
     (re.compile(r"^ {0,3}<\?"), re.compile(r"\?>")),
     (re.compile(r"^ {0,3}<!\[CDATA\["), re.compile(r"\]\]>")),
     (re.compile(r"^ {0,3}<![A-Za-z]"), re.compile(r">")),
