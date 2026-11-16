@@ -126,7 +126,7 @@ TABLE_SEPARATOR_CELL = re.compile(r"^:?-+:?$")
 # Headings, thematic breaks, front-matter delimiters, and HTML lines stand alone.
 STANDALONE_LINE = re.compile(r"^ {0,3}(?:#|<|(?:[-*_=] *){3,}$)")
 # A link reference definition ("[label]: destination") is markup, not prose.
-REFERENCE_DEFINITION = re.compile(r"^ {0,3}\[[^\]\n]+\]:[ \t]*\S")
+REFERENCE_DEFINITION = re.compile(r"^ {0,3}\[([^\]\n]+)\]:[ \t]*\S")
 BLOCKQUOTE_PREFIX = re.compile(r"^ {0,3}(?:> ?)+")
 # A GitHub alert marker, alone on the first line of a quote: "> [!NOTE]".
 GITHUB_ALERT = re.compile(r"\[!(?:note|tip|important|warning|caution)\]", re.I)
@@ -318,8 +318,47 @@ def _paragraph_runs(lines, start, depth, list_indent):
     return end, last
 
 
+def _normalize_label(label):
+    """Return LABEL as CommonMark compares link labels: whitespace and case folded."""
+    return " ".join(label.split()).casefold()
+
+
+def _mask_reference_label(masked, line, end, labels):
+    """Mask the label of a full reference link whose link text ends at END.
+
+    LINE[END] is the "]" that closes the link text, and the label is the
+    bracketed text after it. GitHub shows no text for a label that a
+    definition in the document resolves, so it is not prose. The brackets
+    stay, and each label character becomes an underscore, so the link stays
+    one token for the word count. An unknown label is literal text and stays.
+    A label that goes on to the next line stays text too. Return True when a
+    label was masked.
+    """
+    start = end + 1
+    if line[start:start + 1] != "[":
+        return False
+    start += 1
+    stop = start
+    while stop < len(line):
+        if line[stop] == "\\" and stop + 1 < len(line):
+            stop += 2
+            continue
+        if line[stop] in "[]":
+            break
+        stop += 1
+    if stop >= len(line) or line[stop] != "]":
+        return False
+    label = line[start:stop]
+    if not label.strip() or _normalize_label(label) not in labels:
+        return False
+    for index in range(start, stop):
+        if not line[index].isspace():
+            masked[index] = "_"
+    return True
+
+
 def _mask_code_spans(line, open_run, closes_later, lines=(), next_index=0, depth=0, skip=0, carry=None,
-                     brackets=None):
+                     brackets=None, labels=None):
     """Blank the code spans in LINE, also a span that wraps across lines.
 
     OPEN_RUN is the backtick run length of a span still open from an earlier
@@ -334,8 +373,10 @@ def _mask_code_spans(line, open_run, closes_later, lines=(), next_index=0, depth
     paragraph goes on after LINE, so a link must close in it. SKIP is where a
     link from an earlier line ends in LINE. When a link goes on in a later
     line, CARRY gets [lines ahead, column after its ")"]. BRACKETS carries the
-    open "[" marks from line to line of a paragraph. Return (masked line, open
-    run).
+    open "[" marks from line to line of a paragraph. LABELS holds the
+    normalized labels of the reference definitions in the document: the
+    second bracketed part of a full reference link is markup only when its
+    label is one of them (CommonMark 6.3). Return (masked line, open run).
     """
     masked = list(line)
     start = 0 if open_run else None
@@ -358,6 +399,7 @@ def _mask_code_spans(line, open_run, closes_later, lines=(), next_index=0, depth
     marks = [m.start() for m in BRACKET.finditer(line) if not _escaped(line, m.start())]
     if brackets is None:
         brackets = [[], 0]
+    labels = labels or frozenset()
     # BRACKETS[0] holds the "[" marks of the paragraph that no "]" closed yet,
     # True for an image "![". A "[" below BRACKETS[1] is in a link, so it
     # opens no link (CommonMark 6.3); an image "![" can still open an image.
@@ -386,6 +428,7 @@ def _mask_code_spans(line, open_run, closes_later, lines=(), next_index=0, depth
                 stack.append(pos > 0 and line[pos - 1] == "!" and not _escaped(line, pos - 1))
             elif line[pos + 1:pos + 2] != "(" and stack:
                 pop_bracket()  # mask_links reads a "](" mark
+                _mask_reference_label(masked, line, pos, labels)
 
     def take_atoms(limit):
         # Let the autolinks and tags that start before LIMIT start first.
@@ -840,6 +883,26 @@ def _fence_step(fence, line):
     return False, fence
 
 
+def _reference_labels(lines):
+    """Return the normalized labels of the reference definitions in LINES.
+
+    CommonMark 4.7: a definition starts a block, and it can come after the
+    links that use it. The scan reads the text inside any block quote prefix
+    and skips fenced code, which holds no definition. The destination is not
+    checked, so an unusual line that starts with "[label]:" also counts.
+    """
+    labels = set()
+    fence = None
+    for line in lines:
+        is_fence, fence = _fence_step(fence, line)
+        if is_fence or fence is not None:
+            continue
+        definition = REFERENCE_DEFINITION.match(_strip_quotes(line.expandtabs(4))[1])
+        if definition:
+            labels.add(_normalize_label(definition.group(1)))
+    return frozenset(labels)
+
+
 # CommonMark 4.6: how each kind of HTML block starts, and the text that ends it.
 # None: the block ends at a blank line (types 6 and 7).
 _BLOCK_TAGS = (
@@ -1188,6 +1251,8 @@ def lint(text, filename="<stdin>", *, text_type="description", mode="clarity", v
     html_containers = []
     lines = text.splitlines()
     table_cells = _markdown_table_cells(lines)
+    # labels of the reference definitions, so a reference link label is markup
+    labels = _reference_labels(lines)
     # first occurrence of each synonym-group member: (group_idx, base) -> (line, col, match)
     seen_synonyms = {}
     # consecutive prose lines form one block, so wrapped sentences count once
@@ -1395,7 +1460,8 @@ def lint(text, filename="<stdin>", *, text_type="description", mode="clarity", v
                 line = _mask_non_prose(_mask_inline_code(segment))
             elif is_table:
                 # a table cell holds its own spans and links
-                line = _mask_non_prose(_mask_code_spans(segment, 0, lambda run: False)[0])
+                line = _mask_non_prose(
+                    _mask_code_spans(segment, 0, lambda run: False, labels=labels)[0])
             else:
                 skip = 0
                 if link_end and link_end[0] > lineno:
@@ -1405,7 +1471,7 @@ def lint(text, filename="<stdin>", *, text_type="description", mode="clarity", v
                 carry = []
                 masked, open_span = _mask_code_spans(segment, open_span, closes_later, lines, lineno,
                                                      paragraph_depth if in_paragraph else None,
-                                                     skip, carry, open_brackets)
+                                                     skip, carry, open_brackets, labels)
                 if carry:
                     link_end = (lineno + carry[0], carry[1])
                 elif link_end and link_end[0] <= lineno:
