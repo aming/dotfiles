@@ -25,7 +25,7 @@ VERB_CATEGORY_MAX = 4
 
 LEVEL = "advisory-free"
 _UNKNOWN_MESSAGE = (
-    "'{surface}' is not recognized by the supplied Issue 9 dictionary export or "
+    "The word is not recognized by the supplied Issue 9 dictionary export or "
     "project terminology. Review the source's completeness, use an approved "
     "word, or establish a qualified technical term with a definition and category.")
 
@@ -588,7 +588,7 @@ class Vocabulary:
                     "start": start, "end": end,
                     "rule": "dictionary-word", "level": LEVEL,
                     "match": match,
-                    "message": _UNKNOWN_MESSAGE.format(surface=match)})
+                    "message": _UNKNOWN_MESSAGE})
             elif entry.kind in ("unapproved", "alias"):
                 findings.append({
                     "start": start, "end": end,
