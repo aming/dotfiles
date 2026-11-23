@@ -40,6 +40,22 @@
     "should_trigger": false
   },
   {
+    "query": "Can you do this runbook at about 80% ASD-STE100? Full compliance reads like a procedure card and I need people to actually read it.",
+    "should_trigger": true
+  },
+  {
+    "query": "strict STE mode on this evacuation step please, I want the full discipline",
+    "should_trigger": true
+  },
+  {
+    "query": "What is the difference between the 80% mode and strict mode in ASD-STE100?",
+    "should_trigger": false
+  },
+  {
+    "query": "Take 80% of the rows from sales.csv and split them into a validation set.",
+    "should_trigger": false
+  },
+  {
     "query": "Rewrite this marketing copy using ASD-STE100, even if it loses its voice.",
     "should_trigger": true
   }

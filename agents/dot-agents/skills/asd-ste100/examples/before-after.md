@@ -13,9 +13,9 @@ These are illustrative rewrites, not verified compliant documents. Consult the o
 | Verb, not noun | "Perform an inspection of the filter." | "Inspect the filter." | The noun form hides the action and adds a filler verb that carries no meaning. |
 | No phrasal verbs | "Take off the access panel." | "Remove the access panel." | "Take off" also means "depart" and "deduct" — the two words together do not predict the meaning. |
 
-## Part 2 — Clarity Mode Applied to Agent Output
+## Part 2 — 80% Mode Applied to Agent Output
 
-These original examples use clarity mode, not the full STE review contract. They can retain necessary vocabulary and verb constructions that STE does not permit. An explicit STE request also needs the official dictionary, approved project terminology, all applicable rule reviews, and disclosure of remaining issues.
+These original examples use 80% mode, not the full STE review contract. They can retain necessary vocabulary and verb constructions that STE does not permit. An explicit STE request also needs the official dictionary, approved project terminology, all applicable rule reviews, and disclosure of remaining issues.
 
 Word counts below are whitespace-separated tokens (`text.split()`), punctuation not counted separately. A different tokenizer will produce a different number.
 
@@ -52,7 +52,7 @@ Not flagged: "may have occurred" and "could be caused by". The message is writte
 
 **This example is the reason the modality rule exists.** An earlier version of this file rewrote the first sentence as "The request failed", and the third as "an outdated client **is the most common cause**". Both read better. Both are wrong: the first asserts a failure the system only suspects, and the second invents a frequency claim that appears nowhere in the input. A rewrite that supplies a cause, a frequency, or a mechanism has stopped being a rewrite.
 
-Clarity mode retains the compound form to protect meaning. In STE mode, flag the construction under 3.2/3.4, then seek an approved construction with the same uncertainty. If none is established, preserve the source meaning and report that compliance is unresolved.
+80% mode retains the compound form to protect meaning. In STE review, flag the construction under 3.2/3.4, then seek an approved construction with the same uncertainty. If none is established, preserve the source meaning and report that compliance is unresolved.
 
 ### Example C — Inter-agent instruction
 
@@ -65,11 +65,11 @@ Clarity mode retains the compound form to protect meaning. In STE mode, flag the
 - 36 words, over the 20-word instruction cap.
 
 **After:**
-> After the upstream job completes without errors, the downstream agent should read the output artifact. A timeout sometimes produces a partial artifact.
+> After the upstream job completes without errors, the downstream agent should read the output artifact. Partial artifacts are sometimes produced under timeout conditions.
 
-The rewrite preserves "should" as a recommendation and "sometimes" as the stated frequency. It adds no completeness check or waiting instruction.
+The rewrite preserves "should" as a recommendation, "sometimes" as the stated frequency, and the passive because the source does not name who produces a partial artifact. It adds no completeness check or waiting instruction.
 
-### Example D — README prose (clarity mode)
+### Example D — README prose (80% mode)
 
 **Before:**
 > Our caching layer is designed to slot seamlessly into your existing stack with minimal friction and no vendor lock-in; it leverages semantic similarity to dramatically reduce the cache misses that traditionally plague LLM workloads.
@@ -83,10 +83,10 @@ The rewrite preserves "should" as a recommendation and "sometimes" as the stated
 **After:**
 > We designed our cache layer to fit into your current stack without vendor lock-in. It uses semantic similarity to reduce cache misses, a long-standing problem for LLM workloads.
 
-Clarity mode did not force a fixed vocabulary. It removed marketing language and the semicolon, and shortened the sentences. It kept "designed to", because the input states a design goal, not a result.
+80% mode did not force a fixed vocabulary. It removed marketing language and the semicolon, and shortened the sentences. It kept "designed to", because the input states a design goal, not a result.
 
 An earlier version of this file added two facts. It said that a normal cache matches requests by exact text. It also said that this cache stores no data outside your stack. The input states neither fact. A rewrite that adds a fact is no longer a rewrite.
 
 ## How to Read These Examples
 
-Part 1 illustrates selected STE principles. Part 2 illustrates meaning-preserving clarity rewrites. Neither part replaces the complete Issue 9 review or establishes official dictionary compliance.
+Part 1 illustrates selected STE principles. Part 2 illustrates meaning-preserving 80% rewrites. Neither part replaces the complete Issue 9 review or establishes official dictionary compliance.
