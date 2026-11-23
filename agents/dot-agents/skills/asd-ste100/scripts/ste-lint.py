@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
-"""Clarity lint and assisted ASD-STE100 Issue 9 review, not certification.
+"""80% lint and assisted ASD-STE100 Issue 9 review, not certification.
 
 Usage:
-    ste-lint.py FILE [FILE ...]                 # lightweight clarity checks
+    ste-lint.py FILE [FILE ...]                 # lightweight 80% checks
     ste-lint.py --mode ste --dictionary LOCAL.json --terminology TERMS.json FILE
     ste-lint.py --mode ste --json FILE          # reports missing vocabulary
     ste-lint.py --list-rules [--json]           # all 53 official rule IDs
     ste-lint.py --selftest
 
-STE mode checks supported patterns and local vocabulary, then requires review
-of meaning, grammar, terminology qualifications, document structure, and safety.
-It never turns a clean pattern scan into a claim of complete STE compliance.
+The 80% mode (the internal ``clarity`` profile) checks supported structural
+patterns without a dictionary claim. STE mode additionally checks local
+vocabulary, then requires review of meaning, grammar, terminology
+qualifications, document structure, and safety. Neither mode turns a clean
+pattern scan into a claim of complete STE compliance.
 
-Exit 0: clarity checks within baseline. Exit 1: hard findings exceed baseline.
+Exit 0: 80% checks within baseline. Exit 1: hard findings exceed baseline.
 Exit 2: invalid input/configuration. Exit 3: STE review remains required.
-Baselines and disabled rules are available only in clarity mode.
+Baselines and disabled rules are available only in 80% mode.
 """
 import argparse
 import bisect
@@ -1561,7 +1563,7 @@ def report(findings, words_total, as_json, hard_count, baseline, *, mode="clarit
     print(f"\n{len(findings)} findings ({hard_count} hard, baseline {baseline}), "
           f"{words_total} words, {rate} per 100 words")
     if coverage is None:
-        print("Clarity checks only. STE compliance is not verified. Hedges/modality are preserved.")
+        print("80% checks only. STE compliance is not verified. Hedges/modality are preserved.")
         return
     for gap in coverage["gaps"]:
         print(f"Missing source: {gap}")
@@ -2324,12 +2326,12 @@ def _non_negative_int(value):
 def main(argv):
     parser = argparse.ArgumentParser(
         prog="ste-lint.py", allow_abbrev=False,
-        description="Clarity lint or assisted ASD-STE100 Issue 9 review; not certification. "
+        description="80% lint or assisted ASD-STE100 Issue 9 review; not certification. "
                     "Reads stdin when no FILE is given.",
-        epilog="Exit codes: 0 clarity pass; 1 hard findings; 2 usage/input error; 3 STE review required.")
+        epilog="Exit codes: 0 80% pass; 1 hard findings; 2 usage/input error; 3 STE review required.")
     parser.add_argument("paths", nargs="*", metavar="FILE")
-    parser.add_argument("--mode", choices=("clarity", "ste"), default="clarity",
-                        help="clarity (default) or assisted STE review")
+    parser.add_argument("--mode", choices=("80", "clarity", "ste"), default="80",
+                        help="80% (default; clarity profile) or assisted STE review")
     parser.add_argument("--dictionary", metavar="JSON", help="local Issue 9 dictionary export")
     parser.add_argument("--terminology", metavar="JSON", help="approved project technical nouns/verbs")
     parser.add_argument("--list-rules", action="store_true", help="list all 53 Issue 9 rules and review criteria")
@@ -2344,13 +2346,15 @@ def main(argv):
     parser.add_argument("--selftest", action="store_true", help="run the built-in tests")
     # intermixed parsing keeps flags valid between file paths
     args = parser.parse_intermixed_args(argv)
+    if args.mode == "80":
+        args.mode = "clarity"
     if args.selftest:
         selftest()
         return 0
     as_json, baseline, paths = args.json, args.baseline, args.paths
     disabled = set().union(*args.disable)
     if args.mode == "ste" and (baseline or disabled):
-        parser.error("STE review does not permit --baseline or --disable; use --mode clarity for selective lint")
+        parser.error("STE review does not permit --baseline or --disable; use --mode 80 for selective lint")
     if args.mode == "clarity" and (args.dictionary or args.terminology):
         parser.error("--dictionary and --terminology require --mode ste")
     try:

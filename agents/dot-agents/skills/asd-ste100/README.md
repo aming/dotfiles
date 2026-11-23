@@ -1,6 +1,6 @@
 # ASD-STE100 Assisted Review Skill
 
-Rewrite technical English and review it against ASD-STE100 Issue 9. The skill accounts for all 53 writing rules, the official dictionary, and approved technical nouns and verbs.
+Rewrite technical English and review it against ASD-STE100 Issue 9. STE review accounts for all 53 writing rules, the official dictionary, and approved technical nouns and verbs. The default 80% contract applies the structural rules without a dictionary claim.
 
 **This is an assisted workflow, not an automatic compliance certificate.** The Python script checks supported patterns and local vocabulary. The skill and a qualified reviewer address meaning, grammatical function, document structure, terminology approval, and safety.
 
@@ -8,10 +8,12 @@ Rewrite technical English and review it against ASD-STE100 Issue 9. The skill ac
 
 | Mode | Use | Acceptance |
 |---|---|---|
-| STE review | Explicit STE rewrites and compliance reviews | All applicable rules, dictionary uses, and technical terminology need review. |
-| Clarity | General simplification and agent-output rewrites | No STE compliance claim. Preserves necessary vocabulary, modality, and verb forms. |
+| 80% (default) | General simplification, agent output, READMEs, error messages, tool descriptions | Structural rules at full strength; vocabulary is a consistency rule, not a dictionary claim. No STE compliance claim. |
+| STE review (Strict) | Explicit STE rewrites and compliance reviews, procedures, safety text | All applicable rules, dictionary uses, and technical terminology need review. |
 
-Explicit STE requests select STE review in `SKILL.md`. The script defaults to clarity for ordinary lint use; select `--mode ste` for the assisted workflow.
+Explicit STE requests select STE review in `SKILL.md`. The script defaults to the 80% checks; select `--mode ste` for the assisted review. `--mode 80` is the explicit form of the default; `--mode clarity` is an accepted alias for the same check profile.
+
+The 80% default is a scope, not a score: countable rules stay at 100%, while vocabulary and the one-word-one-meaning lockdown relax. It is the default because strict STE prompting reliably shortened sentences but did not improve model comprehension in 2026 prompt-level tests, and one informal test lost 46.8% of scored facts in Claude's code explanations. It is not a proven optimum; no study compares 80% and 100% head to head. See [`references/mode-evidence.md`](references/mode-evidence.md).
 
 ## Install
 
@@ -30,7 +32,7 @@ python3 scripts/ste-lint.py --mode ste --text-type procedure \
 
 python3 scripts/ste-lint.py --mode ste --text-type description \
   --dictionary references/issue9-dictionary.json --json description.md
-python3 scripts/ste-lint.py --mode clarity description.md
+python3 scripts/ste-lint.py --mode 80 description.md
 python3 scripts/ste-lint.py --list-rules --json
 ```
 
@@ -44,7 +46,7 @@ For vocabulary schemas, explicit inflections, canonical aliases, and counting un
 
 [`references/rule-coverage.json`](references/rule-coverage.json) is the 53-rule inventory. Each record identifies an official rule, related automatic checks, applicable text types, and remaining review criteria. `--list-rules` shows this inventory without reading stdin.
 
-STE mode adds:
+STE review adds:
 
 - Dictionary surface-form lookup and explicit inflections from local data.
 - Approved technical nouns/verbs and noncanonical-alias detection.
@@ -53,7 +55,7 @@ STE mode adds:
 - STE-oriented sentence counting: parentheses, explicit quoted text, hyphens, and configured names, labels, quantities, and other counting units.
 - Official rule references on mapped findings, missing-source reporting, and a review-required result.
 
-Selected phrasal verbs, nominalizations, sentence lengths, and semicolons are also checked. Grammar detection remains heuristic. Marketing adjectives, arbitrary synonym-group rotation, and the project-specific dangling-conjunction check belong to clarity mode, not formal STE coverage.
+Selected phrasal verbs, nominalizations, sentence lengths, and semicolons are also checked. Grammar detection remains heuristic. Marketing adjectives, arbitrary synonym-group rotation, and the project-specific dangling-conjunction check belong to the 80% checks, not formal STE coverage.
 
 The dictionary lookup does **not** validate contextual meaning or part of speech. Technical terms do not become valid in every context merely by appearing in a glossary. Parenthetical text is checked separately, while also counting as one outer word. Unmarked names/titles/labels, unconfigured units, formulas, complex lists, noun-phrase structure, and grammatical ambiguity still need review. Inline and fenced code are excluded from prose checks; Markdown support is partial.
 
@@ -63,18 +65,18 @@ The JSON report retains `violations`, `count`, `hard_count`, `baseline`, `words`
 
 | Code | Meaning |
 |---|---|
-| 0 | Clarity checks within baseline, or a successful rule-list/self-test command. |
+| 0 | 80% checks within baseline, or a successful rule-list/self-test command. |
 | 1 | Hard findings exceed baseline. |
 | 2 | Invalid input or configuration. |
 | 3 | STE scan found no hard findings; review remains required. |
 
-STE review never returns an acceptance code. Correct hard findings, inspect heuristic advisories, then complete the remaining review against the official standard. Nonzero `--baseline` and `--disable` are rejected in STE mode. They remain available for selective clarity lint.
+STE review never returns an acceptance code. Correct hard findings, inspect heuristic advisories, then complete the remaining review against the official standard. Nonzero `--baseline` and `--disable` are rejected in STE mode. They remain available for selective 80% lint.
 
 ## Skill output
 
-General rewrites return the revised text. An STE request with incomplete sources or review also gets a concise `Review required:` line. Request an analysis to get rule IDs, original wording, revisions, and remaining review.
+80% rewrites return the revised text. An STE request with incomplete sources or review also gets a concise `Review required:` line. If the user asks which contract you used, answer in one line: `Mode: 80% (default).` or `Mode: STE review (Strict).` Request an analysis to get rule IDs, original wording, revisions, and remaining review.
 
-The examples in [`examples/before-after.md`](examples/before-after.md) illustrate clarity and rule principles. They are not verified compliant documents. [`examples/linter-edge-cases.md`](examples/linter-edge-cases.md) intentionally contains invalid list endings for the clarity checker.
+The examples in [`examples/before-after.md`](examples/before-after.md) illustrate 80% and rule principles. They are not verified compliant documents. [`examples/linter-edge-cases.md`](examples/linter-edge-cases.md) intentionally contains invalid list endings for the 80% checker.
 
 ## Verify the implementation
 
@@ -83,7 +85,7 @@ python3 scripts/ste-lint.py --selftest
 python3 -m unittest discover -s scripts -p 'test_ste_*.py'
 ```
 
-The self-test covers existing clarity/Markdown behavior. The additional tests exercise local vocabulary and assisted-review behavior. Passing implementation tests does not certify a document or the checker.
+The self-test covers existing 80% (clarity-profile) and Markdown behavior. The additional tests exercise local vocabulary and assisted-review behavior. Passing implementation tests does not certify a document or the checker.
 
 ## Sources
 

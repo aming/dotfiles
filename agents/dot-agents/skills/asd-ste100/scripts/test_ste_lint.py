@@ -62,6 +62,13 @@ class AssistedSteTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2)
                 self.assertIn("does not permit", result.stderr)
 
+    def test_eighty_mode_alias_uses_the_structural_profile(self):
+        result = self.cli("Open the file.", "--mode", "80", "--json")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["mode"], "clarity")
+        self.assertEqual(report["status"], "clarity-checks-passed")
+
     def test_modal_perfect_is_flagged_without_removing_uncertainty(self):
         text = "The request may\nhave failed."
         findings = self.findings(text)
